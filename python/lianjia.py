@@ -4,13 +4,6 @@ from bs4 import BeautifulSoup
 
 url = 'http://soa.dooioo.com/api/v4/online/house/ershoufang/listMapResult?access_token=7poanTTBCymmgE0FOn1oKp&client=pc&cityCode=sh&siteType=quyu&type=district&dataId=sh&showType=list&limit_count=2000'
 
-form_data = { 'latitudeFrom':3.52,
-              'latitudeTo':53.33,
-              'longitudeFrom':73.4,
-              'longitudeTo':135.23,
-              'gardenId':'',
-              'zoom':12 }
-
 request_headers = { 'Accept':'*/*',
                     'Host':'soa.dooioo.com',
                     'Origin':'http://sh.lianjia.com',
