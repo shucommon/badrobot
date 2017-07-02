@@ -1,16 +1,16 @@
 #include<iostream>
+#include<string>
 
 using namespace std;
 
-class A
-{
-    public:
-        A();
-        ~A();
-}
-
 int main()
 {
+    string test = "";
+    if(test.empty())
+        cout << "empty\n";
+    else
+        cout << "hh\n";
 
+    return 0;
 
 }

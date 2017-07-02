@@ -51,13 +51,13 @@ def crawler(url):
               ', title: ' + title)
 
 page = 1
-while page <= 4100:
+while page <= 1:
     url = 'http://sh.lianjia.com/ershoufang/d' + str(page)
     print url
     crawler(url)
     page += 1
 
 # get total info
-#source_code = requests.get(url, headers=request_headers, params=query_string_param)
-#soup = BeautifulSoup(source_code.text, 'lxml')
-#print soup
+source_code = requests.get(url, headers=request_headers, params=query_string_param)
+soup = BeautifulSoup(source_code.text, 'lxml')
+print soup.prettify()

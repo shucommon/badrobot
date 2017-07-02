@@ -1,0 +1,15 @@
+#include <dlfcn.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+
+int main()
+{
+//    test();
+    void* handle = dlopen("libtest.so", RTLD_LAZY);
+    void (*local_test)() = dlsym(handle, "test");
+    (*local_test)();
+
+    printf("pid %d\n", getpid());
+    return 0;
+}

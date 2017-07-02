@@ -1,0 +1,17 @@
+## chapter 2
+You can view the GNU Coding
+Standards’ guidelines for command-line options by invoking the following from a shell
+prompt on most GNU/Linux systems:
+% info “(standards)User Interfaces”
+
+% program > output_file.txt 2>&1
+% program 2>&1 | filter
+The 2>&1 syntax indicates that file descriptor 2 (stderr) should be merged into
+file descriptor 1 (stdout). Note that 2>&1 must follow a file redirection (the first example)
+but must precede a pipe redirection (the second example).
+
+Note that even though the parameter type of the exit function is int and the main
+function returns an int, Linux does not preserve the full 32 bits of the return code. In
+fact, you should use exit codes only between zero and 127. Exit codes above 128 have
+a special meaning—when a process is terminated by a signal, its exit code is 128 plus
+the signal number.
