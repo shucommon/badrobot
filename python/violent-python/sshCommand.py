@@ -24,11 +24,15 @@ def connect(user, host, password):
         child.sendline(password)
         child.expect(PROMPT)
         return child
+    if ret == 2:    # already add the ssh key
+        child.sendline(password)
+        child.expect(PROMPT)
+        return child
 
 def main():
     host = 'localhost'
     user = 'root'
-    password = 'aaaa'
+    password = 'xxxx'
     child = connect(user, host, password)
     send_command(child, 'cat /etc/shadow | grep root')
 
