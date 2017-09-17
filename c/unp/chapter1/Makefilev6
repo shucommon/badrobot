@@ -1,0 +1,15 @@
+CC = gcc
+CFLAGS = -I../unpv13e/lib -g -O2 -D_REENTRANT -Wall
+LIBS = ../unpv13e/libunp.a -lpthread
+CLEANFILES = *.o 
+
+OBJS = daytimetcpcliv6.o 
+PROGS = daytime
+
+all:	${PROGS}
+
+daytime:	${OBJS}
+		${CC} ${CFLAGS} -o $@ ${OBJS} ${LIBS}
+
+clean:
+		rm -f ${PROGS} ${CLEANFILES}
