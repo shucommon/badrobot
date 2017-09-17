@@ -431,6 +431,7 @@ set laststatus=2
 " Add by GQ
 " set relative number
 set rnu
+set paste
 
 " cscope maps
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
