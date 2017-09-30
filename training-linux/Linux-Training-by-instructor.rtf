@@ -1,0 +1,322 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf810
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Monaco;}
+{\colortbl;\red255\green255\blue255;\red242\green242\blue242;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\csgray\c95825;\csgray\c0\c85000;}
+\margl1440\margr1440\vieww13800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs60 \cf0 Kernel:\
+\
+ Manages:\
+    - Files\
+    - Processes \
+         - Threads (scheduling)\
+    - Memory (Virtual Memory)\
+    - Devices\
+          - character: stream of bytes\
+				- example: printer, tty, pty\
+		  - block: a buffered access to an array of blocks (512, 4096,8192 bytes)\
+               - USB drive\
+			    - hard disk (mass storage) \
+		  - interface (sockets)\
+\
+  Kernel - can be found in /boot\
+ \
+     Name: vmlinuz-X.Y.Z (version)\
+\
+     Vmlinuz - compressed. (Gz or Bz2)\
+      It is expanded in memory.\
+\
+    Kernel is a program that is booted directly from BIOS/EFI (or using a boot loader), and then remains resident in memory to provide services for all other \
+programs.\
+\
+\
+    +\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97-\'97+\
+    |                    KERNEL                       |\
+    |         (same in all processes)           |\
+    +\'97\'97\'97\'97\'970xffffffff8xxx\'97 \'97\'97\'97\'97+\
+    |                       |          |                      |\
+    |                     UNUSED                    |\
+    +\'97\'97\'97\'97\'97\'970x7fffffffffff\'97\'97\'97\'97\'97+\
+    |                       |          |                      |\
+    |    User. P1     | 128T |    User P2     |\
+   +\'97\'97\'97\'97\'97\'97+         +\'97\'97\'97\'97\'97\'97+\
+\
+ \
+  Every process has an address space of:  4GB (= 32 bit) and  16 EB (= 64 bit)\
+\
+   In 32 bit case - we reserve 1GB out of the 4GB. So maximum is 3GB.\
+  \
+    In the 64-bit case: we USE ONLY 47\
+   Bits.  2^47= 128 TB\
+\
+   In 32-bit: Top 1GB. Is kernel\
+   In 64-bit: Top 128TB is kernel (rest unused)\
+\
+    - This proves more efficient (faster!)\
+        This approach is FAR less secure and \
+      FAR less stable (robust) than that of micro kernel, but in microkernel everything is isolated and requires message passing - \
+  And major context switching (SLOW)\
+     And in this approach kernel pages are always. Mapped - so it\'92s like a thread context\
+ Switch (minor context switch \'97> faster)\
+\
+\
+   Monolithic - main drawback - problem - a\
+   Crash in kernel space is a complete panic.\
+    Forces a full system reboot.\
+\
+    Kernel now contains much more code (of\
+   Drivers, of fs, of vm management, etc..) then\
+   It is more likely to crash \'97> system may be\
+   Less stable.\
+\
+   Kernel can load 
+\b modules
+\b0 \
+\
+(10,20,30,40,50,60)\
+   K.  M. G.  T.  P. E\
+\
+    HT: Optimal for two threads of same process either on ALU or using different\
+   Microarchitecture components\
+\
+             \
+    MC: Two threads of same process but\
+    Can basically do anything. Can also work\
+   For unrelated threads (of diff. Processes) assuming no L2 cache contention.\
+\
+    MP: Optimal for unrelated (diff processes) because otherwise you involve IPI (inter processor interrupts)\
+\
+    /proc/cpuinfo\
+         -> physical | wc -l : how many processors\
+         -> core id | wc -l : how many cores.\
+              If you see same core twice with same\
+             Physical \'97> HT\
+\
+    In HT: Kernel should be 3.2 or higher.\
+\
+\
+    System call:  A function implemented by\
+    The kernel (in kernel mode).\
+\
+       Linux exports two sets of system calls:\
+			- POSIX: Portable Operating System Interface [x] - common to all UN*X systems (same sys calls as Solaris, or MacOS)\
+\
+			- Linux: These are specific to Linux and not found anywhere else.\
+\
+\
+\
+   Two calling conventions:\
+       - ABI64: How we call functions in 64-bit\
+			(using registers - rdi,rsi, rdx,rcx,r8,r9)\
+ 	 \
+      - Syscall: how we call functions when they\
+  					are in kernel mode.\
+\
+            LOAD sys call # into EAX.\
+\
+    \'97 AX (16 bit) EAX: (32-bit) RAX: (64-bit)\
+\
+\
+\
+    When you call a system call you MOVE from user mode to kernel mode.\
+  Moving into kernel mode can only be done through a FIXED entry point - system_call\
+  ALL syscall instructions go to that address.\
+  The address is set by the kernel when it starts up.\
+\
+  Otherwise, Deref a pointer to kernel space will automatically get SEGV (kill -11) because you are not allowed to go to kernel mode arbitrarily. ONLY through sys call and ONLY through specified address -which is set by kernel and CANNOT be controlled by you (for security).\
+\
+ SYSCALL is a special instruction that is \
+  Equivalent to:\
+    JMP <syscall_entry_point> \
+   ALSO changes user mode -> kernel mode\
+        (Architecture specific - on intel : EFLAGS)\
+\
+\
+   Using system calls is called \'93VOLUNTARY\'94 kernel switch. \
+\
+But there are a lot of NONVOLUNTARY kernel switches:\
+       - Scheduling (threads - context switch)\
+       - Exception (CPU)\
+       - Trap (CPU)\
+\
+  Scheduling: M threads N cpus for M >> N\
+			simple case : M= 2 >> 1= CPU\
+\
+ \
+    Thread: A state of registers which is running\
+    On the CPU ==> register values belong to the thread.\
+\
+  -   General purpose registers (variables)\
+          AX,BX,CX,DX, R8-R9\
+   - Instruction Pointer (IP)/Program Counter (PC)\
+        - points to the next instruction in memory.\
+   - Stack Pointer (SP): Pointer to thread stack.\
+   - Base Pointer (BP): Pointer to stack frame.\
+\
+   Process:  CONTAINER of Virtual memory\
+			(memory mapping in a special register\
+			called CR3. All threads in same \'93process\'94\
+			share the value of CR3, which points to\
+			a shared PAGE TABLE.\
+\
+   YOU CANNOT AND DO NOT RUN A PROCESS.\
+   YOU ONLY RUN THREADS, and every process\
+	has a single MAIN thread, and maybe others.\
+\
+\
+   PS, top, etc. All show THREAD GROUPS\
+	(in PS you can see individual threads with -L)\
+\
+       A thread group is called a PROCESS when it has a container in user mode.\
+	Otherwise, threads in kernel mode, are threads\
+ Without a process.\
+\
+\
+     In order to perform SCHEDULING the kernel\
+   Has to be able to take a thread OUT of the CPU\
+   And put another thread INTO the CPU\
+\
+     Take a thread out of CPU:\
+     Save the register context somewhere (kernel stack)\
+\
+     Put the thread INTO the CPU:\
+     Load the register state of CPU from the thread.\
+\
+\
+   If both threads (in , and out) share the same CR3\
+      -> GOOD, simple operation , MINOR context .\
+\
+  If Both threads are from different CR3 (\'93processes\'94) then \
+    -> NOT SO GOOD : Expensive operation.\
+			- Load CR3, invalidate cached pages (TLB).\
+\
+     - Cooperative multitasking: nice idea, good if \
+  Threads cooperate - still used when threads do I/O. During I/O - thread is put to sleep (and kicked out)\
+\
+     - Preemptive: Dont wait for cooperation - kick out.\
+    All modern CPUs support interrupts.\
+	Since interrupt will automatically jump to interrupt\
+  Handler - on way back interrupt handler will trigger\
+	scheduler.\
+  Problem: interrupts are unpredictable\
+	Solution: synthetic interrupt -> TIMER\
+     Configurable - 100, 250, 300, 1000 times/sec HZ	 \
+        Many timer interrupts will be \'93spurious\'94\
+\
+  The value of the HZ you choose affects system responsiveness.\
+\
+   1000 - 1 ms responsiveness\
+   100 - 10 ms responsiveness\
+\
+          From CPU perspective:\
+			1 ms = 1,000,000 ns (cycles) (assume 1g)\
+\
+       The tradeoff is - 1ms - better response, more spurious\
+      10 ms - slower response, less interruptions.\
+\
+   In linux 2.6.21 - big improvement \'93tickless\'94\
+\
+    Exercise: caches, memory and I/O\
+\
+\
+        http://pastebin.com/HK57JVLt\
+\
+\
+\'97\
+Understanding assembly:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \cb3 \CocoaLigature0 0000000000400526 <main>:\
+PROLOG: Compiler generated code. Sets up local frame.\
+  400526:       55                      push   %rbp\
+  400527:       48 89 e5                mov    %rsp,%rbp\
+ \'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+  40052a:       bf d0 05 40 00          mov    $0x4005d0,%edi\
+  40052f:       e8 cc fe ff ff          callq  400400 <puts@plt>\
+  400534:       b8 00 00 00 00          mov    $0x0,%eax\
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+Epilog: Compiled generated code - Tears down frame.\
+  400539:       5d                      pop    %rbp\
+  40053a:       c3                      retq   \
+  40053b:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)\
+\
+0000000000400540 <__libc_csu_init>:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs60 \cf0 \cb1 \CocoaLigature1 \
+\
+FOR UNOPTIMIZED CODE ONLY:\
+\
+   - First instructions of prolog are always:\
+        PUSH RBP\
+	    MOV RSP, RBP\
+		\'97\'97\
+	   SUB.  ?????, RSP (allocate stack)\
+\
+       \'97\'97\'97\'97\'97\'97\
+       ADD ????, RSP\
+       POP RBP.              Or     LEAVE\
+       RET\
+	\
+\
+ Exercise: http://Technologeeks.com/temp/m.tgz\
+    http://hisown.com/temp/m.tgz\
+\
+    Binary - m\
+    Text file m.txt\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \cb3 \CocoaLigature0 -  Create a simple program that reads from a file one byte at a time:\
+\
+int main (int argc , char **argv)\
+\{\
+        int fd = open (argv[1], O_RDONLY);\
+        while (1)\{\
+                char c;\
+                read(fd,&c,1);\
+                sleep(1);\
+        \}\
+\}\
+\
+\
+Use /proc/..../fdinfo on the file to see if you can find the exact offset of the file\
+ - what is the "flags" field in fdinfo mean?\
+\
+Create a small script to trigger debugger on particular offset in file (say, 200)\
+\
+\
+- hint : use "cut" and "grep"\
+-----------------\
+\
+- Using the status file, create a small script to alert you if the memory size of a process (VmRSS) exceeds a\
+certain limit (say, 10M)\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs60 \cf0 \cb1 \CocoaLigature1 \
+\
+\
+http://pastebin.com/xXn0n6ZC\
+\
+\
+\
+      \
+\
+\
+\
+\
+  \
+  \
+\
+\
+\
+\
+\
+\
+\
+\
+   \
+}

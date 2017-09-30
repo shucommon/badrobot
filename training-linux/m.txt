@@ -1,0 +1,46 @@
+
+Consider the test binary -  provided:
+
+Using objdump -d, you should see the following:
+
+0000000000400526 <main>:
+  400526:	55                   	push   %rbp
+  400527:	48 89 e5             	mov    %rsp,%rbp
+  ---------------------------
+  40052a:	48 83 ec 20          	sub    $0x20,%rsp
+  40052e:	48 8d 45 e0          	lea    -0x20(%rbp),%rax
+  400532:	ba 18 00 00 00       	mov    $0x18,%edx
+  400537:	be 4a 00 00 00       	mov    $0x4a,%esi
+  40053c:	48 89 c7             	mov    %rax,%rdi
+  40053f:	e8 bc fe ff ff       	callq  400400 <memset@plt>
+  400544:	b8 00 00 00 00       	mov    $0x0,%eax
+  ----------------------------
+  400549:	c9                   	leaveq 
+  40054a:	c3                   	retq   
+  40054b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+
+
+Note the pattern discussed in class - identify the prolog and the epilog, and see:
+
+   - What is the stack frame layout?
+   - What arguments are passed to the function? Remember the calling convention of x86_64
+   - What is the source of the program? Create a .c file and compile to see if you get the same results.
+
+-----------------------------
+
+Optimization:
+-------------
+
+  Taking the source of the program, compile it again, but this time with -O2.
+
+  - What happened to the memset?
+  - How would you fix that, so you see the memset code again?
+
+  - After fixing the program, compile with -O2 again. Now what happens to the memset()?
+
+  - Now compile with -Os. What is the difference?
+
+===================================================
+
+
+
