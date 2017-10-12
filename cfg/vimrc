@@ -426,12 +426,13 @@ endfunction
 
 " my own setting
 set number
-set cursorline
+" uncomment cursorline to enaboe underline 
+" set cursorline
 set laststatus=2
 " Add by GQ
 " set relative number
 set rnu
-set paste
+set paste 
 
 " cscope maps
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
