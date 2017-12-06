@@ -1,0 +1,12 @@
+##how to build a kernel module with kernel source
+
+1. download kernel from kernel.org
+2. untar kernel, enter kernel source folder
+   $ make menuconfig && make oldconfig && make prepare && make modules_prepare
+3. modify magic version to the target kernel version
+    linux-4.1.15/include/generated/utsrelease.h
+    linux-4.1.15/include/linux/vermagic.h
+4. write you kernel module source code
+5. write Makefile
+    obj-m := hello.o
+6. make -C /root/kernel/linux-4.1.15 M=`pwd` modules
