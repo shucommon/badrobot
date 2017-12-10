@@ -2,7 +2,7 @@
 
 1. download kernel from kernel.org
 2. untar kernel, enter kernel source folder
-   $ make menuconfig && make oldconfig && make prepare && make modules_prepare
+   $ make menuconfig && make oldconfig && make prepare && make modules_prepare && make scripts
 3. modify magic version to the target kernel version
     linux-4.1.15/include/generated/utsrelease.h
     linux-4.1.15/include/linux/vermagic.h
