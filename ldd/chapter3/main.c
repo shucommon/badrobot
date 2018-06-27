@@ -85,6 +85,108 @@ int scull_trim(struct scull_dev *dev)
 }
 
 #ifdef SCULL_DEBUG /* use proc only if debugging */
+
+#define MIN(a, b) ((a) < (b) ? (a):(b))
+#define proc_print(page, len, format, ...)       \
+            len += sprintf(page+len, format, ## __VA_ARGS__)
+
+static ssize_t 
+proc_write_test(struct file *fp, const char *buffer, size_t count, loff_t *off )
+{
+   char str[10];
+
+
+   memset(str, 0, 10);
+   if (copy_from_user(str, buffer, MIN(sizeof(str) - 1, count))) {
+      PERR("copy_from_user failed\n");
+      return -EFAULT;
+   }
+
+    str[9] = '\0';
+  PERR("copy_from_user %s\n", str);
+
+   return count;
+
+}
+int len,temp;
+
+char *msg;
+
+char *str = "hello";
+
+
+static ssize_t 
+proc_read_test(struct file *fp, char __user *buf, size_t count, loff_t *off)
+{
+/*
+if(count>temp)
+{
+count=temp;
+}
+temp=temp-count;
+copy_to_user(buf,msg, count);
+if(count==0)
+temp=len;
+   
+return count;
+*/
+
+   int leng = 0;
+   proc_print(buf, leng, "%s\n", str);
+PERR("count = %zu\n", count);
+PERR("leng = %d\n", leng);
+   return leng;
+}
+
+struct file_operations proc_fops = {
+    .read = proc_read_test,
+    .write= proc_write_test
+};
+
+static int cavium_proc_show(struct seq_file *s, void *v)
+{
+    struct scull_dev *scull_devices;	/* allocated in scull_init_module */
+    char *str = "hello world";
+
+   scull_devices = (struct scull_dev *)s->private;
+
+   seq_printf(s, "Octeon (Status: %s)\n", str);
+   seq_printf(s, "jiffies: %lu\n", jiffies);
+
+   return 0;
+}
+
+static int cavium_proc_open(struct inode *inode, struct file *file)
+{
+    return single_open(file, cavium_proc_show, NULL);
+}
+ 
+static const struct file_operations proc_fops_test = {
+    .open = cavium_proc_open,
+    .read = seq_read,
+    .llseek = seq_lseek,
+    .release = single_release,
+};
+
+int proc_test_init(struct scull_dev *scull_dev)
+{
+    struct proc_dir_entry *root, *node;
+    root = proc_mkdir("ddnv", NULL);  
+    if( root == NULL ) {
+        PERR("create root error\n");
+    }
+
+    node = proc_create_data("proc_test", 0666, root, &proc_fops_test, scull_dev);
+    if( node == NULL ) {
+        PERR("create node failde\n");
+    }
+
+    msg=" Hello World ";
+    len=strlen(msg);
+    temp=len;
+    printk(KERN_INFO "1.len=%d",len);
+}
+
 /*
  * The proc filesystem: function to read and entry
  */
@@ -233,6 +335,7 @@ static void scull_create_proc(void)
             &scullmem_proc_ops,
             NULL /* client data */);
     proc_create_data( "scullseq", 0, NULL, &scull_proc_ops, NULL);
+    proc_test_init(scull_devices);
 }
 
 static void scull_remove_proc(void)
@@ -240,6 +343,8 @@ static void scull_remove_proc(void)
 	/* no problem if it was not registered */
 	remove_proc_entry("scullmem", NULL /* parent dir */);
 	remove_proc_entry("scullseq", NULL);
+    remove_proc_entry("ddnv", NULL);
+	remove_proc_entry("proc_test", NULL);
 }
 
 #endif /* SCULL_DEBUG */

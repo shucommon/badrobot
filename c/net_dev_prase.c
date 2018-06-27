@@ -73,7 +73,7 @@ int tx_rx_stat( char *eth_name, double *recv, double *send )
     int nDevLen, fd, nBytes, i = 0;
     char *p, * pDev, *ifconfig_value;
     long rx_tx[2];
-    char buf[1024];
+    char buf[1024 * 1024];
     char ath0[120];
     char cmd[250];
     FILE *pipe;

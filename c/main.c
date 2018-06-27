@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 /* #define TEST_CALLBACK */
 #define TEST_ALIGNMENT
@@ -46,5 +48,16 @@ int main(int argc, char**grgc)
 #ifdef TEST_ALIGNMENT
 	printf("size: %d \n", sizeof(test_alignment));
 #endif
+
+    char * str = "/dev/ddnva";
+    int fd = open(str,  O_RDWR);
+    if(fd < 0)
+        printf("error open ddnva\n");
+    else
+    {
+        printf("open ddnva\n");
+        close(fd);
+    }
+    printf("sizeof(unsigned short) = %u\n", sizeof(unsigned short));
 	return 0;
 }

@@ -1,0 +1,1 @@
+cmd_/root/little-routine/ldd/chapter3/scull.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /root/little-routine/ldd/chapter3/scull.ko /root/little-routine/ldd/chapter3/scull.o /root/little-routine/ldd/chapter3/scull.mod.o

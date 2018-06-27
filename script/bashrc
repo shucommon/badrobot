@@ -85,7 +85,15 @@ alias tree='tree --charset ASCII'
 
 # [GQ]persional aliases
 alias c='clear'
-
+alias cl='clear && l'
+alias bp='cd /root/chameleon-kit && make chameleon-plugin'
+alias bc='cd /root/chameleon-kit && make chameleon-core'
+alias bk='cd /root/chameleon-kit && make chameleon-kernel'
+alias mc='cd /root/chameleon-kit && make all'
+alias plugin='cd /root/chameleon-kit/output/build/chameleon-plugin-git/'
+alias core='cd /root/chameleon-kit/output/build/chameleon-core-git/'
+alias kernel='cd /root/chameleon-kit/output/build/chameleon-kernel-git/'
+export LANG="C"
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.

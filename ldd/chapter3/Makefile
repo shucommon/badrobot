@@ -20,7 +20,8 @@ ifneq ($(KERNELRELEASE),)
 # Otherwise we were called directly from the command
 # line; invoke the kernel build system.
 else
-	KERNELDIR ?= /root/kernel/linux-4.1.15 
+	#KERNELDIR ?= /root/kernel/linux-4.1.15 
+	KERNELDIR ?= /root/chameleon-kit/output/build/linux-4.1.15 
 	PWD := $(shell pwd)
 
 modules:

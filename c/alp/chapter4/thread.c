@@ -5,7 +5,7 @@
 void* myfuc(void* parm)
 {
     int * par = (int*)parm; 
-    printf("thread id = %d, pid = %d, parm = %d\n", pthread_self(), (int)getpid(), *par);
+    printf("thread id = %lx, pid = %d, parm = %d\n", pthread_self(), (int)getpid(), *par);
     return NULL;
 }
 
