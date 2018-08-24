@@ -39,6 +39,14 @@
 "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+execute pathogen#infect()
+syntax on
+filetype plugin indent on
+
+"tagbar
+nmap <F8> :TagbarToggle<CR>
+let g:tagbar_left = 1
+let g:tagbar_autofocus = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
@@ -429,6 +437,7 @@ set number
 " uncomment cursorline to enaboe underline 
 " set cursorline
 set laststatus=2
+
 " Add by GQ
 " set relative number
 set rnu
