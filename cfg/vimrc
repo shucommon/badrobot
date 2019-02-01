@@ -39,14 +39,22 @@
 "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+" mapleader set the map leader character
+let mapleader = '\'
+
 execute pathogen#infect()
 syntax on
 filetype plugin indent on
 
 "tagbar
-nmap <F8> :TagbarToggle<CR>
+"below two lines select the map method
+"nmap <F8> :TagbarToggle<CR>
+noremap <silent> <Leader>\ :TagbarToggle<CR>       " Display panel with \ (or \\)
 let g:tagbar_left = 1
 let g:tagbar_autofocus = 1
+let g:tagbar_width=26                          " Default is 40, seems too wide
+" comment out below line to specify ctags bin path
+"let g:tagbar_ctags_bin='/usr/local/bin/ctags'  " Proper Ctags locations
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
