@@ -114,3 +114,10 @@ fi
 #fi
 
 export HISTTIMEFORMAT="%d/%m/%y %T "
+
+alias r='source ~/.bashrc'
+
+alias tl='tmux list-session'
+alias ta='tmux attach-session'
+alias td='tmux detach'
+alias tn='tmux new -s'
