@@ -59,5 +59,7 @@ int main(int argc, char**grgc)
         close(fd);
     }
     printf("sizeof(unsigned short) = %u\n", sizeof(unsigned short));
+
+	printf("test 1 >> 1 = %d\n", 1 >> 1);
 	return 0;
 }

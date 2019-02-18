@@ -6,6 +6,21 @@ int a;
 int b;
 } test;
 
+void print_width()
+{
+	printf("F16    FP      Port\n"
+			"===    ====    ===\n");
+	printf("%-7d%-8d%d\n", 0,1,1);
+	printf("%-7d%-8d%d\n", 0,1,11);
+	printf("%-7d%-8d%d\n", 0,11,1);
+	printf("%-7d%-8d%d\n", 0,11,11);
+	printf("%-7d%-8d%d\n", 1,1,1);
+	printf("%-7d%-8d%d\n", 2,1,11);
+	printf("%-7d%-8d%d\n", 1,11,1);
+	printf("%-7d%-8d%d\n", 2,11,11);
+	printf("port-%02d port-%0-2d\n", 1,1);
+}
+
 int main(int argc, char* argv[])
 {
 	struct Test ts;
@@ -19,5 +34,7 @@ int main(int argc, char* argv[])
 	test.b = 2;
 	ts.a = 1;
 	printf("test.a = %d, ts.a = %d\n", test.a, ts.a);
+
+	print_width();
 	return 0;
 }
