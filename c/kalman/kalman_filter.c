@@ -5,7 +5,6 @@ struct quad_properties{
 	// State variables
 	float height;
 	float kalmanvel_z;
-	float ;
 
 	// Measurements
 	float baro_height;

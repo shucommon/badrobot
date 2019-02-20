@@ -1,0 +1,2 @@
+force upgrade pip3
+	sudo -H pip3 install --upgrade pip --force-reinstall
