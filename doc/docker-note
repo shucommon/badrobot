@@ -1,0 +1,80 @@
+CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
+
+1 Docker ecosystem
+    container core technology
+        container standard  -> Open Container Initiative(OCI)
+            runtime spec
+            image format spec
+
+        container runtime
+            lxc  linux originate, container use this at beginning
+            runc docker developped, it's default now
+            rkt  developped by CoreOS
+
+        container managerment tools
+            lxd -> lxc
+            docker engine -> runc
+                deamon
+                cli
+            rkt cli -> rkt
+
+        container define tools
+            docker image : template of docker container, runtime depend on docker image to create container
+            dockerfile: contain cmds to create docker image
+            ACI(App Container Image): image of rtk by CoreOS
+
+        Registries
+            Docker Registry: for enterprise
+            Docker Hub (https://hub.docker.com) : public registry
+            Quay.io(https://quay.io/) : public registry
+
+        container OS - OS specific for running container
+            coreos
+            atoic
+            ubuntu core
+
+    container platform technology - make container running as cluster in distribute system
+        container orchestration(编排) engine - container management, schedule, cluster define, service discover, form a microservice application
+            docker swarm - developped by docker
+            kubernetes - by Google, support docker, CoreOS container
+            mesos+marathon
+
+        container manage platform - contruct based on container orchestration
+            Rancher
+            ContainerShip
+
+        PaaS based on container
+            Deis
+            Flynn
+            Dokku
+        
+    container support technology
+        Docker network
+            docker network
+            flannel
+            weave
+            calico
+
+        Service discover - save microservice latest info in cluster(ip/port), provide API for outside
+            etcd
+            consul
+            zookeeper
+
+        Monitor
+            docker ps/top/stats
+            docker stats API - HTTP
+            sysdig
+            cAdvisor/Heapster
+            Weave Scope
+
+        Data manage - migrate between host
+            Flocker
+
+        Log manage
+            docker logs
+            logspout
+
+        Safety
+            OpenSCAP
+
+
