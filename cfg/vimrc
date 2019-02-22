@@ -449,9 +449,18 @@ set number
 set laststatus=2
 
 " Add by GQ
-" set relative number
-set rnu
 set paste 
+"set rnu
+" set relative number
+" set rnu
+set paste
+:set number relativenumber
+
+:augroup numbertoggle
+:  autocmd!
+:  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+:  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+:augroup END
 
 " netrw
 let g:netrw_liststyle = 3
