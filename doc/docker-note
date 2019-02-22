@@ -145,7 +145,7 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
         $ docker ps                     -> list running containers
         $ docker container ls           -> list running containers
 
-4. Image
+4. Docker Image
     Dockerfile -> image describe file
         hello-world dockerfile:
             FROM scratch
@@ -189,5 +189,57 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
             $docker build -t new_image_name .  -> . mean build context is current path, search Dockerfile in build content
             $docker build -t new_image_name . -f Dockerfile 
     
-        $ docker history container
-    
+            $ docker history container
+            $ docker build will try to use cache for exist container, using docker build --no-cache to avoid using cache
+
+            FROM                -> specify base Image
+            MAINTAINER          -> set Image auther 
+            COPY                -> copy file from build context to Image
+                COPY src dest
+                COPY ["src", "dest"]
+            ADD                 -> save with COPY, except that it will auto extract tar/zip/tgz/xz will copy to Image
+            ENV                 -> set environment variable
+                '''
+                ENV MY_VERSION 1.3
+                RUN apt-get install -y mypackage=$MY_VERSION
+                '''
+            EXPOSE              -> specify a PORT for the process in container
+            VOLUME              -> claim file or folder as volume
+            WORKDIR             -> set current work dir for subcmd(RUN/CMD/ENTRYPOINT/ADD/COPY)
+            RUN                 -> run cmd in container
+            CMD                 -> run when container start, only the last CMD have effective, CMD will be replaced by parameter after docker run 
+            ENTRYPOINT          -> last one have effective, CMD or parameter after docker run will pass to ENTRYPOINT as parameter
+                RUN execute cmd and create new Image layer, often used to install software
+                CMD set default cmd and parameter to execute after container start. if docker run have parameters, CMD will be replaced
+                ENTRYPOINT set cmd to run when container start, if CMD only have parameters, then the parameter will pass to ENTRYPOINT. if ENTRYPOINT using shell method, CMD or docker run parameter will be ignored
+
+        Docker image name
+            [image name] = [repository]:[tag]
+            docker tag myimage-v1.9.1 myimage:1
+            docker tag myimage-v1.9.1 myimage:1.9
+            docker tag myimage-v1.9.1 myimage:1.9.1
+            docker tag myimage-v1.9.1 myimage:latest
+
+    Using public registry
+        register account on Docker Hub
+        $ docker login -u user_name  / password:
+        $ docker tag httpd user_name/httpd:v1   -> set standard name:  [username]/xxx:tag
+        $ docker push user_name/httpd:v1
+        $ docker push user_name/httpd       -> push all image under same repository
+
+    Configure personal registry
+        $ docker run -d -p 5000:5000 -v /myregistry:/var/lib/registry registry:2        -> -d deamon -p map container port to host port -v map container /var/lib/registry to host /myregistry
+        $ docker tag user_name/httpd:v1 registry.example.net:5000/user_name/httpd:v1    -> rename image to match registry  - [registry-host]:[port]/[username]/xxx
+        $ docker push registry.example.net:5000/user_name/httpd:v1
+        $ docker pull registry.example.net:5000/user_name/httpd:v1
+            
+    summary
+        images    show image list
+        history   show image create history
+        commit    create new image from container
+        build     construct new image from Dockerfile
+        tag       set tag for image
+        pull      download image from registry
+        push      upload image to registry
+        rmi       remove Docker host image -> only can delete image in host, not registry
+        search    search Docker Hub image
