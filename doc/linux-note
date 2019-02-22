@@ -1,0 +1,227 @@
+## linux training tips
+    ctrl+z stop
+    fg/bg continue
+    ctrl+c exit 
+
+    cpulimit -l percentage -p pid  - limit a process cpu percentage
+
+    fork - vfork( MMU-less system)
+    pthread_create -> clone
+
+    fork/vfork/clone -> do_fork(clone_flag)
+
+    pid - tgid (top group pid, posix comp)
+
+    syscall(_NR_gettid)
+    top -H thread view
+
+    ps - id wa
+
+    LMbench
+
+    pmap
+
+    \time -v python xx.py
+    major/minor page fault
+
+    smem 
+    smem --pie=command
+    smem --bar=command
+
+    buffer - disk raw info 
+    cache
+
+    /proc/pid/smaps
+
+    meld
+
+    cgroup
+    cgexec
+    ./a.out cgexec Memory:A 
+
+    nm -D --defined-only
+    apt install dot
+    ldd app  -> show elf dependence .so
+
+## vim 
+    # refresh opening file
+	You can use the :edit command, without specifying a file name, to reload the current file. If you have made modifications to the file, you can use :edit! to force the reload of the current file (you will lose your modifications).
+
+    % keyEdit
+    The % key can be used for the following:
+
+    To jump to a matching opening or closing parenthesis, square bracket or a curly brace: ([{}])
+    To jump to start or end of a C-style comment: /* */.
+    To jump to a matching C/C++ preprocessor conditional: #if, #ifdef, #else, #elif, #endif.
+    To jump between appropriate keywords, if supported by the ftplugin file, for example, between begin and end in a Pascal program.
+    A nice keymap is:
+
+    noremap % v%
+    This way, whenever you type % you jump to the matching object, and you visually select all the text in between. It's useful for indenting a C/C++ method/class: go to opening/closing brace, and type =%
+
+   # resize window
+	You can use the :resize command or its shortcut :res to change the height of the window. To change the height to 60 rows, use:
+	:resize 60
+
+	You can also change the height in increments. To change the height by increments of 5, use:
+	:res +5
+	:res -5
+
+	You can use :vertical resize to change the width of the current window. To change the width to 80 columns, use:
+	:vertical resize 80
+
+	You can also change the width in increments. To change the width by increments of 5, use:
+	:vertical resize +5
+	:vertical resize -5
+
+	For a split window: You can use Ctrl-w + and Ctrl-w - to resize the height of the current window by a single row. For a vsplit window: You can use Ctrl-w > and Ctrl-w < to resize the width of the current window by a single column. Additionally, these key combinations accept a count prefix so that you can change the window size in larger steps. [e.g. Ctrl-w 10 + increases the window size by 10 lines]
+
+	To resize all windows to equal dimensions based on their splits, you can use Ctrl-w =.
+	To increase a window to its maximum height, use Ctrl-w _.
+	To increase a window to its maximum width, use Ctrl-w |.
+	To resize in different steps, you can create maps that will adjust the window size differently. For example to increase the window size by a factor of 1.5 and decrease the window size by 0.67, you can map this:
+	nnoremap <silent> <Leader>+ :exe "resize " . (winheight(0) * 3/2)<CR>
+	nnoremap <silent> <Leader>- :exe "resize " . (winheight(0) * 2/3)<CR>
+
+	In Gvim and vim in terminals with mouse support, it is also possible to use the mouse to resize a window. Simply grab the statusline at the window border and drag it into the desired direction.
+
+    # file browser - vim built in netrw
+        :Explore - opens netrw in the current window
+        :Sexplore - opens netrw in a horizontal split
+        :Vexplore - opens netrw in a vertical split
+        You can also snigger by typing :Sex to invoke a horizontal split.
+
+## show hardware info
+    lshw lspci lsdev lscpu lsusb lsblk
+## cmd for hw control and cofigure
+    hdparm
+    write to proc/dev/sys
+    inb outb
+    setpci
+## system calls
+    include/uapi/asm-generic/unistd.h
+## /proc/meminfo
+## !! fast redone a comand
+## $! fast insert previous parameters 
+
+## grub - https://wiki.centos.org/HowTos/Grub2
+    1. The Boot Menu is Automatically Created
+
+    Do not attempt to manually edit the boot menu because it is automatically created from files within the /boot/ directory tree. However you can adjust the /etc/default/grub file that defines the general settings and the /etc/grub.d/40_custom file to add specific custom entries.
+
+    The content of the /etc/default/grub file looks like this:
+
+    GRUB_TIMEOUT=5
+    GRUB_DEFAULT=saved
+    GRUB_DISABLE_SUBMENU=true
+    GRUB_TERMINAL_OUTPUT="console"
+    GRUB_CMDLINE_LINUX="crashkernel=auto rhgb quiet"
+    GRUB_DISABLE_RECOVERY="true"
+    Kernel options that are common to each entry are defined on the GRUB_CMDLINE_LINUX line. For example, if you like to see the full detailed boot messages, delete rhgb quiet. If you like to see the standard boot messages, just delete rhgb. Changes to the setting is made effective by executing the following command:
+
+    [root@host ~]# grub2-mkconfig -o /boot/grub2/grub.cfg
+    Generating grub configuration file ...
+    Found linux image: /boot/vmlinuz-3.10.0-229.14.1.el7.x86_64
+    Found initrd image: /boot/initramfs-3.10.0-229.14.1.el7.x86_64.img
+    Found linux image: /boot/vmlinuz-3.10.0-229.4.2.el7.x86_64
+    Found initrd image: /boot/initramfs-3.10.0-229.4.2.el7.x86_64.img
+    Found linux image: /boot/vmlinuz-3.10.0-229.el7.x86_64
+    Found initrd image: /boot/initramfs-3.10.0-229.el7.x86_64.img
+    Found linux image: /boot/vmlinuz-0-rescue-605f01abef434fb98dd1309e774b72ba
+    Found initrd image: /boot/initramfs-0-rescue-605f01abef434fb98dd1309e774b72ba.img
+    done
+    On UEFI-based systems, the command will be grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg
+
+    2. add yourslef custom boot entry
+        a. edit /etc/grub.d/40_custom 
+        for example, add below content:
+            menuentry 'Custom linux boot entry' {
+                linux   /boot/vmlinuz-4.15.0-43-generic root=UUID=ac3520ce-3503-4169-       be71-5378ace9c098 ro  quiet splash $vt_handoff initcall_debug
+                initrd  /boot/initrd.img-4.15.0-43-generic
+            }
+        b. grub-mkconfig -o /boot/grub/grub.cfg
+        c. reboot, press shift
+
+## kernel module
+    a. a.c
+    b. Makefile : obj-m := a.o
+    c. make -C /lib/modules/$(uname -r)/build M=$PWD modules
+
+## kernel source
+    lsb_release -a to get codename
+    git clone git://kernel.ubuntu.com/ubuntu/ubuntu-bionic.git
+
+## Make the current user own everything inside the folder (and the folder itself):
+    sudo chown -R $USER ~/.blabla
+    sudo chown -R username:group directory
+
+## build kernel
+    time make clean
+    time make -j8 bzImage
+    time make -j8 modules
+    time make modules_install
+    time make install
+
+## debug vmlinux
+    using scripts/extract-vmlinux to unzip vmlinuz
+        $ sudo /usr/src/linux-headers-$(uname -r)/scripts/extract-vmlinux vmlinuz-$(uname -r) > vmlinux
+        $ objdump -D vmlinux | less
+    All the symbols and their starting address can be found in the file /boot/System.map-$(uname -r).
+
+## resize virtualbox .vdi size
+    remove attachment of the vdi file
+    VBoxManage modifymedium "/Users/qianggu/VirtualBox VMs/ubuntu-18.04/ubuntu-18.04.vdi"  --resize 51200
+    readd vdi
+    https://linuxhint.com/increase-virtualbox-disk-size/
+ 
+## passwordless ssh to another server
+    copy user a in host A's .ssh/id_rsa.pub to b in host B's .ssh/authorized_keys
+
+## change default shell - chsh:
+    cat /etc/shells  list the available shells on your system
+    chsh
+    /bin/bash  Type in the path and name of your new shell.
+    su - yourid  Type in su - and your userid to relog in to verify that everything works correctly.
+
+## tmux
+    C-b %  split left-right
+    C-b "  split top-bottom
+    C-b <arrow key>  navigate panel 
+    exit/ctrl-d to exit
+    C-b c  create new window 
+    C-b p  previous window 
+    C-b n  next window 
+    C-b <number>  jump to specific window 
+    C-b d  detach 
+    C-b D  select which session to detach 
+    tmux ls  list running session
+    tmux attach -t 0  connect to specific session
+    tmux new -s session_name  create tmux with a specific session_name
+    tmux rename-session -t 0 session_name  to rename a sessionn with new session_name 
+    C-b ?
+    C-b z: make a pane go full screen. Hit C-b z again to shrink it back to its previous size
+    C-b C-<arrow key>: Resize pane in direction of <arrow key>
+    C-b ,: Rename the current window
+    .tmux.conf
+
+## cscope/ctags/tagbar
+    .bashrc  export CSCOPE_EDITOR=/usr/bin/vim   - to specify cscope vim
+    .vimrc   let g:tagbar_ctags_bin = '/usr/bin/ctags'  - to specify ctags tagbar used
+
+## install homebrew
+    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+## add user to group
+    sudo groupadd mynewgroup
+    usermod -a -G examplegroup exampleusername
+    change user primary group
+        usermod -g groupname username
+    To view the groups the current user account is assigned to
+        group
+        id
+    groups exampleusername
+    id exampleusername
+    create a new user and assign a group
+        useradd -G examplegroup exampleusername
+    view all groups on system
+        getent group

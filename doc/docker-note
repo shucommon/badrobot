@@ -114,3 +114,80 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
 
     Verify that Docker CE is installed correctly by running the hello-world image.
         $ sudo docker run hello-world
+
+3. Docker construct in details
+    Docker Client
+
+    Docker server - Docker daemon
+        docker status:
+            $ systemctl status docker.service
+        restart daemon:
+            $ systemctl daemon-reload
+            $ systemctl restart docker.service 
+        to allow remote client request:
+            /etc/systemd/system/multi-user.target.wants/docker.service, add "-H tcp://0.0.0.0" after ExecStart to allow any IP
+        communicate with remoete server(192.168.1.115):
+            $ docker -H 192.168.1.115 info(command)        
+
+    Docker registry - Image : template to create docker container
+        $ docker build <docker-file> 
+
+    Registry
+        $ docker pull
+        $ docker run
+
+    Docker Container
+        the runtime of docker image
+
+    docker conponent cooperate
+        $ docker run -d -p 80:80 httpd
+        $ docker images [image_name]    -> list local downloaded images
+        $ docker ps                     -> list running containers
+        $ docker container ls           -> list running containers
+
+4. Image
+    Dockerfile -> image describe file
+        hello-world dockerfile:
+            FROM scratch
+            COPY hello /        ->copy file hello to /
+            CMD ["/hello"]      ->when image run, exec /hello
+
+    base image : build from scratch, such as Ubuntu/Debian/CentOS
+        CentOS DockerFILE
+            FROM scratch
+            ADD centos-7-docker.tar.xz /
+            CMD ["/bin/bash"]
+
+    container rely on host kernel, can modify the kernel
+
+    docker hierarchy
+        FROM debian
+        RUN apt-get install emacs
+        RUN apt-get install apache2
+        CMD ["/bin/bash"]
+    
+        when container start, a new writable layer is added to the top of the image, it's called "container layer", the left is "image layer"
+        upper layer same name file will override lowwer layre file
+        modify file: loop up from upper image to lowwer, the first match file will be copied to container layer
+        delete file: also from upper layer
+        copy-on-wirte - copy only when need modify
+
+    Create docker image
+        docker commit
+            1. run container
+                $ docker run -it ubuntu
+            2. modify contaier
+                $ apt-get install -y vim 
+            3. save as new image 
+                in host, run $ docker ps to get container name
+                docker commit container_name image_name
+
+        Dockerfile
+            FROM ubuntu
+            RUN apt-get update && apt-get install -y vim
+
+            $docker build -t new_image_name .  -> . mean build context is current path, search Dockerfile in build content
+            $docker build -t new_image_name . -f Dockerfile 
+    
+        $ docker history container
+    

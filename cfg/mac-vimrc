@@ -38,23 +38,18 @@
 "    -> Helper functions
 "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" mapleader set the map leader character
 let mapleader = '\'
-
 execute pathogen#infect()
 syntax on
 filetype plugin indent on
 
 "tagbar
-"below two lines select the map method
 "nmap <F8> :TagbarToggle<CR>
-noremap <silent> <Leader>\ :TagbarToggle<CR>       " Display panel with \ (or \\)
 let g:tagbar_left = 1
 let g:tagbar_autofocus = 1
+let g:tagbar_ctags_bin='/usr/local/bin/ctags'  " Proper Ctags locations
 let g:tagbar_width=26                          " Default is 40, seems too wide
-" comment out below line to specify ctags bin path
-"let g:tagbar_ctags_bin='/usr/local/bin/ctags'  " Proper Ctags locations
+noremap <silent> <Leader>\ :TagbarToggle<CR>       " Display panel with y (or ,y)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
@@ -191,8 +186,6 @@ set noswapfile
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Text, tab and indent related
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Use spaces instead of tabs
-set expandtab
 
 " Be smart when using tabs ;)
 set smarttab
@@ -450,7 +443,7 @@ set laststatus=2
 
 " Add by GQ
 " set relative number
-set rnu
+"set rnu
 set paste 
 
 " netrw
@@ -465,6 +458,14 @@ let g:netrw_altv = 1
 "  autocmd!
 "  autocmd VimEnter * :Vexplore
 "augroup END
+
+:set number relativenumber
+
+:augroup numbertoggle
+:  autocmd!
+:  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+:  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+:augroup END
 
 " cscope maps
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -629,4 +630,8 @@ if has("cscope")
     "
     "set ttimeoutlen=100
 
-endif
+endif "cscope
+
+
+" Use spaces instead of tabs
+set expandtab
