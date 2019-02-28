@@ -212,16 +212,40 @@
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 ## add user to group
-    sudo groupadd mynewgroup
-    usermod -a -G examplegroup exampleusername
+    $ sudo groupadd mynewgroup
+    $ usermod -a -G examplegroup exampleusername
     change user primary group
-        usermod -g groupname username
+        $ usermod -g groupname username
     To view the groups the current user account is assigned to
-        group
-        id
-    groups exampleusername
-    id exampleusername
+        $ group
+        $ id
+    $ groups exampleusername
+    $ id exampleusername
     create a new user and assign a group
-        useradd -G examplegroup exampleusername
+        $ useradd -G examplegroup exampleusername
+        $ adduser username group
     view all groups on system
-        getent group
+        $ getent group
+    remove user from sudo group
+        $ sudo deluser user_name sudo
+        $ sudo gpasswd -d user_name sudo
+
+## su sudo root
+    $ su
+        switch to root, keep old environment
+    $ su -
+        switch to root, and create new environment based on root ~/.bashrc
+    sudo only permmit run one cmd, su start a new shell, run utill quit
+    sudo's cmd is exectued as target user(root), but will be logged with name configured in /etc/sudoers file
+    ubuntu bind the use of su, you can use "$ sudo su" to jump this
+    if you want to enable root in system
+        $ sudo passwd root
+    execute cmd as another suer
+        $ sudo -u another_suer
+    $ sudo -s 
+        new shell will currnet user .bashrc
+    $ sudo -i 
+        new shell will new user .bashrc
+    $ sudo -i 
+        cancel sudo pass cache
+    

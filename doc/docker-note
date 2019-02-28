@@ -243,3 +243,68 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
         push      upload image to registry
         rmi       remove Docker host image -> only can delete image in host, not registry
         search    search Docker Hub image
+5 Docker
+    docker run [-d] [--name name] [-it] [--restart=always] container
+        -d means deamon
+        --name set container name
+        -it iterative
+        [--restart=always]  auto restart when stopped, even normal quit
+         --restart=on-failure:3   if quit code !0, then restart at most 3 times
+        docker run == docker create & docker start
+    docker rename
+    docker ps [-a]
+    docker container ls [-a]
+    docker stop short_id | container_name     send SIGTERM
+    docker kill short_id | container_name     send SIGKILL
+    docker start short_id | container_name    restart the stopped status container 
+        start will save the original parameter when container start
+        restart == stop && start
+    docker pause/unpause short_id | container_name     
+    docker attach <container>      ctrl+p then ctrl+q to quit attach
+        attach enter same terminal that when the container startup, won't start new process
+    docker exec -it <container> bash|sh    exit to quit
+        exec open a new ternimal in the container, can start new process
+    docker logs -f short_id    -f is samilar with tail -f in funtional
+    docker rm short_id | container_name
+        rm container 
+    docker rmi short_id | container_name
+        rm Docker Images 
+    docker rm -v $(docker ps -aq -f status=exited)
+        rm all exited images
+
+    docker memeory limit setting
+        docker run [-m|--memory mem_size] [--memory-swap mem+swap]
+            if only set -m, then -swap == -m at default
+            docker run -it -m 200M --memory-swap=300M progrium/stress --vm 1 --vm-bytes 280M
+
+    docker cpu limit setting
+        docker run [-c|--cpu-shares values(default 1024)]
+            relative value, the final cpu resource is decided by the proportion in all the container's cpu share
+
+    docker block io limit setting
+        docker run [--blkio-weight values(default 500)]
+        bps byte per second
+            --device-read-bps，restrict a device's read bps。
+            --device-write-bps，restrict a device's write bps。
+        io per second
+            --device-read-iops，restrict a device's read iops。
+            --device-write-iops，restrict a device's write iops。
+
+        docker run -it --device-write-bps /dev/sda:30MB ubuntu
+
+    cgroup - control group - resource restrict
+        /sys/fs/cgroup
+        /sys/fs/cgroup/cpu/docker
+        /sys/fs/cgroup/memory/docker
+        /sys/fs/cgroup/blkio/docker
+    namespace - resource isolate 
+        Mount  isolate fs
+        UTS   hostname
+        IPC   share memory and semaphore
+        PID   all container process is under dockered process
+        Network  network-card ip router
+        User  user
+
+6 Network
+
+
