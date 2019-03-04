@@ -1,7 +1,7 @@
 CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
 
 1 Docker ecosystem
-    container core technology
+    ## container core technology
         container standard  -> Open Container Initiative(OCI)
             runtime spec
             image format spec
@@ -11,7 +11,7 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
             runc docker developped, it's default now
             rkt  developped by CoreOS
 
-        container managerment tools
+        container management tools
             lxd -> lxc
             docker engine -> runc
                 deamon
@@ -33,7 +33,7 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
             atoic
             ubuntu core
 
-    container platform technology - make container running as cluster in distribute system
+    ## container platform technology - make container running as cluster in distribute system
         container orchestration(编排) engine - container management, schedule, cluster define, service discover, form a microservice application
             docker swarm - developped by docker
             kubernetes - by Google, support docker, CoreOS container
@@ -48,7 +48,7 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
             Flynn
             Dokku
         
-    container support technology
+    ## container support technology
         Docker network
             docker network
             flannel
@@ -116,9 +116,9 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
         $ sudo docker run hello-world
 
 3. Docker construct in details
-    Docker Client
+    ## Docker Client
 
-    Docker server - Docker daemon
+    ## Docker server - Docker daemon
         docker status:
             $ systemctl status docker.service
         restart daemon:
@@ -129,58 +129,58 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
         communicate with remoete server(192.168.1.115):
             $ docker -H 192.168.1.115 info(command)        
 
-    Docker registry - Image : template to create docker container
+    ## Docker registry - Image : template to create docker container
         $ docker build <docker-file> 
 
-    Registry
+    ## Registry
         $ docker pull
         $ docker run
 
-    Docker Container
+    ## Docker Container
         the runtime of docker image
 
-    docker conponent cooperate
+    ## docker conponent cooperate
         $ docker run -d -p 80:80 httpd
         $ docker images [image_name]    -> list local downloaded images
         $ docker ps                     -> list running containers
         $ docker container ls           -> list running containers
 
 4. Docker Image
-    Dockerfile -> image describe file
+    ## Dockerfile -> image describe file
         hello-world dockerfile:
             FROM scratch
             COPY hello /        ->copy file hello to /
             CMD ["/hello"]      ->when image run, exec /hello
 
-    base image : build from scratch, such as Ubuntu/Debian/CentOS
+    ## base image : build from scratch, such as Ubuntu/Debian/CentOS
         CentOS DockerFILE
             FROM scratch
             ADD centos-7-docker.tar.xz /
             CMD ["/bin/bash"]
 
-    container rely on host kernel, can modify the kernel
+    ## container rely on host kernel, can't modify the kernel
 
-    docker hierarchy
+    ## docker hierarchy
         FROM debian
         RUN apt-get install emacs
         RUN apt-get install apache2
         CMD ["/bin/bash"]
     
         when container start, a new writable layer is added to the top of the image, it's called "container layer", the left is "image layer"
-        upper layer same name file will override lowwer layre file
-        modify file: loop up from upper image to lowwer, the first match file will be copied to container layer
+        upper layer same name file will override lowwer layer file
+        modify file: loop up from upper image to lower, the first match file will be copied to container layer
         delete file: also from upper layer
         copy-on-wirte - copy only when need modify
 
-    Create docker image
+    ## Create docker image
         docker commit
             1. run container
                 $ docker run -it ubuntu
             2. modify contaier
                 $ apt-get install -y vim 
             3. save as new image 
-                in host, run $ docker ps to get container name
-                docker commit container_name image_name
+                in host, run '$ docker ps' to get container name
+                $ docker commit container_name image_name
 
         Dockerfile
             FROM ubuntu
@@ -207,11 +207,11 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
             VOLUME              -> claim file or folder as volume
             WORKDIR             -> set current work dir for subcmd(RUN/CMD/ENTRYPOINT/ADD/COPY)
             RUN                 -> run cmd in container
-            CMD                 -> run when container start, only the last CMD have effective, CMD will be replaced by parameter after docker run 
-            ENTRYPOINT          -> last one have effective, CMD or parameter after docker run will pass to ENTRYPOINT as parameter
+            CMD                 -> run when container start, only the last CMD have effective, CMD will be replaced by parameter after 'docker run'
+            ENTRYPOINT          -> last one have effective, CMD or parameter after 'docker run' will pass to ENTRYPOINT as parameter
                 RUN execute cmd and create new Image layer, often used to install software
-                CMD set default cmd and parameter to execute after container start. if docker run have parameters, CMD will be replaced
-                ENTRYPOINT set cmd to run when container start, if CMD only have parameters, then the parameter will pass to ENTRYPOINT. if ENTRYPOINT using shell method, CMD or docker run parameter will be ignored
+                CMD set default cmd and parameter to execute after container start. if 'docker run' have parameters, CMD will be replaced
+                ENTRYPOINT set cmd to run when container start, if CMD only have parameters, then the parameter will pass to ENTRYPOINT. if ENTRYPOINT using shell method, CMD or 'docker run' parameter will be ignored
 
         Docker image name
             [image name] = [repository]:[tag]
@@ -220,20 +220,20 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
             docker tag myimage-v1.9.1 myimage:1.9.1
             docker tag myimage-v1.9.1 myimage:latest
 
-    Using public registry
+    ## Using public registry
         register account on Docker Hub
         $ docker login -u user_name  / password:
         $ docker tag httpd user_name/httpd:v1   -> set standard name:  [username]/xxx:tag
         $ docker push user_name/httpd:v1
         $ docker push user_name/httpd       -> push all image under same repository
 
-    Configure personal registry
+    ## Configure personal registry
         $ docker run -d -p 5000:5000 -v /myregistry:/var/lib/registry registry:2        -> -d deamon -p map container port to host port -v map container /var/lib/registry to host /myregistry
         $ docker tag user_name/httpd:v1 registry.example.net:5000/user_name/httpd:v1    -> rename image to match registry  - [registry-host]:[port]/[username]/xxx
         $ docker push registry.example.net:5000/user_name/httpd:v1
         $ docker pull registry.example.net:5000/user_name/httpd:v1
             
-    summary
+    ## summary
         images    show image list
         history   show image create history
         commit    create new image from container
@@ -243,7 +243,7 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
         push      upload image to registry
         rmi       remove Docker host image -> only can delete image in host, not registry
         search    search Docker Hub image
-5 Docker
+5 Docker cmd
     docker run [-d] [--name name] [-it] [--restart=always] container
         -d means deamon
         --name set container name
@@ -307,4 +307,264 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
 
 6 Network
 
+    ##  docker original network 
+        when docker installed, 3 network is created
+        $ docker network ls
+            none/host/bridge
+        using --network= to specify network to use for container
+            $ docker run -it --network=none busybox     
 
+        none
+            only contain lo
+        host
+            all container connect to host network will share docker host network stack, and have same configuration with host
+            the biggest advantage of host network is performance
+            another usage is container can configure host network directly
+        bridge
+            default network for container
+            $ sudo apt install bridge-utils
+            $ brctl show
+                bridge name	bridge id		    STP enabled	interfaces
+                docker0		8000.02426a2c0a58	no
+            when a container is create, 'veth pair' is created(docker-network-1.png): 
+            host docker0 bridge network < vethebf1e41> <-----> container bridge network <eth0@if9>
+                        busybox 
+                        172.17.0.2       
+                        eth0@
+                          |
+                          |             container
+                        ------------------------------
+                          |             host 
+                          |
+                        vethxxxx
+                          |
+                        docker0
+                        172.17.0.1
+                        docker host
+
+                qianggu@ubuntu:~$ docker run -it busybox
+                / # ip a
+                1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000
+                    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+                    inet 127.0.0.1/8 scope host lo
+                       valid_lft forever preferred_lft forever
+                8: eth0@if9: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue 
+                    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff
+                    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
+                       valid_lft forever preferred_lft forever
+
+                qianggu@ubuntu:~$ brctl show
+                bridge name	bridge id		STP enabled	interfaces
+                docker0		8000.02426a2c0a58	no		vethebf1e41
+
+            $ docker network inspect bridge
+                "Subnet": "172.17.0.0/16",      - the container using bridge network will have this subnet ip address
+                "Gateway": "172.17.0.1"         - docker0 ip in host network
+                    $ ifconfig docker0
+
+    ## User-defined network driver
+        overlay - multi host
+        macvlan - multi host
+        bridge
+            $ docker network create --driver bridge my_net
+                5f8626183acae7b0cb44673bcf0f8c2cdc44b7e357c688e8669f142e674f800b
+            $ brctl show
+                bridge name	        bridge id		    STP enabled	interfaces
+                br-5f8626183aca		8000.0242eefeac42	no	                        -> new network bridge created	
+                docker0		        8000.02426a2c0a58	no		    vethebf1e41
+            $ docker network inspect my_net
+                "Name": "my_net",
+                "Id": "5f8626183acae7b0cb44673bcf0f8c2cdc44b7e357c688e8669f142e674f800b",
+                "Created": "2019-03-04T10:53:55.634973336+08:00",
+                "Scope": "local",
+                "Driver": "bridge",
+                "EnableIPv6": false,
+                "IPAM": {
+                    "Driver": "default",
+                    "Options": {},
+                    "Config": [
+                        {
+                            "Subnet": "172.18.0.0/16",
+                            "Gateway": "172.18.0.1"
+                        }
+                    ]
+                },
+
+            Specify subnet gateway when create network:
+                $ docker network create --driver bridge --subnet 172.22.16.0/24 --gateway 172.22.16.1 my_net2
+                    3b9d06bb6db6e5c22cd5c65ea3f1f75ab2b03aecb043f21e80b45f267d05781d
+            $ docker run -it --network=my_net2 busybox      - specify network to use
+                inet 172.22.16.2/24
+            $ docker run -it --network=my_net2 --ip 172.22.16.8 busybox      - specify network and ip
+                inet 172.22.16.8/24
+            NOTE: only network created by --subnet can specify static ip
+
+            now, network toplogy (docker-network-2.png):
+                        busybox1        busybox2        busybox3
+                        172.17.0.2      172.22.16.2     172.22.16.8
+                        eth0            eth0            eth0
+                          |               |               |
+                          |               |               |             container
+                        ---------------------------------------------------------
+                          |               |               |             host
+                          |               |               |
+                        veth1           veth2           veth3
+                          |               |               |
+                          |             +-------------------+
+                        docker0         | br-xxxxx          |
+                        172.17.0.1      | my_net2           |
+                        docker host     | 172.22.16.1       |
+                                        +-------------------+
+            container using same bridge network can ping each other, also, container can ping gateway, container with different network, can't ping each other
+                busybox2 busybox3 is created using same bridge network - my_net2, so they can ping each other in container, but busybox2 can't ping busybox1
+                / # ping -I 172.22.16.2 172.22.16.8
+                    PING 172.22.16.8 (172.22.16.8) from 172.22.16.2: 56 data bytes
+                    64 bytes from 172.22.16.8: seq=0 ttl=64 time=0.097 ms
+                    64 bytes from 172.22.16.8: seq=1 ttl=64 time=0.078 ms
+
+                / # ping -I 172.22.16.2 172.22.16.1
+                    PING 172.22.16.1 (172.22.16.1) from 172.22.16.2: 56 data bytes
+                    64 bytes from 172.22.16.1: seq=0 ttl=64 time=0.083 ms
+                    64 bytes from 172.22.16.1: seq=1 ttl=64 time=0.114 ms
+                
+                Add router for different network also not work, because dockder have isolation in design
+                 $ ip r
+                 $ sysctl net.ipv4.ip_forward
+                 $ sudo iptables-save
+                    -A DOCKER-ISOLATION -i br-5d863e9f78b6 -o docker0 -j DROP
+                    -A DOCKER-ISOLATION -i docker0 -o br-5d863e9f78b6 -j DROP
+
+                The sulation is to add another same network card(my_net2) for busybox1
+                    $ docker ps
+                                    CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+                       busybox1     c457442c2343        busybox             "sh"                3 hours ago         Up 3 hours                              peaceful_kirch
+                       busybox2     79984f432cfe        busybox             "sh"                2 hours ago         Up 2 hours                              elastic_mendeleev
+                       busybox3     7f920f1690ee        busybox             "sh"                2 hours ago         Up 2 hours                              compassionate_lederberg
+                    $ docker network connect my_net2 c457442c2343
+                        in busybox1, eth1@if19 is created with my_net2 network:
+                            $ ip r
+                                8: eth0@if9: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue 
+                                    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff
+                                    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
+                                       valid_lft forever preferred_lft forever
+                                18: eth1@if19: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue 
+                                    link/ether 02:42:ac:16:10:03 brd ff:ff:ff:ff:ff:ff
+                                    inet 172.22.16.3/24 brd 172.22.16.255 scope global eth1
+                                       valid_lft forever preferred_lft forever
+                    now ping busybox1 from busybox2 is worked
+                        $ ping 172.22.16.3 -I 172.22.16.2 -c 3
+
+                    the network toplogy is (docker-network-3.png)
+                        +-------------------------+
+                        |        busybox1         |     busybox2        busybox3
+                        |172.17.0.2   172.22.16.3 |    172.22.16.2     172.22.16.8
+                        |eth0         eth1        |     eth0            eth0
+                        +-------------------------+      |               |
+                          |            |                 |               |
+                          |            |                 |               |             container
+                        ------------------------------------------------------------------------
+                          |            |                 |               |             host
+                          |            |                 |               |
+                        veth1        veth4             veth2           veth3
+                          |            |                 |               |
+                          |         +--------------------------------------+
+                        docker0     |               br-xxxxx               |
+                        172.17.0.1  |               my_net2                |
+                        docker host |               172.22.16.1            |
+                                    +--------------------------------------+
+
+    ## inter-container comunication 
+        ip  -> container should contain same network
+            --network=
+            docker network connect
+
+        Docker DNS server
+            $ docker run -it --network=my_net2 -name=bbox1 busybox
+            $ docker run -it --network=my_net2 -name=bbox2 busybox
+            in bbox2, ping bbox1 through name will work:
+            $ ping -c 3 bbox1
+            NOTE: Only user-defined network can use docker DNS
+
+        joined container
+            joined containers share same network stack, network card and configuration info, can communicate through 127.0.0.1 directly
+            usually used in satuations where high effecience communacation required between containers through loopback, or in hope of supervisor other container's network traffic flow 
+            first create a httpd container
+                $ docker run -d -it --name=web1 httpd
+            then create busybox, and specify jointed container web1
+                $ docker run -it --network=container:web1 busybox
+
+    ## Visit outside world from container
+        by default, the container can visit outside network(the network outside container, not specify to internet) 
+        Why it can ping outside:
+            loop up docker host iptables rules:
+                $ iptables -t nat -S
+                    ...
+                    -A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE
+                    ...
+                it means if br docker0 receive out packets from 172.17.0.0/16, then pass it to MASQUERADE to deal with
+                what MASQUERADE did is replace packet ori address with host addr, and send out, i.e. it did a NAT (network address translate) 
+            how NAT is achived
+                $ ip r
+                    default via 10.0.2.2 dev enp0s3 proto dhcp metric 100   -> defalut router through enp0s3 to send packet, so we need listen icmp(ping) packet on enp0s3 and docker0 
+        
+                when ping www.google.com from container, docker0 receive busybox ping packet, source ip 172.17.0.3, it's ok, and pass to MASQUERADE to handle
+                $ tcpdump -i docker0 -n icmp
+                    14:54:56.223184 IP 172.17.0.3 > 172.217.161.164: ICMP echo request, id 2304, seq 19, length 64
+                    14:54:56.261916 IP 172.217.161.164 > 172.17.0.3: ICMP echo reply, id 2304, seq 19, length 64
+
+                in enp0s3, ori addr for ping packet changed to enp0s3's ip 10.0.2.15 from 172.17.0.3, this is the result of iptable NAT rules, to ensure data packet can reach outside
+                $ tcpdump -i enp0s3 -n icmp
+                    14:55:17.295493 IP 10.0.2.15 > 172.217.161.164: ICMP echo request, id 2304, seq 40, length 64
+                    14:55:17.334220 IP 172.217.161.164 > 10.0.2.15: ICMP echo reply, id 2304, seq 40, length 64
+
+                the toplogy(docker-network-4.png)
+
+                                               |                           |
+                    www.google.com             |         docker host       |            container network
+                                        +-------------+                    |
+                        network <-------|   enp0s3    |<-- NAT <-----------|
+                                        |  10.0.2.15  |                    |
+                                        +-------------+                    |
+                                               |                    +----------------+     +----------------+
+                                               |                    |    docker0     |     |    busybox     |
+                                               |                    |   172.17.0.1   |<----|   172.17.0.3   |
+                                               |                    +----------------+     +----------------+
+                                               |                           |
+                                               |                           |  outband request from container
+                                               |                           |
+
+    ## Visit container from outside 
+        port forwarding: map docker service port1 to host port2, outside through port2 to visit the container 
+        $ docker run -d -p 80 httpd     -> map container 80 port to host
+            9f49c86216027af7bcab197a989ca6ecd14f7957186f6b2ff14ebaec04c5909a
+        $ docker ps
+            CONTAINER ID        IMAGE               COMMAND              CREATED             STATUS              PORTS                   NAMES
+            9f49c8621602        httpd               "httpd-foreground"   30 seconds ago      Up 28 seconds       0.0.0.0:32768->80/tcp   vibrant_khayyam
+        $ docker port  9f49c8621602
+            80/tcp -> 0.0.0.0:32768 
+        through <host ip>:<32768> can visit container web service now
+            $ curl 10.0.2.15:32768 
+        also we can set host port to 8080
+            $ docker run -d -p 8080:80 httpd
+        each map port, host will start a docker-proxy process to deal the traffic for container
+            $ ps -ef | grep docker-proxy
+
+        toplogy(docker-network-5.png)
+                                               |                           |
+                    www.google.com             |         docker host       |            container network
+                                        +-------------+                    |
+                        network <-------|   enp0s3    |<-- NAT <-----------|            
+                                        |  10.0.2.15  |                    |  outband request from container             
+                                        +-------------+                    |               
+                                          ^    |   |                +----------------+     +----------------+
+                                          |    |   |                |    docker0     |<----|    busybox     |
+                    inbound request-------+    |   |                |   172.17.0.1   |     |   172.17.0.3   |
+                    to exposed port            |   |                +----------------+     +----------------+
+                      tcp 32768                |   |                    ^  |     |
+                                               |   |                    |  |     |         +----------------+
+                                               |   +--> docker-proxy ---+  |     |         |     httpd      |
+                                               |                           |     +-------->|   172.17.0.4   |
+                                               |                           |     tcp 80    +----------------+
+                                               |                           |
+
+7. Storage
