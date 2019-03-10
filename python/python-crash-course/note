@@ -1,0 +1,297 @@
+python Zen  #python 之蝉
+    import this
+
+## variable
+	string 
+        define:
+            'this is a string'
+            "this is also a string"
+            'I told my friend, "Python is my favorite language!"'
+            "The language 'Python' is named after Monty Python, not the snake."
+            "One of Python's strengths is its diverse and supportive community."
+        function
+            name="hello"
+            name.title()    first alp upper
+            name.upper()
+            name.lower()
+            name.rstrip()   delete the blank character in end of the string
+            name.lstrip()   delete the blank character in start of the string
+            name.strip()    delete the blank character in both end and start of the string
+
+            age=18
+            str(age)
+
+            concatenate
+                first_name = "ada"
+                last_name = "lovelace"
+                full_name = first_name + " " + last_name
+
+            \n      new line
+            \t      tab
+
+    Number
+        int
+            + - * / **(power)
+
+        float
+            dot in number
+
+        python 2 : 3/2 = 1
+        python 3 : 3/2 = 1.5
+
+    list : []
+        bicycles = ['trek', 'cannondale', 'redline', 'specialized']
+        bicycles[0]     first one 
+        bicycles[-1]    the last one
+        bicycles[-2]    the one before last one
+        ...
+
+        bicycles.append(new_elem)   add to tail
+        bicycles.insert(index, new_elem)     insert to index
+        del bicycles[0]             remove an element
+        bicycles.pop()              delete last element and return the element
+        bicycles.pop(index)         delete element in index and return the element
+        bicycles.remove(element_name)         delete last specific element(the first one) in list, you  must know the name first 
+
+        sort():  permerment change
+            cars = ['bmw', 'audi', 'toyota', 'subaru']
+            cars.sort()
+            cars.sort(reverse=True)
+            cars.reverse()  # list reverse
+            len(cars)  # list length 
+
+        sorted(cars):  temperary change 
+        # print(sorted(cars, revers=True))
+
+    create list of numbers
+        for value in range(1,6):     1-5
+        numbers = list(range(1,6))  # [1, 2, 3, 4, 5]
+        even_numbers = list(range(2,11,2)) # [2, 4, 6, 8, 10]
+
+        >>> digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] 
+        >>> min(digits)
+        >>> max(digits)
+        >>> sum(digits)
+
+    list parse
+        squares = [value**2 for value in range(1,11)] #[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+    list slice
+        players = ['charles', 'martina', 'michael', 'florence', 'eli']
+        print(players[0:3])  # print 0,1,2 element
+        print(players[:3])  # print 0,1,2 element
+        print(players[2:])  # print 2,3,4 element
+        print(players[-2:])  # print last 2 elements
+
+    list copy
+        lst1=[1,2,3]
+        lst2=lst1           # same as c array, lst1,lst2 point to same array
+        lst3=lst1[:]        # copy lst1 to lst3, get a different array
+
+    tuple : ()
+        unchangable list is called tuple
+        tp=(1,2)
+        tp[0] = 3 # wrong
+        tp=(2,3)  # it's ok
+
+## controll logic
+    if statement
+        if xx == xx:    True/False
+        if xx != xx:    True/False
+        if xx != xx and/or xx == xx:    True/False
+        if conditional_test:
+            do something
+
+        if age >= 18:
+            do something
+        else:
+            do something
+
+        if-elif-else
+
+        requested_toppings = []
+        if requested_toppings:    # test list none
+
+    in/not in:
+        requested_toppings = ['mushrooms', 'onions', 'pineapple']
+        'mushrooms' in requested_toppings  # True
+        'mushrooms' not in requested_toppings  # False 
+
+    bool
+        True  False
+    
+## dictionary {} : key-value pairs
+    alien_0 = {'color': 'green', 'points': 5}
+    print(alien_0['color'])
+    print(alien_0['points'])
+    alien_0['new_ele'] = 'new_value' # add new element
+    del alien_0['points']   # delete element
+    for key, value in alien_0.items():   # iterate dict
+    for key in alien_0.keys():           # iterate key
+    for key in alien_0:                  # default iterate key
+    for key in sorted(alien_0.keys()):   # return sorted keys
+    for value in alien_0.values():           # iterate values 
+    for value in set(alien_0.values()):      # delete duplicatate values 
+
+    dictionary list
+        alien_0 = {'color': 'green', 'points': 5}
+        alien_1 = {'color': 'yellow', 'points': 10}
+        alien_2 = {'color': 'red', 'points': 15}
+        aliens = [alien_0, alien_1, alien_2]
+        for alien in aliens:
+            print(alien)
+
+    list in dictionary
+        pizza = {
+            'crust': 'thick',
+            'toppings': ['mushrooms', 'extra cheese'],
+            }
+
+    dic in dic
+
+## user input & while loop
+    input()     # stop and wait user input
+        message = input("Tell me something, and I will repeat it back to you: ")
+        print(message)
+    the input is treat as string, even it's number, using int() to convert to number
+
+    python 2.7 
+        raw_input() same as input() in python3
+        input()   # treat as python code
+
+    while loop
+        current_number = 1
+        while current_number <= 5:
+            print(current_number)
+            current_number += 1
+
+## function
+    def func():
+    def describe_pet(pet_name, animal_type='dog'):
+    describe_pet(animal_type='hamster', pet_name='harry')
+    function_name(list_name) # list pass to function is something like c pass pointer
+    function_name(list_name[:]) # pass list copy to function, won't change original list
+    def func(*parm):        # changeable parm number, python create tuple as input for parm
+    def func(**parm):       # changeable key parm number
+        def build_profile(first, last, **user_info):
+            profile = {}
+            profile['first_name'] = first
+            profile['last_name'] = last
+
+            for key, value in user_info.items():
+                profile[key] = value
+
+            return profile
+
+        user_profile = build_profile('albert', 'einstein', 
+                                    location='princeton',
+                                    field='physics')
+        print(user_profile)
+
+## module 
+    import module_name
+    from module_name import function_name
+    from module_name import function_0, function_1, function_2
+    using as to rename the imported function or moudle name 
+        from module_name import function_name as fn
+        import module_name as mn
+    import all function from a modules
+        from module_name import *
+
+## class
+    example
+        class Dog():
+            def __init__(self, name, age):
+                self.name = name
+                self.age = age
+
+            def sit(self):
+                print(self.name.title() + " is now sitting.")
+            def roll_over(self):
+                print(self.name.title() + " rolled over!")
+
+        my_dog = Dog('willie', 6)
+
+    python2.7
+        class ClassName(object):
+            --snip--
+
+    inherate
+        class Car():
+            ...
+
+        class ElectricCar(Car):
+            def __init__(self, make, model, year): 
+                super().__init__(make, model, year) # init father class first
+
+    python2.7
+        class Car(object):
+            def __init__(self, make, model, year):
+            --snip--
+
+        class ElectricCar(Car):
+            def __init__(self, make, model, year):
+            super(ElectricCar, self).__init__(make, model, year)
+            --snip--
+
+    rewrite function on superclass in child class will override the function in super
+
+    import class
+        from car import Car
+        from car import ElectricCar
+        from car import Car, ElectricCar
+        import car      # import whole module
+        from module_name import *
+
+
+## file and exception
+    with open('pi_digits.txt') as file_object:
+        contents = file_object.read()
+
+    for line in file_object:    # read one line by line
+        print(line)
+
+    read()      # read all
+    readlines() # read all line by line
+
+    >>> message = "I really like dogs."
+    >>> message.replace('dog', 'cat')
+
+    with open(filename, 'w') as file_object:
+        file_object.write("I love programming.")
+    
+    r read  #default
+    w write
+    a append
+    r+ read and write
+
+    python only can write string to file
+    write() won't add '\n' in the end
+
+    try-except
+    try-except-else
+        try:
+            print(5/0)
+        except ZeroDivisionError:
+            print("You can't divide by zero!")
+            #pass
+        else:
+            xx
+
+    try:
+        with open(filename) as f_obj:
+            contents = f_obj.read()
+    except FileNotFoundError:
+
+    split()
+
+    >>> line = "Row, row, row your boat"
+    >>> line.count('row')
+    2
+    >>> line.lower().count('row')
+    3
+
+    json.load()
+    json.dump()
+        number_rw.py
+
+## unittest
