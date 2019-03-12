@@ -568,3 +568,88 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
                                                |                           |
 
 7. Storage
+    ## storage driver managed image layer and container layer
+        copy-on-write
+        - new data will store in container layer 
+        - modify exist data will copy data from image layer to container layer first, the modified data will be saved in container layer first, image layer keep unchanged
+        - if multi layer contain same named files, user can only visit the toppest layer
+
+        AUFS、Device Mapper、Btrfs、OverlayFS、VFS and ZFS
+
+        $docker info
+            Storage Driver: overlay2
+                Backing Filesystem: extfs
+                Supports d_type: true
+                Native Overlay Diff: true
+
+    ## Data Volume
+        Data Volume actually is files or folder in docker host file system, can be directly mounted to docker's fs.
+        - it's files or folder, not no-formatted disk(block device)
+        - container can w/r volume data
+        - volume data can be saved permemently, even container which used the volume is destroied.
+
+        bind mount
+            mount exist file or folder in host to container
+            -v <host path>:<container path>                         # mount folder
+            -v <host path>/file:<container path>/file_container     # mount a single file, the file must exist in host, otherwise it will be treated as folder and mounter to container
+            -v <host path>:<container path>:ro                      # read only in container
+            if the path is same, container file will be hidden
+            update content:
+                $ docker cp host_path container_id:path_in_container
+                or modify files in host or container
+
+        docker managed volume
+            -v <container path>     # no need to specify host path
+            $ docker inspect short_id
+                "Mounts": [
+                    "Source": "/var/lib/docker/volumes/xxx
+            $ docker volume ls
+            
+            data in container path will copy to host
+
+        bind mount vs docker managed volume
+                             | bind mount	        |   docker managed volume
+
+            volume position  | can be specified     |   /var/lib/docker/volumes/...
+
+            impact on exist  | hide and replace     |
+            mount point      | by volume content	|   copy original data to volume
+
+            single file      | support              |   no, only folder
+
+            authority        | rd only / rw         |   r/w    
+
+            porting          | weak, bind with host |   strong
+
+        data share
+            a. mount same mount point to containers
+
+            b. volume container - host and container decouple, but data is still in host
+                $ docker create --name vc_data \
+                    -v host_path:container_path \           # bind mount
+                    -v container_path \                     # docker managed volume
+                    busybox
+                $ docker run --name web1 -d -p 80 --volume-from vc_data httpd
+
+            c. data-packed volume container - data is totally in volume container
+                create Dockerfile
+                    FROM busybox:latest
+                    ADD host_path container_path        # cp host content to container
+                    VOLUME container_path               # save as -v
+
+                build image datapacked 
+                    $ docker build -t datapacked .
+
+                using new image datapacked to create data-packed volume container
+                    $ docker create --name vc_data datapacked
+
+                create container using the newly created data-packed volume container
+                    $ docker run --name web1 -d -p 80 --volume-from vc_data httpd
+            
+        data backup/recovery/transfor/destroy
+            backup - backup host content
+            recovery - using the backuped host content
+            transfor - stop container first, then mount original host volume
+            destory
+                $ docker rm -v   will delete docker managed volume
+                $ docker volume rm $(docker volume ls -q)
