@@ -243,7 +243,7 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
         push      upload image to registry
         rmi       remove Docker host image -> only can delete image in host, not registry
         search    search Docker Hub image
-5 Docker cmd
+5. Docker cmd
     docker run [-d] [--name name] [-it] [--restart=always] container
         -d means deamon
         --name set container name
@@ -305,7 +305,7 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
         Network  network-card ip router
         User  user
 
-6 Network
+6. Network - single host
 
     ##  docker original network 
         when docker installed, 3 network is created
@@ -653,3 +653,38 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
             destory
                 $ docker rm -v   will delete docker managed volume
                 $ docker volume rm $(docker volume ls -q)
+
+8. Multi-host management
+    docker machine
+        https://docs.docker.com/machine/install-machine/
+        $ base=https://github.com/docker/machine/releases/download/v0.16.0 &&
+          curl -L $base/docker-machine-$(uname -s)-$(uname -m) >/tmp/docker-machine &&
+          sudo install /tmp/docker-machine /usr/local/bin/docker-machine
+
+        install docker machine tab completion script
+            https://github.com/docker/machine/tree/master/contrib/completion/bash
+            cp above 3 scripts to /etc/bash_completion.d 
+            add PS1='[\u@\h \W$(__docker_machine_ps1)]\$ '  to '$HOME/.bashrc：
+
+        $ docker-machine ls
+
+    create machine
+        host1 docker machine          host2       host3
+        192.168.56.101            92.168.56.102  192.168.56.103
+
+        neew passwd less log on to host2/host3
+        host1$ ssh-copy-id 192.168.56.102/3
+        host1$ docker-machine create --driver generic --generic-ip-address=192.168.56.102 host2
+        host2$ cat /etc/systemd/system/docker.service
+            -H tcp://0.0.0.0:2376  make docker accept remote connect
+            --tls* make safe certify and encrypt for remote connect
+
+    manage machine
+        host1$ docker-machine env host2     # show info about how to visit host2 
+        host1$ eval $(docker-machine env host2)     # enter host2 to management
+        host1$ docker-machine upgrade host2 host3   # upgrade machine's docker
+        host1$ docker-machine config host2          # show configure of host2
+        host1$ docker-machine stop/start/restart    # operate machine's os, not docker deamon
+        host1$ docker-machine scp host2:/tmp/a host3:/tmp/b  # copy file between host2/host3
+
+9. Container Network - multi host
