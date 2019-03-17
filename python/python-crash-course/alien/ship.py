@@ -31,3 +31,6 @@ class Ship():
     def blitme(self):
         """ print ship in set position """
         self.screen.blit(self.image, self.rect)
+
+    def center_ship(self):
+        self.center = float(self.screen_rect.centerx)
