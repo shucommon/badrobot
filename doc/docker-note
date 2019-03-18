@@ -688,3 +688,72 @@ CloudMan https://mp.weixin.qq.com/s/7o8QxGydMTUe4Q7Tz46Diw?
         host1$ docker-machine scp host2:/tmp/a host3:/tmp/b  # copy file between host2/host3
 
 9. Container Network - multi host
+
+                                       |-- none             -
+                                       |-- host             |   single-host
+                                       |-- bridge           |
+                 |--- docker network --|-- joined container -
+                 |                     |-- overlay          |   multi-host
+                 |                     |-- macvlan          |
+    container ---|
+    network      |--- flannel   -
+                 |--- veave     |   multi-host
+                 |--- calico    -
+
+    ## libnetwork CNM - container network model (docker-network-6.png)
+        Sandbox - container network stack, contain container's interface, router table,
+        DNS settings, Linux Network Namespace is the standard implenmentation of Sandbox
+        it can contain endpoint from different network
+
+        Endpoint - connect Sandbox to Network, typical implenment is veth pair
+        it can only belong to one network and one sandbox
+
+        Network - contain a group of Endpoint, Endpoint in same Network can communicate directly
+        Linux Bridge, VLAN
+
+                --------------------------        --------------------------
+                |    docker container    |        |    docker container    |
+                |                        |        |                        |
+                |   |-----------------|  |        |   |-----------------|  |
+                |   | Network Sandbox |  |        |   | Network Sandbox |  |
+                |   |    ------------ |  |        |   | -------    ------- |
+                |   |----| Endpoint |-|  |        |   |-| Ep1 |----| Ep2 | |
+                |        ------------    |        |     -------    ------- |
+                ---------------|---------         --------|-----------|----
+                               |                          |           |
+                ------------------------------------------------  -------------
+                |                     Network 1                |  | Network 2 |
+                ------------------------------------------------  -------------
+
+                                        docker
+                                          |
+                                          |
+                                      libnetwork
+                                     /          \
+                                    /            \
+                          Native Drivers        Remote Drivers
+               none, bridge, overlay, macvlan   flannel, veave, calico, etc
+
+
+        below is the previous example:
+            2 Network: bridge, my_net2
+            implement method is Linux Bridge: docker0, br-xxxxx
+
+            3 Endpoint, implement by veth pair, one end in Linux bridge, one end in container
+
+            3 Sandbox, implement by Network Namespace, each container has it's own Sandbox
+
+               busybox1        busybox2        busybox3
+               172.17.0.2      172.22.16.2     172.22.16.8
+               eth0            eth0            eth0
+                 |               |               |
+                 |               |               |             container
+               ---------------------------------------------------------
+                 |               |               |             host
+                 |               |               |
+               veth1           veth2           veth3
+                 |               |               |
+                 |             +-------------------+
+               docker0         | br-xxxxx          |
+               172.17.0.1      | my_net2           |
+               docker host     | 172.22.16.1       |
