@@ -328,3 +328,8 @@ python Zen  #python 之蝉
         $ brew install sdl_mixer portmidi
         $ pip3 install --user hg+http://bitbucket.org/pygame/pygame
         
+# matplotlib
+	$ sudo apt-get install python3-matplotlib
+	$ sudo apt-get install python3.7-dev python3-tk tk-dev
+	$ sudo apt-get install libfreetype6-dev g++
+	$ pip3 install --user matplotlib

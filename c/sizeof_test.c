@@ -127,5 +127,9 @@ int main(int argc, char* argv[])
 
 	printf("sizeof secure_header_t is 0x%x\n", sizeof(struct secure_header_t)); 
 	printf("sizeof img_header_t is 0x%x\n", sizeof(struct img_header_t)); 
+
+	int i = 0;
+	int j = sizeof(i++);
+	printf("%d %d\n", i, j);
 	return 0;
 }
