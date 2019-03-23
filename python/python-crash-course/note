@@ -333,3 +333,20 @@ python Zen  #python 之蝉
 	$ sudo apt-get install python3.7-dev python3-tk tk-dev
 	$ sudo apt-get install libfreetype6-dev g++
 	$ pip3 install --user matplotlib
+
+# pygal  vector 
+	pip install --user pygal
+	pip3 install pygal_maps_world
+
+	world map
+		american.py
+		country_code.py
+		world_population.py
+
+
+# csv file
+	highs_lows.py
+	>>> from datetime import datetime
+	>>> first_date = datetime.strptime('2014-7-1', '%Y-%m-%d') >>> print(first_date)
+		2014-07-01 00:00:00
+
