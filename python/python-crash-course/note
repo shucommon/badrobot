@@ -358,3 +358,34 @@ python Zen  #python 之蝉
 	Hacker News(http://news.ycombinator.com/)
 
 	https://hacker-news.firebaseio.com/v0/item/9884165.json
+
+# web app
+	http://djangoproject.com/
+
+	virtual-env
+		apt-get install python3-venv
+
+		python3 -m venv ll_env		# create virtual env ll_env
+		virtualenv ll_env --python=python3
+		source ll_env/bin/active
+		deactivate
+
+		sudo apt install python-virtualenv
+		sudo apt install python3-virtualenv
+
+# Django
+	pip install Django
+	django-admin.py startproject learning_log .
+	python manage.py migrate
+	python manage.py runserver
+
+	python manage.py startapp learning_logs
+	1. modify models.py
+	2. python manage.py makemigrations learning_logs
+	3. python manage.py migrate
+
+	python manage.py createsuperuser
+	modify admin.py
+
+	Django shell
+		 $ python manage.py shell
