@@ -1,0 +1,11 @@
+from django.shortcuts import render
+from django.http import HttpResponseRedirect
+
+# Create your views here.
+from django.urls import reverse
+from django.contrib.auth import logout
+
+def logout_view(request):
+    """ logout user """
+    logout(request)
+    return HttpResponseRedirect(reverse('learning_logs:index'))
