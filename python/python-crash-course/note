@@ -389,3 +389,5 @@ python Zen  #python 之蝉
 
 	Django shell
 		 $ python manage.py shell
+
+	pip install django-bootstrap3
