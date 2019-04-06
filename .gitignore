@@ -30,3 +30,7 @@
 
 # Debug files
 *.dSYM/
+
+# python
+__pycache__
+*.sqlite3
