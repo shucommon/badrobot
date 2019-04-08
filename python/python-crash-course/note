@@ -391,3 +391,35 @@ python Zen  #python 之蝉
 		 $ python manage.py shell
 
 	pip install django-bootstrap3
+
+# make docker image
+	https://dzone.com/articles/one-exception-handler-for-all-packaged-subprograms
+	1. install docker
+	2. build your app - Build a Django Application
+		$ sudo pip install django==1.9
+		$ django-admin startproject your_app_name 
+	3. Requirements File
+		$ pip freeze > requirements.txt
+		note: delete pkg-resources
+	4. Create Dockerfile
+		# set the base image 
+		FROM python:3.6
+		# File Author / Maintainer
+		MAINTAINER Qiang, Guo 
+		#add project files to the usr/src/app folder
+		ADD . /usr/src/app
+		#set directoty where CMD will execute 
+		WORKDIR /usr/src/app
+		COPY requirements.txt ./
+		# Get pip to download and install requirements:
+		RUN pip install --no-cache-dir -r requirements.txt
+		# Expose ports
+		EXPOSE 8000
+		# default command to execute    
+		CMD exec gunicorn your_app_name.wsgi:application --bind 0.0.0.0:8000 --workers 3
+	5. Build the Docker Image
+		$ [sudo] docker build -t django_application_image .
+		$ [sudo] docker images
+		$ [sudo] docker run -p 8000:8000 -i -t django_application_image
+	6. You should see a message that gunicorn is serving your app at http://0.0.0.0:8000.
+		Navigate to your servers IP (ip_address:8000) and you should see the Django welcome page.
