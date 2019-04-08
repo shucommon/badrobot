@@ -423,3 +423,14 @@ python Zen  #python 之蝉
 		$ [sudo] docker run -p 8000:8000 -i -t django_application_image
 	6. You should see a message that gunicorn is serving your app at http://0.0.0.0:8000.
 		Navigate to your servers IP (ip_address:8000) and you should see the Django welcome page.
+	7. push local docker image to server
+		a. login https://hub.docker.com/ and create a repo, e.g. named webapp
+		b. You can name your local images either when you build it, using
+			$ docker build -t <hub-user>/<repo-name>[:<tag>],
+		   by re-tagging an existing local image
+			$ docker tag <existing-image> <hub-user>/<repo-name>[:<tag>],
+		   or by using
+			$ docker commit <existing-container> <hub-user>/<repo-name>[:<tag>]
+		   to commit changes.
+		c. $ docker login docker.io
+		d. $ docker push <hub-user>/<repo-name>:<tag>
