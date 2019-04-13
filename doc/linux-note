@@ -336,3 +336,14 @@
 		var=`command-name-here arg1`
 		var=`/path/to/command`
 		var=`/path/to/command arg1 arg2`
+
+## os name
+	$ lsb_release -a
+		# if no lsb module
+		$sudo apt-get install lsb-core
+    $ hostnamectrl
+
+## tmux error
+sudo locale-gen "en_US.UTF-8"
+sudo  dpkg-reconfigure locales # choose en_US.UTF-8
+or edit: sudo vi /etc/locale.gen
