@@ -1368,3 +1368,12 @@
     Linux kernel development - rober love -  Linux kernel version 2.6.34
     Professional linux kernel architecture - Wolfgang Mauerer - kernel 2.6.24
     Understanding the Linux Kernel- Daniel P. Bovet, Marco Cesati -  kernel 2.6.11
+
+## screen
+    $ screen /dev/cu.SLAB_USBtoUART 115200
+    Ctrl+A then Ctrl+D. Doing this will detach you from the screen session which you can later resume by doing screen -r.
+    You can also do: Ctrl+A then type :, this will put you in screen command mode.
+    Type the command detach to be detached from the running screen session.
+    $ screen -r
+    $ ctrl+a then ctrl+\ to terminate
+    $ screen ls

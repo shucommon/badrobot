@@ -5,3 +5,24 @@
 	https://github.com/majutsushi/tagbar
 3. install ctags if not installed before
 	https://thomashunter.name/blog/installing-vim-tagbar-with-macvim-in-os-x/
+
+## USB TO TTL driver
+    PL2303
+        https://plugable.com/2011/07/12/installing-a-usb-serial-adapter-on-mac-os-x/
+
+        down load PL2303 MacOSX10.6 dmg v.1.4.0.zip and install
+            https://plugable.com/drivers/prolific/
+
+        restart and check:
+            $ kextstat | grep prolific
+        and:
+            $ ioreg -c IOSerialBSDClient | grep usb
+
+    CP2102
+        https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers
+
+        ls /dev/cu*
+        - CP210x based devices will show up as cu.SLAB_USBtoUART.
+
+        kextutil -n /Library/Extensions/SiLabsUSBDriver.kext
+            - Will tell you if the driver installed correctly, is loadable, and is signed.
