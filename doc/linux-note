@@ -1,7 +1,7 @@
 ## linux training tips
     ctrl+z stop
     fg/bg continue
-    ctrl+c exit 
+    ctrl+c exit
 
     cpulimit -l percentage -p pid  - limit a process cpu percentage
 
@@ -24,11 +24,11 @@
     \time -v python xx.py
     major/minor page fault
 
-    smem 
+    smem
     smem --pie=command
     smem --bar=command
 
-    buffer - disk raw info 
+    buffer - disk raw info
     cache
 
     /proc/pid/smaps
@@ -37,13 +37,13 @@
 
     cgroup
     cgexec
-    ./a.out cgexec Memory:A 
+    ./a.out cgexec Memory:A
 
     nm -D --defined-only
     apt install dot
     ldd app  -> show elf dependence .so
 
-## vim 
+## vim
     # refresh opening file
 	You can use the :edit command, without specifying a file name, to reload the current file. If you have made modifications to the file, you can use :edit! to force the reload of the current file (you will lose your modifications).
 
@@ -161,7 +161,7 @@
     include/uapi/asm-generic/unistd.h
 ## /proc/meminfo
 ## !! fast redone a comand
-## $! fast insert previous parameters 
+## $! fast insert previous parameters
 
 ## grub - https://wiki.centos.org/HowTos/Grub2
     1. The Boot Menu is Automatically Created
@@ -192,7 +192,7 @@
     On UEFI-based systems, the command will be grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg
 
     2. add yourslef custom boot entry
-        a. edit /etc/grub.d/40_custom 
+        a. edit /etc/grub.d/40_custom
         for example, add below content:
             menuentry 'Custom linux boot entry' {
                 linux   /boot/vmlinuz-4.15.0-43-generic root=UUID=ac3520ce-3503-4169-       be71-5378ace9c098 ro  quiet splash $vt_handoff initcall_debug
@@ -210,7 +210,26 @@
     lsb_release -a to get codename
     git clone git://kernel.ubuntu.com/ubuntu/ubuntu-bionic.git
 
-## Make the current user own everything inside the folder (and the folder itself):
+    Ubuntu
+    Check version
+    cat /etc/lsb-releases
+
+## chown/chmod
+    Use chown to change ownership and chmod to change rights.
+    use the -R option to apply the rights for all files inside of a directory too.
+    Note that both these commands just work for directories too. The -R option makes them also change the permissions for all files and directories inside of the directory.
+    For example
+        $ sudo chown -R username:group directory
+    will change ownership (both user and group) of all files and directories inside of directory and directory itself.
+
+    sudo chown username:group directory
+    will only change the permission of the folder directory but will leave the files and folders inside the directory alone.
+
+    Note that if you use chown <user>: <file> (Note the left-out group), it will use the default group for that user.
+    If you want to change only the group, you can use:
+        chown :<group> <file>
+
+    # Make the current user own everything inside the folder (and the folder itself):
     sudo chown -R $USER ~/.blabla
     sudo chown -R username:group directory
 
@@ -232,7 +251,7 @@
     VBoxManage modifymedium "/Users/qianggu/VirtualBox VMs/ubuntu-18.04/ubuntu-18.04.vdi"  --resize 51200
     readd vdi
     https://linuxhint.com/increase-virtualbox-disk-size/
- 
+
 ## passwordless ssh to another server
     copy user a in host A's .ssh/id_rsa.pub to b in host B's .ssh/authorized_keys
 
@@ -243,34 +262,55 @@
     su - yourid  Type in su - and your userid to relog in to verify that everything works correctly.
 
 ## tmux
+    Reference:
+    https://github.com/tmux/tmux
+    https://hackernoon.com/a-gentle-introduction-to-tmux-8d784c404340 (My configured prefix is ctrl+a instead of ctrl+b)
+
     C-b %  split left-right
     C-b "  split top-bottom
-    C-b <arrow key>  navigate panel 
+    C-b <arrow key>  navigate panel
     exit/ctrl-d to exit
-    C-b c  create new window 
-    C-b p  previous window 
-    C-b n  next window 
-    C-b <number>  jump to specific window 
-    C-b d  detach 
-    C-b D  select which session to detach 
+    C-b c  create new window
+    C-b p  previous window
+    C-b n  next window
+    C-b <number>  jump to specific window
+    C-b d  detach
+    C-b D  select which session to detach
     tmux ls  list running session
     tmux attach -t 0  connect to specific session
     tmux new -s session_name  create tmux with a specific session_name
-    tmux rename-session -t 0 session_name  to rename a sessionn with new session_name 
+    tmux rename-session -t 0 session_name  to rename a sessionn with new session_name
     C-b ?
     C-b z: make a pane go full screen. Hit C-b z again to shrink it back to its previous size
     C-b C-<arrow key>: Resize pane in direction of <arrow key>
     C-b ,: Rename the current window
     .tmux.conf
 
+    Attach tmux session:
+    tmux a -t qa_171
+    Detach tmux session:
+    Ctrl+a  d
+
 ## cscope/ctags/tagbar
     .bashrc  export CSCOPE_EDITOR=/usr/bin/vim   - to specify cscope vim
     .vimrc   let g:tagbar_ctags_bin = '/usr/bin/ctags'  - to specify ctags tagbar used
 
+    Tagbar
+    under ~/.vim folder, create autoload bundle
+    download pathogen.vim under autoload
+        https://raw.githubusercontent.com/tpope/vim-pathogen/master/autoload/pathogen.vim
+    in .vimrc add
+        call pathogen#infect()
+        call pathogen#helptags()
+
+    cd ~/.vim/bundle/
+    git clone git://github.com/majutsushi/tagbar or
+    git clone https://github.com/majutsushi/tagbar.git
+
 ## install homebrew
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-## add user to group
+## adduser/usermod
     $ sudo groupadd mynewgroup
     $ usermod -a -G examplegroup exampleusername
     change user primary group
@@ -289,6 +329,20 @@
         $ sudo deluser user_name sudo
         $ sudo gpasswd -d user_name sudo
 
+    chown
+    Use chown to change ownership and chmod to change rights.
+    use the -R option to apply the rights for all files inside of a directory too.
+    Note that both these commands just work for directories too. The -R option makes them also change the permissions for all files and directories inside of the directory.
+    For example
+    sudo chown -R username:group directory
+    will change ownership (both user and group) of all files and directories inside of directory and directory itself.
+    sudo chown username:group directory
+    will only change the permission of the folder directory but will leave the files and folders inside the directory alone.
+
+    Note that if you use chown <user>: <file> (Note the left-out group), it will use the default group for that user.
+    If you want to change only the group, you can use:
+	chown :<group> <file>
+
 ## su sudo root
     $ su
         switch to root, keep old environment
@@ -301,13 +355,13 @@
         $ sudo passwd root
     execute cmd as another suer
         $ sudo -u another_suer
-    $ sudo -s 
+    $ sudo -s
         new shell will currnet user .bashrc
-    $ sudo -i 
+    $ sudo -i
         new shell will new user .bashrc
-    $ sudo -i 
+    $ sudo -i
         cancel sudo pass cache
-    
+
     show password as Asterisks
         $ sudo visudo
             Defaults        env_reset,timestamp_timeout=0,pwfeedback
@@ -344,6 +398,973 @@
     $ hostnamectrl
 
 ## tmux error
-sudo locale-gen "en_US.UTF-8"
-sudo  dpkg-reconfigure locales # choose en_US.UTF-8
-or edit: sudo vi /etc/locale.gen
+    sudo locale-gen "en_US.UTF-8"
+    sudo  dpkg-reconfigure locales # choose en_US.UTF-8
+    or edit: sudo vi /etc/locale.gen
+
+## ftp login
+    ftp ftp://username:password@my.domain.com
+
+## network related
+    # modify mac address
+    $ /etc/init.d/networking stop
+    or $ ifconfig eth0 down
+    $ ifconfig eth0 hw ether 00:60:16:75:12:02
+    $ /etc/init.d/networking start
+    or $ ifconfig eth0 up
+
+    # ifconfig
+    sudo ifconfig eth0 10.62.34.52/24
+    ifconfig eth0 netmask 255.255.255.224
+    ifconfig eth0 broadcast 172.16.25.63
+    ifconfig eth0 172.16.25.125 netmask 255.255.255.224 broadcast 172.16.25.63
+    ifconfig eth0 mtu 1000
+
+    # route
+    sudo route add default gw 10.62.34.1
+
+    # add dns
+        vim /etc/resolv.conf.
+        Add - nameserver 10.32.102.224
+        Save the file.
+
+    # show port
+        netstate -a
+
+    # Network Cards info
+        lspci command : List all PCI devices.
+        lshw command : List all hardware.
+        dmidecode command : List all hardware data from BIOS.
+        ifconfig command : Outdated network config utility.
+        ip command : Recommended new network config utility.
+        http://www.cyberciti.biz/faq/linux-list-network-cards-command/
+
+    # ip_forward
+        Check if IP Forwarding is enabled
+        We have to query the sysctl kernel value net.ipv4.ip_forward to see if forwarding is enabled or not: Using sysctl:
+        sysctl net.ipv4.ip_forward
+        net.ipv4.ip_forward = 0
+        cat /proc/sys/net/ipv4/ip_forward
+
+    # Namespace
+    https://www.toptal.com/linux/separation-anxiety-isolating-your-system-with-linux-namespace
+    http://www.opencloudblog.com/?p=42
+    https://lwn.net/Articles/580893/
+    https://lwn.net/Articles/531381/
+    http://www.opencloudblog.com/?p=66
+    http://serverfault.com/questions/127636/force-local-ip-traffic-to-an-external-interface
+    http://stackoverflow.com/questions/2734144/linux-disable-using-loopback-and-send-data-via-wire-between-2-eth-cards-of-one
+
+    route add -net <net> netmask <netmask> gw <gateway>  --> ip r add <net>/<netmasklen> via <gateway>
+    ifconfig                                          --> ip addr or just ip a
+    ifconfig <interface> up/down                      --> ip link set dev <interface> up/down
+    ifconfig <interface> <ip> netmask <netmask>       --> ip addr add <ip>/<masklen> dev <interface>
+    netstat -rn                                       --> ip route or just ip r
+    ip route show table local
+    udhcpc -i eth1
+        ip netns add <new namespace name>
+    Then, you'd assign the interface to the namespace:
+        ip link set <device name> netns <namespace name>
+    attach it to namespace
+        ip link set tap1 netns ns1
+    set the ports to up
+        ip netns exec ns1 ip link set dev tap1 up
+
+    ip netns exec netns1 ip link list
+    #ip netns exec netns1 ip link set dev lo u
+    ip netns exec nstest ip addr add 10.0.0.2/24 dev veth-b
+
+    In addition, physical devices (those connected to real hardware) cannot be assigned to namespaces other than the root.
+    Instead, virtual network devices (e.g. virtual ethernet or veth) can be created and assigned to a namespace.
+
+    Ip route iptables:
+    Have a look in local routing table. With iproute2 tools installed do ip route show table local.
+    As you can see, all packets destinated to your local IPs would never go thru NICs since they are marked as local.
+    To force packets go via ethernet card remove the appropriate route (i.e. ip route delete 192.168.122.1 dev eth0 table local).
+    To restore this route just set the interface down and up: the kernel would do the work to insert these routes.
+    The trick is to use a set of dummy IP addresses to force the kernel into routing it through the wire,
+    and NAT to change it back to the real IP address.
+    Let eth0 and eth1 be the two ethernet cards; IP0 and IP1 its IP address;
+    MAC0 and MAC1 its MAC address respectively. We will be using two dummy IP addresses: IP00 and IP11.
+        arp -s IP00 MAC0
+        arp -s IP11 MAC1
+        ip route add IP00 dev eth1
+        ip route add IP11 dev eth0
+        iptables -t nat -A POSTROUTING -d IP11 -j SNAT --to-source IP00
+        iptables -t nat -A POSTROUTING -d IP00 -j SNAT --to-source IP11
+        iptables -t nat -A PREROUTING -d IP00 -j DNAT --to-destination IP0
+        iptables -t nat -A PREROUTING -d IP11 -j DNAT --to-destination IP1
+    Use the dummy IP addresses IP00 and IP11 instead of the real one.
+
+    Ifconfig
+
+    eth4      Link encap:Ethernet  HWaddr 00:60:48:48:8B:E0
+              UP BROADCAST MULTICAST  MTU:1500  Metric:1
+              RX packets:25908936 errors:0 dropped:0 overruns:679371 frame:14
+              TX packets:39659170 errors:0 dropped:0 overruns:0 carrier:0
+              collisions:0 txqueuelen:1000
+              RX bytes:38604314640 (35.9 GiB)  TX bytes:59092163300 (55.0 GiB)
+              Interrupt:88 Memory:920024e0000-920024fffff
+
+    eth5      Link encap:Ethernet  HWaddr 00:60:48:48:8B:E1
+              UP BROADCAST MULTICAST  MTU:1500  Metric:1
+              RX packets:43018730 errors:0 dropped:0 overruns:1140472 frame:20
+              TX packets:34436309 errors:0 dropped:0 overruns:0 carrier:0
+              collisions:0 txqueuelen:1000
+              RX bytes:64097907700 (59.6 GiB)  TX bytes:51310100410 (47.7 GiB)
+              Interrupt:153 Memory:920024c0000-920024dffff
+
+    frame counts only misaligned frames, it means frames with a length not divisible by 8. Because of that length is not a valid frame and it is simply discarded.
+    Meanwhile errors counts CRC errors, too-short frames and too-long frames.
+    overruns counts that times when there is fifo overruns, caused by the rate at which the buffer gets full and the kernel isn't able to empty it.
+    At last, dropped counts things like unintended VLAN tags or receiving IPv6 frames when the interface is not configured for IPv6.
+
+    You can see how many packets have been dropped on your machine with netstat -suna. Mine has dropped 918 packets so far apparently ("918 packet receive errors")
+
+## mount nfs
+    mount
+        On PXE 36
+        sudo service portmap start
+        sudo service nfs-kernel-server start
+        sudo service nfs-common start
+
+    On SP
+        mount -o port=2049,nolock,proto=tcp -t nfs 192.168.1.1:/home/share/guoq3 /mnt/guoq3/
+
+## format code
+    http://astyle.sourceforge.net/
+
+    use "astyle" command to format each of your new files into standard format:
+        astyle --style:ansi -sbCKm0pD plugin.cpp
+
+## tar.gz
+    http://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/
+
+    tar -czvf name-of-archive.tar.gz /path/to/directory-or-file
+        -c: Create an archive.
+        -z: Compress the archive with gzip.
+        -v: Display progress in the terminal while creating the archive, also known as "verbose" mode. The v is always optional in these commands, but it's helpful.
+        -f: Allows you to specify the filename of the archive.
+    tar.xz
+        tar xf file.tar.zx
+        tar xf file.tar.gz
+
+## diff
+    Once you have the source trees, e.g.
+        diff -ENwbur repos1/ repos2/
+    Even better
+        diff -ENwbur repos1/ repos2/  | kompare -o -
+    and have a crack at it in a good gui tool :)
+        -Ewb ignore the bulk of whitespace changes
+        -N detect new files
+        -u unified
+        -r recurse
+
+## apt-get
+    /var/lib/apt/lists/
+    /etc/apt/sources.list
+    /var/cache/apt/archives
+
+## count all lines of folders
+    find . -name '*.c' | xargs wc -l
+
+    ( find ./ -name '*.c' -print0 | xargs -0 cat ) | wc -l
+    works on names with spaces, only outputs one number.
+
+## Samba server
+    First, make sure that you've installed Samba server.
+        www.howtogeek.com/howto/ubuntu/install-samba-server-on-ubuntu/
+    Install samba:
+        sudo apt-get install samba
+    Set a Samba password:
+        sudo smbpasswd -a USERNAME.
+    This command will generate a prompt for a password (substitute USERNAME with your username).
+
+    Modify smb.conf:
+    To share the home directories, open up smb.conf with the following command:
+        sudo vim /etc/samba/smb.conf
+    Find this section of the file, and make it match the following:
+        [homes]
+        comment = Home Directories
+        browseable = yes
+        ...
+        valid users = %S
+        ...
+        writable = yes
+    Now you should be able to map a drive on windows using the following share format:
+        \\ubuntumachine\username
+
+    Add share folder:
+        [<floder name>]
+        path = <folder path>
+        valid users = username1, username2
+        read only = no
+        browsable = yes
+        public = yes
+        writable = yes
+
+## make
+    make
+    -g -ggdb3
+
+## Apply patch of a diff file
+    1 create a diff file.
+    2 patch -p[num] < patchfile
+    patch [options] originalfile patchfile
+    http://www.thegeekstuff.com/2014/12/patch-command-examples
+
+## readelf
+
+## linux tools
+    ccache - https://ccache.samba.org/   a fast C/C++ compiler cache
+    CFLAGS - remove O2, add  -d dgdb
+
+    tree
+        tree --charset ASCII
+
+## dmidecode
+    https://linux.die.net/man/8/dmidecode
+
+    dmi table decoder
+    dmidecode is a tool for dumping a computer's DMI (some say SMBIOS ) table contents in a human-readable format.
+    This table contains a description of the system's hardware components,
+    as well as other useful pieces of information such as serial numbers and BIOSrevision.
+
+## iPerf
+    https://iperf.fr/
+    iPerf3 is a tool for active measurements of the maximum achievable bandwidth on IP networks.
+    It supports tuning of various parameters related to timing, buffers and protocols (TCP, UDP, SCTP with IPv4 and IPv6).
+    For each test it reports the bandwidth, loss, and other parameters.
+    This is a new implementation that shares no code with the original iPerf and also is not backwards compatible.
+    iPerf was orginally developed by NLANR/DAST. iPerf3 is principally developed by ESnet / Lawrence Berkeley National Laboratory.
+    It is released under a three-clause BSD license.
+
+## packetgen
+
+## timezone
+    $ rm /etc/localtime
+    $ cd /etc
+    $ ln -s /usr/share/zoneinfo/Asia/Shanghai localtime
+
+## screen
+    https://www.gnu.org/software/screen/manual/screen.html
+
+## CRLF&LF
+    Display CRLF as ^M:
+        :e ++ff=unix
+    Substitute CRLF for LF:
+        :setlocal ff=unix
+        :w
+        :e
+
+## markdown
+    mkdocs serve -a 10.32.136.25:8000 -f /home/qiang/xxx-docs/mkdocs.yml
+
+    install python pip
+    $ wget https://bootstrap.pypa.io/get-pip.py
+    $ python get-pip.py
+    $ pip install mkdocs
+    $ pip install mkdocs-material
+    $ mkdocs -version
+    $ mkdocs new my-project
+    $ cd my-project
+    $ mkdocs serve
+    INFO    -  Building documentation...
+    INFO    -  Cleaning site directory
+    [I 160402 15:50:43 server:271] Serving on http://127.0.0.1:8000
+    [I 160402 15:50:43 handlers:58] Start watching changes
+    [I 160402 15:50:43 handlers:60] Start detecting changes
+
+    $ mkdocs build
+
+    How to update Docs into GitHub:
+
+    Step1: Install tools at your environment (once and for all)
+        "python" version 2.7
+        "pip"  ---- suggest use below commands
+            sudo wget https://bootstrap.pypa.io/get-pip.py  --no-check-certificat
+            sudo python ./get-pip.py
+        "mkdocs"
+            sudo pip install --upgrade mkdocs
+            sudo pip install mkdocs-material
+
+    Step2: Get codes
+        Repo:  ssh://git@eos2git.cec.lab.emc.com/Chameleon/chameleon-kit.git
+
+    Step3: Change code:
+        Suggest to use markdownpad to modify your code.
+
+        Add the new document to docs/ folder
+            cd docs/
+            git add <newpage.md>
+        Edit the mkdocs.yml file
+            site_name: Docs
+            pages:
+            - Home: index.md
+            - About: README.md
+            - <New-Page-Title>: <newpage.md>
+            theme: 'material'
+
+    Step4: Verify at Local:
+        start http server:
+            $ mkdocs serve -a 10.32.136.25:8000 -f /home/qiang/xxx-docs/mkdocs.yml
+        access it with Chrome:
+            $ http://10.32.136.25:8000
+
+## history timestamps
+    How to see time stamps in bash history
+    $ export HISTTIMEFORMAT="%d/%m/%y %T "
+    or
+    $ echo 'export HISTTIMEFORMAT="%d/%m/%y %T "' >> ~/.bashrc
+    $ source ~/.bashrc
+
+## ssh tunnel
+    ssh -f -N -D <1080 user@remote-server.com>
+    ssh -fN -D :1080 xxx@xxx
+    export all_proxy=socks5://localhost:1080
+
+## send message within shell
+    $sudo wall -n hi
+    $sudo echo "Let's go have lunch... ok?" > /dev/pts/4
+    $write username tty
+
+    mesg [y|n]
+    Mesg controls the access to your terminal by others.
+    It's typically used to allow or disallow other users to write to your terminal (see write(1)).
+
+## shell script
+    # for loop
+    for i in {1..1000000}; do echo -n "$i:"; wget http://www.intel.com/cd/edesign/library/asmo-na/eng/$i.htm; done;
+
+    recursive execute all files
+    find . -type f | xargs dos2unix
+
+## sed
+    insert one line in the specific line:
+    sed -i '8i8 This is Line 8' FILE
+
+    find /path/to/files -type f -exec sed -i 's/oldstring/new string/g' {} \;
+    grep -rl matchstring somedir/ | xargs sed -i 's/string1/string2/g'
+
+    insert operation
+        #insert # at the beginning of file.txt
+        $ sed 's/^/#/' file.txt
+
+        #insert blank at the beginning of file.txt
+        $ sed 's/^/ /' file.txt
+        sed 'line-num-1,line-num-2s/^/    /' intel_eth_device_errors.h
+
+        # replace string start with " with ;
+        sed '79,133s/".*/;/g' intel_eth_device_errors.h
+
+        sed -i '23,$s/^/\t/' filename
+
+    To append after the pattern: (-i is for inplace replace). line1 and line2 are the lines you want to append(or prepend)
+        sed -i '/pattern/a line1 line2' inputfile
+    To prepend the lines before:
+    sed -i '/pattern/i line1 line2' inputfile
+
+## lxc
+    lxc image list
+    lxc image list ubuntu: | less
+    lxc launch ubuntu:16.04 first
+    lxc list
+    lxc info first
+    lxc config show first
+    free -m
+    lxc exec first -- free -m
+    lxc config set first limits.memory 64MB
+    lxc exec first -- free -m
+    lxc exec first -- apt-get update
+    lxc exec first -- apt-get dist-upgrade -y
+    lxc exec first -- apt-get autoremove --purge -y
+    lxc snapshot first clean
+    lxc exec first -- rm -Rf /etc /usr
+    lxc exec first -- bash
+    lxc restore first clean
+    lxc exec first -- bash
+    lxc publish first/clean --alias clean-ubuntu
+    lxc stop first
+    lxc delete first
+    lxc launch clean-ubuntu second
+    lxc file pull second/etc/hosts .
+    lxc file push hosts second/etc/hosts
+    lxc file pull second/var/log/syslog - | less
+    lxc delete --force second
+    lxc image list images: | less
+    lxc launch images:centos/7 third
+    lxc exec third -- cat /etc/redhat-release
+    lxc remote list
+    lxc remote add tryit 2001:470:b368:1070:216:3eff:fec6:67dc --password=safe
+    lxc list tryit:
+    lxc image list tryit:
+    lxc launch clean-ubuntu tryit:fourth
+
+## Compile
+    Archives - An archive (or static library) is simply a collection of object files stored as a single file.
+    (An archive is roughly the equivalent of a Windows .LIB file.) When you provide an archive to the linker,
+    the linker searches the archive for the object files it needs, extracts them,
+    and links them into your program much as if you had provided those object files directly.
+
+    Create an archive
+        % ar cr libtest.a test1.o test2.o
+
+    Link .a
+        // wrong method
+        % gcc -o app -L. -ltest app.o
+        // right one
+        % gcc -o app app.o -L. -ltest
+
+    Shared library
+    step 1, compile the objects that will make up the library using the -fPIC option to the compiler
+        % gcc -c -fPIC test1.c
+    Step 2 - combine the object files into a shared library, like this:
+        % gcc -shared -fPIC -o libtest.so test1.o test2.o
+    -L. -ltest will first search .so then .a in the same path.
+    Use -static option to demand static archives, if can't find .so, error return
+        % gcc -static -o app app.o -L. -ltest
+
+    The program only search /lib /usr/lib for .so, use -Wl,-rpath to specify .so path
+        % gcc -o app app.o -L. -ltest -Wl,-rpath,/usr/local/lib
+    Another solution to this problem is to set the LD_LIBRARY_PATH environment variable.
+
+    Position-Independent Code (PIC)
+    PIC stands for position-independent code. The functions in a shared library may be loaded at different
+    addresses in different programs, so the code in the shared object must not depend on the address (or
+    position) at which it is loaded. This consideration has no impact on you, as the programmer, except that
+    you must remember to use the -fPIC flag when compiling code that will be used in a shared library.
+
+## xxd hexdump
+
+## find
+    find a pattern in files and rename them
+    find ./inc-test/ -name "*.orig" -exec rename -f 's/.h.orig/.h/' {} +
+    find . -name '*-GHBAG-*' -exec bash -c 'mv $0 ${0/GHBAG/stream-agg}' {} \;
+        mv ./report-GHBAG-1B ./report-stream-agg-1B
+        mv ./reoprt-GHBAG-0.5B ./report-stream-agg-0.5B
+    ignore some path
+        find some_path -path path_to_ignore -prune -o -name "*.mk"
+
+## The command-line history
+    Use the up and down key's to scroll through previously typed commands.
+    Press [Enter] to execute them or use the left and right arrow keys to edit the command first.
+
+    Also see history (below).
+    The history command can be used to list Bash's log of the commands you have typed:
+    This log is called the "history". To access it type:
+        history n
+    This will only list the last n commands. Type "history" (without options) to see the the entire history list.
+
+    You can also type
+        !n to execute command number n.
+        !! to execute the last command you typed.
+        !-n will execute the command n times before (in other words !-1 is equivalent to !!).
+        !string will execute the last command starting with that "string" and
+        !?string? will execute the last command containing the word "string". For example:
+        !cd Will re-run the command that you last typed starting with "cd".
+        "commandName !*" will execute the "commandName" with any arguments you used on your last command.
+    This maybe useful if you make a spelling mistake, for example. If you typed:
+        emasc /home/fred/mywork.java /tmp/testme.java
+    In an attempt to execute emacs on the above two files this will obviously fail. So what you can do is type:
+        emacs !*
+    This will execute emacs with the arguments that you last typed on the command-line. In other words this is equivalent to typing:
+        emacs /home/fred/mywork.java /tmp/testme.java
+
+    Searching through the Command History ( CTRL-R )
+    Use the CTRL-R key to perform a "reverse-i-search". For example, if you wanted to use the command you used the last time you used snort, you would type:
+    CTRL-R then type "snort".
+    What you will see in the console window is:
+    (reverse-i-search)`':
+    After you have typed what you are looking for, use the CTRL-R key combination to scroll backward through the history.
+    Use CTRL-R repeatedly to find every reference to the string you've entered. Once you've found the command you're looking for, use [Enter] to execute it.
+    Alternatively, using the right or left arrow keys will place the command on an actual command-line so you can edit it.
+
+## Set environment permanently
+    You need to add it to your ~/.profile or .bashrc file.
+    export PATH=$PATH:/path/to/dir
+    Temporary:
+    export PATH=$PATH:/path/to/dir
+
+## PS1
+    Change / Setup bash custom prompt
+    Prompt is control via a special shell variable. You need to set PS1, PS2, PS3 and PS4 variable.
+    If set, the value is executed as a command prior to issuing each primary prompt.
+
+    PS1 - The value of this parameter is expanded (see PROMPTING below) and used as the primary prompt string. The default value is \s-\v\$ .
+    PS2 - The value of this parameter is expanded as with PS1 and used as the secondary prompt string. The default is >
+    PS3 - The value of this parameter is used as the prompt for the select command
+    PS4 - The value of this parameter is expanded as with PS1 and the value is printed before each command bash displays during an execution trace.
+          The first character of PS4 is replicated multiple times, as necessary, to indicate multiple levels of indirection. The default is +
+
+    How do I modify or change the prompt?
+    Modifying the prompt is easy task. Just assign a new value to PS1 and hit enter key:
+        My old prompt -> [vivek@105r2 ~]
+        $ PS1="touch me : "
+    So when executing interactively, bash displays the primary prompt PS1 when it is ready to read a command,
+    and the secondary prompt PS2 when it needs more input to complete a command. Bash allows these prompt
+    strings to be customized by inserting a number of backslash-escaped special characters that are decoded as follows:
+        \a : an ASCII bell character (07)
+        \d : the date in "Weekday Month Date" format (e.g., "Tue May 26")
+        \D{format} : the format is passed to strftime(3) and the result is inserted into the prompt string;
+            an empty format results in a locale-specific time representation. The braces are required
+        \e : an ASCII escape character (033)
+        \h : the hostname up to the first '.'
+        \H : the hostname
+        \j : the number of jobs currently managed by the shell
+        \l : the basename of the shell's terminal device name
+        \n : newline
+        \r : carriage return
+        \s : the name of the shell, the basename of $0 (the portion following the final slash)
+        \t : the current time in 24-hour HH:MM:SS format
+        \T : the current time in 12-hour HH:MM:SS format
+        \@ : the current time in 12-hour am/pm format
+        \A : the current time in 24-hour HH:MM format
+        \u : the username of the current user
+        \v : the version of bash (e.g., 2.00)
+        \V : the release of bash, version + patch level (e.g., 2.00.0)
+        \w : the current working directory, with $HOME abbreviated with a tilde
+        \W : the basename of the current working directory, with $HOME abbreviated with a tilde
+        \! : the history number of this command
+        \# : the command number of this command
+        \$ : if the effective UID is 0, a #, otherwise a $
+        \nnn : the character corresponding to the octal number nnn
+        \\ : a backslash
+        \[ : begin a sequence of non-printing characters, which could be used to embed a terminal control sequence into the prompt
+        \] : end a sequence of non-printing characters
+
+## irq/smp_affinity
+    SMP IRQ Affinity
+
+    Background:
+    Whenever a piece of hardware, such as disk controller or ethernet card,
+    needs attention from the CPU, it throws an interrupt.  The interrupt tells
+    the CPU that something has happened and that the CPU should drop what
+    it's doing to handle the event.  In order to prevent mutliple devices from
+    sending the same interrupts, the IRQ system was established where each device
+    in a computer system is assigned its own special IRQ so that its interrupts
+    are unique.
+    Starting with the 2.4 kernel, Linux has gained the ability to assign certain
+    IRQs to specific processors (or groups of processors).  This is known
+    as SMP IRQ affinity, and it allows you control how your system will respond
+    to various hardware events.  It allows you to restrict or repartition
+    the work load that you server must do so that it can more efficiently do
+    it's job.
+
+    Obviously, in order for this to work, you will need a system that has more
+    than one processor (SMP).  You will also need to be running a 2.4 or higher
+    kernel.
+
+    Some brief and very bare information on SMP IRQ affinity is provided in
+    the kernel source tree of the 2.4 kernel in the file:
+
+        /usr/src/linux-2.4/Documentation/IRQ-affinity.txt
+    How to use it:
+
+    SMP affinity is controlled by manipulating files in the /proc/irq/ directory.
+    In /proc/irq/ are directories that correspond to the IRQs present on your
+    system (not all IRQs may be available). In each of these directories is
+    the "smp_affinity" file, and this is where we will work our magic.
+
+    The first order of business is to figure out what IRQ a device is using.
+    This information is available in the /proc/interrupts file.  Here's a sample:
+
+     [root@archimedes /proc]# cat /proc/interrupts
+                CPU0       CPU1       CPU2       CPU3
+       0:    4865302    5084964    4917705    5017077    IO-APIC-edge  timer
+       1:        132        108        159        113    IO-APIC-edge  keyboard
+       2:          0          0          0          0          XT-PIC  cascade
+       8:          0          1          0          0    IO-APIC-edge  rtc
+      10:          0          0          0          0   IO-APIC-level  usb-ohci
+      14:          0          0          1          1    IO-APIC-edge  ide0
+      24:      87298      86066      86012      86626   IO-APIC-level  aic7xxx
+      31:      93707     106211     107988      93329   IO-APIC-level  eth0
+     NMI:          0          0          0          0
+     LOC:   19883500   19883555   19883441   19883424
+     ERR:          0
+     MIS:          0
+
+
+    As you can see, this is a 4 processor machine.  The first column (unlabelled)
+    lists the IRQs used on the system.  The rows with letters (ie, "NMI", "LOC")
+    are parts of other drivers used on the system and aren't really accessible
+    to us, so we'll just ignore them.
+
+    The second through fifth columns (labelled CPU0-CPU3) show the number of times
+    the corresponding process has handled an interrupt from that particular IRQ.
+    For example, all of the CPUs have handled roughly the same number of interrupts
+    for IRQ 24 (around 86,000 with CPU0 handling a little over 87,000).
+
+    The sixth column lists whether or not the device driver associated with the
+    interrupt supports IO-APIC (see /usr/src/linux/Documentation/i386/IO-APIC.txt
+    for more information).  The only reason to look at this value is that
+    SMP affinity will only work for IO-APIC enabled device drivers.  For
+    example, we will not be able to change the affinity for the "cascade"
+    driver (IRQ 2) because it doesn't support IO-APIC.
+
+    Finally, the seventh and last column lists the driver or device that is
+    associated with the interrupt.  In the above example, our ethernet card
+    (eth0) is using IRQ 31, and our SCSI controller (aic7xxx) is using IRQ 24.
+
+## Finding a patch's kernel version with git
+    What I did to double-check was:
+
+        git log fs/namei.c
+
+    to find the commit series by Al (obviously, you can do it other ways too,
+    but that was the easy way). Then, when you find the commit  just do
+
+        git name-rev 1f36f774b22a0ceb7dd33eca626746c81a97b6a5
+
+    which gives us
+
+        1f36f774b22a0ceb7dd33eca626746c81a97b6a5 tags/v2.6.34-rc1~195^2
+
+    ie that commit is reachable from v2.6.34-rc1, not from any stable kernel.
+
+    (Or alternatively, use "git describe", and get "v2.6.33-5088-g1f36f77",
+    which means that it is v2.6.33 plus 5088 commits).
+
+    And as usual, there are other ways. One particularly obscure one is to say
+
+        git log --tags --source --author=viro fs/namei.c
+
+    which basically says "show only commits by viro in fs/namei.c, start from
+    all tags, and for each commit, show _which_ tag the commit was reached
+    from". It's not perfect, but it does it in one go. With "--oneline", you'd
+    have gotten a listing like
+
+        3e297b6 v2.6.34-rc3 Restore LOOKUP_DIRECTORY hint handling in final lookup on open()
+        781b167 v2.6.34-rc2 Fix a dumb typo - use of & instead of &&
+        1f36f77 v2.6.34-rc2 Switch !O_CREAT case to use of do_last()
+        def4af3 v2.6.34-rc2 Get rid of symlink body copying
+        3866248 v2.6.34-rc2 Finish pulling of -ESTALE handling to upper level in do_filp_open()
+        806b681 v2.6.34-rc2 Turn do_link spaghetty into a normal loop
+        10fa8e6 v2.6.34-rc2 Unify exits in O_CREAT handling
+	9e67f36 v2.6.34-rc2 Kill is_link argument of do_last()
+	...
+
+    so you see into which -rc the different patches from Al went.
+
+                Linus
+
+    git describe --contains f3a1ef9cee4812e2d08c855eb373f0d83433e34c
+
+
+## gdb
+
+    help
+        help command                        Get help on a certain command
+        apropos keyword                     Search help for a particular keyword
+
+    Starting and Quitting
+        gdb [-tui] [-c core] [exename]      (Unix Command) Start gdb on an executable or standalone;
+                                            specify "-tui" to start the TUI GUI; specify "-c" with a
+                                            corefile name to see where a crash occurred
+        run [arg1] [arg2] [...]             Run the currently loaded program with the given command line arguments
+        quit                                Exit the debugger
+        file exename                        Load an executable file by name
+
+    Breakpoints and Watchpoints
+        break location                      Set a breakpoint at a location, line number, or file (e.g. "main", "5", or "hello.c:23")
+        watch expression                    Break when a variable is written to
+        rwatch expression                   Break when a variable is read from
+        awatch expression                   Break when a variable is written to or read from
+        info break                          Display breakpoint and watchpoint information and numbers
+        info watch                          Same as info break
+        delete num                          Delete a breakpoint or watchpoint by number
+
+    Stepping and Running
+        next                                Run to the next line of this function
+        step                                Step into the function on this line, if possible
+        stepi                               Step a single assembly instruction
+        continue                            Keep running from here
+        CTRL-C                              Stop running, wherever you are
+        finish                              Run until the end of the current function
+        advance location                    Advance to a location, line number, or file (e.g. "somefunction", "5", or "hello.c:23")
+        jump location                       Just like continue, except jump to a particular location first.
+
+    Examining and Modifying Variables
+        display expression                  Display the value of a variable or expression every step of the program-the expression must make sense in the current scope
+        info display                        Show a list of expressions currently being displayed and their numbers
+        undisplay num                       Stop showing an expression identified by its number (see info display)
+        print expression                    Print the value of a variable or expression
+        printf formatstr expressionlist     Do some formatted output with printf() e.g. printf "i = %d, p = %s\n", i, p
+        set variable expression             Set a variable to value, e.g. set variable x=20
+        set (expression)                    Works like set variable
+
+    Window Commands
+        info win                            Shows current window info
+        focus winname                       Set focus to a particular window bby name ("SRC", "CMD", "ASM", or "REG") or by position ("next" or "prev")
+        fs                                  Alias for focus
+        layout type                         Set the window layout ("src", "asm", "split", or "reg")
+        tui reg type                        Set the register window layout ("general", "float", "system", or "next")
+        winheight val                       Set the window height (either an absolute value, or a relative value prefaced with "+" or "-")
+        wh                                  Alias for winheight
+        set disassembly-flavor flavor       Set the look-and-feel of the disassembly. On Intel machines, valid flavors are intel and att
+
+    Misc Commands
+        RETURN                              Hit RETURN to repeat the last command
+        backtrace/bt                        Show the current stack
+        attach pid                          Attach to an already-running process by its PID
+        info registers                      Dump integer registers to screen
+        info all-registers                  Dump all registers to screen
+
+## sshpass
+    Use sshpass:
+    sshpass -p "password" scp -r user@example.com:/some/remote/path /some/local/path
+    or so the password does not show in the bash history
+    sshpass -f "/path/to/passwordfile" scp -r user@example.com:/some/remote/path /some/local/path
+    The above copies contents of path from the remote host to your local.
+
+## setpci
+
+## addr2line
+    convert addresses into file names and line numbers.
+
+## make usb installer
+    You can use dd.
+        sudo umount /dev/sd<?><?>
+    where <?><?> is a letter followed by a number, look it up. Then, next:
+        sudo dd bs=4M if=input.iso of=/dev/sd<?> conv=fdatasync
+    where input.iso is the input file, and /dev/sd<?> is the USB device you're writing to
+    (run lsblkto see all drives to find out what <?> is for your USB).
+    This method is fast and has never failed me.
+
+    EDIT: for those on a Mac ending up here, use lowercase for bs=4m:
+        sudo dd if=inputfile.img of=/dev/disk<?> bs=4m && sync
+
+    EDIT: If USB drive does not boot (this happened to me), it is because the target is a particular partition
+    on the drive instead of the drive. So the target needs to be /dev/sdc and not dev/sdc <?>For me it was /dev/sdb.
+    Reference: https://superuser.com/a/407327 and https://askubuntu.com/a/579615/669976
+
+## git
+    git rebase
+        integrate changes from one branch into another
+        https://git-scm.com/book/en/v2/Git-Branching-Rebasing
+
+    git blame
+    git-blame - Show what revision and author last modified each line of a file
+    git show <commit-id>
+
+    For generating the patches from the topmost commits from a specific sha1 hash:
+        git format-patch -<n> <SHA1>
+    The last 10 patches from head in a single patch file:
+        git format-patch -10 HEAD --stdout > 0001-last-10-commits.patch
+
+    git commit --amend [-m ...]
+    git push
+
+    delete a commit
+    Careful: git reset --hard WILL DELETE YOUR WORKING DIRECTORY CHANGES.
+    Be sure tostash any local changes you want to keep before running this command.
+    Assuming you are sitting on that commit, then this command will wack it...
+        git reset --hard HEAD~1
+    The HEAD~1 means the commit before head.
+    Or, you could look at the output of git log, find the commit id of the commit you want to back up to, and then do this:
+        git reset --hard <sha1-commit-id>
+
+    If you already pushed it, you will need to do a force push to get rid of it...
+        git push origin HEAD --force
+    However, if others may have pulled it, then you would be better off starting a new branch.
+    Because when they pull, it will just merge it into their work, and you will get it pushed back up again.
+    If you already pushed, it may be better to use git revert, to create a "mirror image" commit that will undo the changes.
+    However, both commits will be in the log.
+
+    FYI -- git reset --hard HEAD is great if you want to get rid of WORK IN PROGRESS.
+    It will reset you back to the most recent commit, and erase all the changes in your working tree and index.
+
+    Lastly, if you need to find a commit that you "deleted", it is typically present in git reflog unless you have garbage collected your repository.
+
+    git-apply - Apply a patch to files and/or to the index
+
+    git - simple guide:
+    http://rogerdudler.github.io/git-guide/index.zh.html
+
+    # somebodys submit log
+    git log --author=bob
+
+    git push origin master # master can change to any branch you want
+    git remote add origin <server>, then you can push your change to the server you added
+    git push origin <branch>
+    git add <filename>
+    git log --pretty=oneline
+
+    ASCII art tree show branch
+        git log --graph --oneline --decorate -all
+
+    git log --name-status
+    delete local change, change to remote master
+        git fetch origin git reset --hard origin/master
+
+    The Merge Option
+    git checkout feature
+    git merge master
+    Or, you can condense this to a one-liner:
+    git merge master feature
+
+    git merge confict
+    git mergetool
+    It opens a GUI that steps you through each conflict, and you get to choose how to merge.
+    Sometimes it requires a bit of hand editing afterwards, but usually it's enough by itself.
+    It is much better than doing the whole thing by hand certainly.
+    Well, it doesn't necessarily open a GUI unless you install one.
+    Running git mergetool for me resulted in vimdiff being used.
+    You can install one of the following tools to use it instead:
+    meld opendiff kdiff3 tkdiff xxdiff tortoisemerge gvimdiff diffuse ecmerge p4merge araxis vimdiff emerge
+
+    Undo git add
+    You can use 'git reset'. This will 'unstage' all the files you've added after your last commit.
+    If you want to unstage only some files, use 'git reset -- <file 1> <file 2> <file n>'.
+    Also it's possible to unstage some of the changes in files by using git reset -p
+
+    Reversing patches
+    You can reverse a patch if you have finished testing it, or if you want to see whether
+    a problem has been introduced by a particular patch. You should also reverse a patch prior to adding a newer,
+    updated version of the same patch. To reverse the patch, use the patch command with the -R option:
+        patch -p1 -R < path/file.patch
+    (If your patch was applied with the -p0 option, use that instead.)
+    Or:
+        git apply -R path/file.patch
+
+    Git - show history of a file
+        git log -p -- path/to/file
+        gitk path/to/file
+        git format-patch
+    For generating the patches from the topmost commits from a specific sha1 hash:
+        git format-patch -<n> <SHA1>
+    The last 10 patches from head in a single patch file:
+        git format-patch -10 HEAD --stdout > 0001-last-10-commits.patch
+
+    # Keeping a fork repo up to date
+        1. Clone your fork:
+            git clone git@github.com:YOUR-USERNAME/YOUR-FORKED-REPO.git
+        2. Add remote from original repository in your forked repository:
+            cd into/cloned/fork-repo
+            git remote add upstream git://github.com/ORIGINAL-DEV-USERNAME/REPO-YOU-FORKED-FROM.git
+            git fetch upstream
+        3. Updating your fork from original repo to keep up with their changes:
+            git pull upstream master
+
+    Colors in Git
+    Git fully supports colored terminal output, which greatly aids in visually parsing command output quickly and easily.
+    A number of options can help you set the coloring to your preference.
+    color.ui
+    Git automatically colors most of its output, but there's a master switch if you don't like this behavior.
+    To turn off all Git's colored terminal output, do this:
+        $ git config --global color.ui false
+
+    Delete branch
+    Delete Local Branch
+    To delete the local branch use:
+        $ git branch -d branch_name
+    or use:
+        $ git branch -D branch_name
+    Note: The -d option is an alias for --delete, which only deletes the branch if it has already been fully merged in its upstream branch.
+    You could also use -D, which is an alias for --delete --force, which deletes the branch "irrespective of its merged status." [Source: man git-branch]
+
+    Delete Remote Branch
+    As of Git v1.7.0, you can delete a remote branch using
+        $ git push origin --delete <branch_name>
+    which might be easier to remember than
+        $ git push origin :<branch_name>
+
+    Git history
+        git log -- path/to/folder
+        git log -- path/to/folder/*
+    History of renamed files will not be followed with this method.
+    if you want to use a graphic tool, such as gitk, it works the same:
+        gitk -- path/to/folder
+
+    You can use git log to display the diffs while searching:
+        git log -p -- path/to/file
+        git log -p will generate the a patch (the diff) for every commit selected. For a single file, use git log --follow -p $file.
+
+## vim
+    http://www.cyberciti.biz/faq/vim-text-editor-find-and-replace-all-text/
+    Search and replace syntax
+    The syntax is as follows:
+        :s/Search/Replace/CommandFlag
+        :s/Search-Word/Replace-Word/g
+        :%s/Search-Word/Replace-Word/g
+        :%s/Search-Word/Replace-Word/gc
+
+    below sequence will delete the space between words
+        w d ? \ s \ + <return>
+    If your cursor is in the middle of some whitespace, 'diw' will delete whitespace left and right of the cursor.
+    (If it is somewhere in the middle of a word, it will delete the word.)
+
+    cscope
+    sudo apt-get install vim-scripts
+    sudo apt-get install exuberant-ctags
+    copy .vim/plugin
+
+    toggle case
+    Toggle case "HellO" to "hELLo" with g~ then a movement.
+    Uppercase "HellO" to "HELLO" with gU then a movement.
+    Lowercase "HellO" to "hello" with gu then a movement.  select the word with visual mode (viw) and press ~, it switches case for all letters in the word.
+
+    undo
+    To undo recent changes, from normal mode use the undo command:
+    u: undo last change (can be repeated to undo preceding commands)
+    Ctrl-R: Redo changes which were undone (undo the undos).
+    Compare to . to repeat a previous change, at the current cursor position.
+    Ctrl-R (hold down Ctrl and press r) will redo a previously undone change, wherever the change occurred.
+
+## IPMI
+    ipmitool
+    ipmitool -I lanplus -U admin -P Password1 -H 192.168.1.181 sol deactivate
+    ipmitool -I lanplus -U admin -P Password1 -H 192.168.1.181 sol activate
+
+    ipmitool -I lanplus -H <bmc ip address> -U admin -P Password1 chassis bootdev bios
+    then ipmitool -I lanplus -H <bmc ip address> -U admin -P Password1 chassis power reset
+    BMC eth0 (PCH NCSI):
+    1.       Set to use static ip instead of DHCP
+    a.       ipmi_cmd c 1 1 4 1
+    2.       Set IP:
+    a.       ipmi_cmd c 1 1 3 c0 a8 1 3       192.168.1.3
+    BMC eth1 (1G lan)
+    1.       Set to use static IP instead of DHCP
+    a.       ipmi_cmd c 1 4 4 1
+    2.       set IP:
+    a.       ipmi_cmd c 1 4 3 c0 a8 1 3       192.168.1.3
+    ipmitool mc info
+    ipmitool -I lanplus -U admin -P Password1 -H 192.168.1.x command
+    ipmitool fru
+    ipmitool sel list	- get sel log
+
+## big-little-endian
+    The big end     31     23      15      7       0  the little end
+                      01        02      03      04
+                    byte1      byte2   byte3   byte4
+
+            little endian                                           big endian
+    31     23      15      7       0                         31     23      15      7       0
+       01      02      03      04                               01       02     03      04
+     byte1    byte2   byte3   byte4        byte address        byte1    byte2  byte3   byte4
+       |        |       |       ^---------------Z----------------^        |      |       |
+       |        |       -----------------------Z+1-------------------------      |       |
+       |        -------------------------------Z+2--------------------------------       |
+       ----------------------------------------Z+3----------------------------------------
+
+## Comment style
+    /* This is a comment */
+    He's also happy with this format:
+
+    /*
+    * This is also a comment, but it can now be cleanly
+    * split over multiple lines
+    */
+
+    If you must, use the comment format below and you'll avoid Torvalds' ire.
+    // This can be a single line. Or many. Your choice.
+
+    For those of you who like to provoke, Torvalds will tolerate this format:
+    /* This is an alternate multi-line format
+    that isn't horrible, but not kernel style */
+
+    astyle --style=ansi -sbCKm0pD xxx.cpp
+
+## book
+    Linux kernel development - rober love -  Linux kernel version 2.6.34
+    Professional linux kernel architecture - Wolfgang Mauerer - kernel 2.6.24
+    Understanding the Linux Kernel- Daniel P. Bovet, Marco Cesati -  kernel 2.6.11
