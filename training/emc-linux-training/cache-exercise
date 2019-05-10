@@ -1,0 +1,39 @@
+- This exercise demonstrates the importance of caching in the system.
+
+  Use the following program:
+
+    #include <unistd.h>
+	int main ()
+	{
+		for (;;) {
+			char *c = (char *) malloc (16 *1024*1024);
+			sleep(1);
+			}
+	}
+
+   Run the program and monitor using top, or using ps aux.
+   What do you see in the memory utilization - VSZ and RSS?
+   Why is RSS so small compared to VSZ?
+
+   How would you fix it so that VSZ and RSZ both grow?
+
+- Kill the program from previous example and then open a window with top,
+  looking at "buffers" and "cached"
+
+  copy a big file from somewhere to somewhere (for example, /boot/vmlinuz* to /tmp)
+
+  Which of the caches changed?
+
+  Run the command again, this time with "time" to measure time.
+
+  Now do (as root)  "time dd if=/dev/sda1 of=/dev/null bs=4096 count=10000"
+  
+   - See how much time it takes, and the effect on cache
+   - Run it again immediately after, and see effect on time.
+
+  How is the second time running program much faster than first??
+
+
+- Finally, use the fixed program that allocates memory, and let it run until it consumes all available memory.  Check caches, and swap. What happens?
+
+- How would you PREVENT someone from causing damage by running such a memory intensive program??:

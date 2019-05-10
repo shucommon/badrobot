@@ -1,0 +1,311 @@
+## Linux Architecture & Debugging
+
+Environment:
+Fedora 24
+4.5.5-300.fc24. x86 64
+
+Kernel:
+
+Manages:
+	- Files
+	- Processes
+		- Threads (scheduling)
+	- Memory(Virtual Memory)
+	- Devices
+		- character: stream of bytes
+			- example: printer, tty, pty
+		- block: a buffered access to an array of blocks (512 ,4096
+			
+		- USB drive
+	- interface(sockets)
+
+Kernel - can be found in /boot
+
+	Name: vmlinux-X.Y.Z(version)
+	Vmlinuz 
+
+	Kernel is a program directly from BIOS/EFI (or using a boot 
+
+	address space
+	0
+		KERNEL
+		(same in all processes)
+	0xffffffff8xx
+		UNUSED
+	Ox7fffffffffff
+	User. P1 128T	User P2 
+
+
+Every process has an address space of : 4GB(=32 bit) and 16 EB( 64 bit) 
+K M G T P E
+
+In 32 bit case we reserve 1GB out of the 4GB.
+In 64 bit case we use only 47 Bits = 2^7 T 
+
+In 32-bit: Top 1GB is kernel
+in 64-bit: Top 128TB is kernel (rest unused)
+
+- This proves more efficient (faster)
+	This approach is FAR less secure and FAR less stable (robust) than that of micro kernel, but in microkernel everything is isolated and requires message passing and major context switching (SLOW)
+And in this approach kernel pages are always. Mapped - so it's like a thread context switch (minor context switch ->faster)
+
+Monolithic - main drawback - problem - a crash in kernel space is a complete panic. Force a full system reboot.
+
+kernel now contains much more code of 
+
+
+cat /proc/$$/maps
+
+cat /proc/kallsyms
+    d data
+    t text
+    s symbol
+    a
+    A absolute address 
+    r readonly
+    0000	   -- cpu specificated
+    ffffffff8  -- kernel 
+    ffffffffa  -- module
+    ffffffffc  -- module
+
+SMP:
+HT Hyper threading
+    - optimal for two threads of same process either on ALU or using different Microarchitecture components
+    - kernel should be 3.2 or higher.
+MC Multi-core
+    - Two threas of same process but can basically do anyting, can also work for unrelated threads(of diff. Processes) assuming no L2 cache contention
+    - Is better for two threads or same process
+MP Multi-processes 
+    - Optimal for unrelated (diff processes) because otherwise you involve IPI(inter processor interrupts)
+
+/proc/cpuinfo
+    -> physical | wc -l:how many processors
+    -> core id | wc -l : how many cores
+        if you see same core twice with same physical -> HT 
+
+Linux exports two sets of system calls:
+    - POSIX: Portable operating system
+    Interface [X] - common to all UN*X systems
+
+    bits/syscall.h
+    objdump
+    objdump -d /lib/x86_64-linux-gnu/libc-2.23.so
+    objdump -dS /lib/x86_64-linux-gnu/libc-2.23.so
+
+Two calling conventions:
+    -ABI64: HOW WE CALL FUNCTIONS IN 64-BI ( USING REGISTERS -RDI,RSI,RDX,RCX,R8,R9)
+    -Syscall: how we call functions when they are in kernel mode.
+    Load sys call # into EAX.
+
+    - AX (16 bit) EAX: (32 bit) RAX: (16-bit)
+
+system_call
+
+When you call a system call you MOVE from user mode to kernel mode.
+Moving into kernel mode can only be done through a FIXED entry point - system_call
+ALL syscall instructins go to that address.
+The address is set by the kernel when it starts up
+
+Otherwise, Deref a pointer to kernel space will automatically get SEGV (kill -11) because you are not allowed to go to kernel 
+
+SYSCALL is a special instructino that is equivalent to:
+JMP <syscall_entry_point>
+Also changes user mode -> kernel mode
+(Architecture specific - on intel : EFLAGS)
+
+But there are a lot of NONVOLUNTARY kernel switches:
+    - Scheduling (threading -content switch)
+    - exception (cpu)
+    - trap (cpu)
+
+Scheduling : M threads N cpus for M >> N
+    simple case : M = 2 >> 1 = cpu
+
+Thread: A state of registers which is running on the CPU ==>REGISTER VALUES BELONG TO THE thread.
+
+- General purpose registers (variables)
+    AX, BX, CX, DX, R8-R9
+- Instruction pointer (IP)/Program Counter(pc)
+    - points to the next instruction in memory.
+- Stack Pointer(SP):Pointer to thread stack.
+- Base Pointer( BP):Pointer to stack frame.
+
+Process: CONTAINER of virtual memory ( memory mapping in a special register called CR3. all threads in same "process" share the value of CR3, which points to a shared PAGE TABLE.
+
+you cannot and do not run a process.
+you only run threads , and every process has a single   
+ps -ef 
+ps -Lef 
+
+PS, top, etc. all show thread groups (in ps you can see individual threads with -L)
+A thread group is called a PROCESS when it has a container in user mode.
+Otherwise, threads in kernel mode, are threads without a process.
+
+In order to perform SCHEDULING the kernel has to be able to take a thread out of the CPU and put another thread  into the CPU
+Take a thread out of CPU
+Save the register context somewhere ( kernel stack)
+put the thread into the CPU
+if both threads (in, and out) share the same CR3 -> good, simple operation, MINOR context.
+if both threads are from different CR3 ("process") then 
+-> NOT SO GOOD: expensive operation.
+- load CR3, invalidate cached pages.
+(TLB).
+
+- Cooperative multitasking: nice idea, good if threads cooperate - still used when threads do I/O. during I/O thread is 
+- Preemptive: Dont wait for cooperatin - kick out
+all modern cpus support interrupts.
+since interrupt will automatically jump to interrupt handler - on way back interrupt handler will trigger scheduler.
+
+Problem: interrupts are unpredictable
+solution: synthetic interrupt -> TIMER
+configurable - 100, 250, 300, 1000 times/sec HZ 
+
+Many timer interrupts will be "spurious"
+The value of the HZ you choose affects system responsiveness.
+
+1000 - 1 ms responsiveness
+100 - 10 ms responsiveness
+from cpu perspective:
+1ms = 1,000,000 ns (cycles) (assume 1g)
+The tradeoff is - 1ms - better response, more spurious
+10 ms - slower response, less interruptions.
+
+tickless
+
+Exercise: caches, memory i/o
+http://pastebin.com/HK57JVLt 
+
+RSS is the Resident Set Size and is used to show how much memory is allocated to that process and is in RAM. It does not include memory that is swapped out. It does include memory from shared libraries as long as the pages from those libraries are actually in memory. It does include all stack and heap memory.
+
+VSZ is the Virtual Memory Size. It includes all memory that the process can access, including memory that is swapped out and memory that is from shared libraries.
+
+lazzy memory allocation 
+cat /proc/meminfo
+Page cache if for files 
+Buffer cache if for block
+cd /proc/sys/vm & ls *dirty* - to see the panic info of system
+kswapd
+jbd2/sda1-8
+fsync - synchronize a file's in 
+fflush -> finally call fsync
+/proc/pid/ -> oom_score oom_adj
+memory_bomb
+ulimit -a
+ulimit -s	stack size
+swapon
+mkswap
+cat /proc/sys/vm/min_free_kbytes
+cat /proc/sys/vm/*dirty*
+cat /proc/sys/vm/oom_kill_allocating_task
+fsync sync
+
+Android
+adb
+adb shell
+ps | grep lmkd
+cat /data/local/tmp/procexp.armv7
+
+cd /sys/class/block
+cd sda1
+cd queue
+
+## Building your project
+
+- Understanding assembly:
+0000000000400526 <main>:
+  400526:       55                      push   %rbp
+  400527:       48 89 e5                mov    %rsp,%rbp
+-----------------------------------; prolog
+  40052a:       bf c4 05 40 00          mov    $0x4005c4,%edi
+  40052f:       e8 cc fe ff ff          callq  400400 <puts@plt>
+  400534:       90                      nop
+-----------------------------------; epilog
+  400535:       5d                      pop    %rbp
+  400536:       c3                      retq
+  400537:       66 0f 1f 84 00 00 00    nopw   0x0(%rax,%rax,1)
+  40053e:       00 00
+
+gdb 
+breakpoint c 
+
+void handler( int sig)
+{
+switch
+
+}
+signal (SIGUSR1, handler);
+signal (SIGUSR2, handler);
+
+strip
+
+alloca - allocate memeory in stack
+strcpy - bad to use.
+
+exercise: http://Technologeeks.com/temp/m.tgz
+http://pastebin.com
+
+## proc
+cd /proc/$$/ && ls -l cwd exe root
+cwd
+exe
+root
+maps
+smaps
+comm
+cmdline
+	cat -tv /proc/pid/cmdline
+	cut -d' ' -f1
+environ
+limits
+status
+stat - for mechine
+statm
+cd task && cat wchan
+fd
+fdinfo
+	flags = O_CLOEXEC | 0/1/2 -> O_RDONLY, O_WRONLY, and O_RDWR 
+	pos
+
+for i in *; do grep State $i/status; done;
+for i in *; do echo -n "$i:"; grep Name $i/status; done;
+
+prctl - change thread name
+
+open -> lseek(...)
+lsof
+netstat -pan
+
+## day3
+coredump
+
+strace -y -p pid
+strace -t -y -p pid
+strace -tt -y -p pid
+strace -ttt -y -p pid
+strace -i -T -tt -y -p pid
+strace -o /tem/out -v -f -i -T -tt -y -p pid
+strace -o /tem/out -v -ff -i -T -tt -y -p pid 
+strace -v -ff -i -T -tt -y -p pid 
+
+cat /proc/sys/kernel/threads-max
+perl -e ''
+!$ -> last command argument
+
+ltrace 
+ftrace
+gtrace
+/sys/kernel/debug/tracing
+
+code injection
+
+cc .c -o x.o -c -fPIC ; -c means compile but not link
+ld -shared .o_name -o l.so -ldl
+
+LD_PRELOAD=$PWD/l.so ls
+LD_PRELOAD=$PWD/l.so ldd ls
+
+mtrace - solve memory leak forever
+backtrace
+setenv("MALLOC_TRACE=/tmp/x" )
+-m2 
+addr2line
