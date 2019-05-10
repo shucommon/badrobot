@@ -1377,3 +1377,17 @@
     $ screen -r
     $ ctrl+a then ctrl+\ to terminate
     $ screen ls
+
+## uname
+    -s kernel name
+    -n computer name
+    -r kernel release
+    -v kernel version
+    -m machine name
+    -p processor type
+    -i hardware platform
+    -o operating system
+
+    cat /proc/version
+    cat /proc/cmdline
+    cat /boot/config-$(uname -r)
