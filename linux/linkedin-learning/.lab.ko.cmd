@@ -1,1 +1,0 @@
-cmd_/home/qianggu/project/linkedin/chap3/lab.ko := ld -r -m elf_x86_64 -z max-page-size=0x200000 -T ./scripts/module-common.lds --build-id  -o /home/qianggu/project/linkedin/chap3/lab.ko /home/qianggu/project/linkedin/chap3/lab.o /home/qianggu/project/linkedin/chap3/lab.mod.o ;  true
