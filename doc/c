@@ -1,0 +1,9 @@
+## cross compile:
+
+    i686-wrs501-linux-gnu-gcc -I../third-party/bin/linux/gdb.x86-xeon-wrl7/linux-windriver-3.14-r0/include.kernel_export --sysroot=/auto/andpkg/rep_cache//wr-x86/7.0rcpl8/sysroots/core2-64-wrsmllib32-linux pcimem.c
+    # sysroot
+    A sysroot is a directory which is considered to be the root directory for the purpose of locating headers and libraries.
+    So for example if your build toolchain wants to find /usr/include/foo.h but you are cross-compiling and the appropriate foo.h
+    is in /my/other/place/usr/include/foo.h, you would use /my/other/place as your sysroot.
+
+## compile & link steps
