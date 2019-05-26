@@ -1,0 +1,3 @@
+# compile opencv under macos
+cd /path/to/opencv/source/code
+g++ -ggdb `pkg-config --cflags --libs opencv` -stdlib=libc++ source_code.cpp -o target_name 

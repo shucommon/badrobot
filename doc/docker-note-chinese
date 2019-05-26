@@ -1,0 +1,100 @@
+first time install docker on mac
+need run "docker login" in shell to login hub.docker.com
+
+################# chapter 3 start ################################
+Chapter 3 images
+下面是镜像的常用操作子命令：
+
+images    显示镜像列表
+history   显示镜像构建历史
+commit    从容器创建新镜像
+build     从 Dockerfile 构建镜像
+tag       给镜像打 tag
+pull      从 registry 下载镜像
+push      将 镜像 上传到 registry
+rmi       删除 Docker host 中的镜像
+search    搜索 Docker Hub 中的镜像
+################# chapter 3 end ################################
+
+################# chapter 4 start ################################
+Chapter 4 container
+##two ways to enter a container
+$ docker attach long-ID
+ctl+p ctl+q to quit
+
+$docker exec -it <container> bash|sh
+
+docker logs -f short-ID
+-f is like 'tail -f', continue print latest messages
+
+##two ways to start a container
+$ docker -d # run services deamon
+'exec -it' can enter the container to debug issue
+
+docker run -it images
+	- run tool relaated container
+
+stop a container
+$ docker stop docker_name # send SIGTERM
+$ docker kill docker_name # send SIGKILL
+$ docker start docker_name # start a container which is stopped
+$ docker restart = docker stop + docker start
+$ docker run -d --restart=always image_name
+$ docker run -d --restart=on-failure:3  # restart when return != 0, max 3 times
+$ docker [un]pause docker_name
+$ docker rm short-ID	# delete container - images still on host
+$ docker rm -v $(docker ps -aq -f status=exited)  # delete all exited container
+$ docker rmi short-ID  # rm images
+$ docker run = docker create + docker start
+$ docker run -m | --memory 200M --memory-swap 300M  # memory max = 200M, swap max 100M
+$ docker run -it -m 200M --memory-swap=300M progrium/stress --vm 1 --vm-bytes 280M
+	--vm 1: start 1 memory worker thread
+	--vm-bytes 280M: each thread create max 280M memory
+$ docker run -it -c|--cpu-shares 1024 image_name --cpu cpu_amount_to_use
+$ docker run -it --blkio-weight 500 image_name	# default 500
+$ docker run -it --device-write-bps /dev/sda:30MB image_name
+	--device-write-bps : restrict the write to a specific device bps
+	--device-read-bps : restrict the read to a specific device bps
+	--device-write-iops : restrict the write to a specific device iops
+	--device-read-iops : restrict the read to a specific device iops
+		-bps : byte per second
+		-iops : io per second
+
+cgroup - control group to control resource
+namespace - resource isolate - Mount、UTS、IPC、PID、Network and User
+	mount - mount/umount file system
+	UTS - hostname, default = short-ID.  using -h|--hostname to set hostname
+	IPC - share memory / semaphore, inter process communicate
+	PID - ps axf. process ID
+	
+common command:
+	create      创建容器  
+	run         运行容器  
+	pause       暂停容器  
+	unpause     取消暂停继续运行容器  
+	stop        发送 SIGTERM 停止容器  
+	kill        发送 SIGKILL 快速停止容器  
+	start       启动容器  
+	restart     重启容器  
+	attach      attach 到容器启动进程的终端  
+	exec        在容器中启动新进程，通常使用 "-it" 参数  
+	logs        显示容器启动进程的控制台输出，用 "-f" 持续打印  
+	rm          从磁盘中删除容器
+#################### chapter 4 end #############################
+
+
+#################### chapter 5 end #############################
+docker network ls
+	NETWORK ID          NAME                DRIVER              SCOPE
+	913bfa2ef2c6        bridge              bridge              local
+	dd0ac8123af1        host                host                local
+	ad368919ea93        none                null                local
+
+$ docker run -it --network=host|bridge|none
+$ docker network inspect network_name
+$ brctl show
+docker user-defined network driver : bridge/overlay/macvlan
+create user-defined network:
+	$ docker network create --driver bridge my_net
+	$ docker network create --driver bridge --subnet 172.22.16.0/24 --gateway 172.22.16.1 my_net2
+
