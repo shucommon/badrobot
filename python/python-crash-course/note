@@ -434,3 +434,10 @@ python Zen  #python 之蝉
 		   to commit changes.
 		c. $ docker login docker.io
 		d. $ docker push <hub-user>/<repo-name>:<tag>
+
+
+## char to int and verse
+    >>> chr(97)
+    'a'
+    >>> ord('a')
+    97
