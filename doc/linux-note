@@ -1391,3 +1391,13 @@
     cat /proc/version
     cat /proc/cmdline
     cat /boot/config-$(uname -r)
+
+## runlevel
+    cat /var/run/utmp
+    who -r
+    runlevel
+
+    change runlevel
+        /sbin/telinit
+        /sbin/init
+        /var/initctl
