@@ -1,0 +1,78 @@
+EDC PHY AND PHYLESS SWITCH DESIGN DIFFERENCE
+( https://bm-switch.com/index.php/blog/edc-phy-and-phyless-switch-design-difference/ )
+Almost all modern bare metal switches are described as PHYless. What does it mean, what we need to consider?
+
+We commonly interconnect network devices for distances below 100 meters with twisted pair or maybe 300 meters over OM3 multimode fiber for 10GBASE-SR. We can extend the span between devices to 10Km for with 10GBASE-LR, 40Km for 10GBase-ER or even 80Km for 10GBase-ZR. However, the signal path doesn’t end at the transceiver. The electronic engineer designing the circuit board must ensure that the signal received by the transceiver is transmitted to the switch ASIC (and vice versa) while maintaining signal integrity and that it a major challenge. Each of the signals traveling along the copper paths has to deal with hazards like electromagnetic interference (EMI), coupling and crosstalk, signal reflections, impedance mismatches, skew, attenuation and a host of other threats as they travel.
+
+An SFP+ transceiver uses an electrical interface called SFI to communicate with the switching ASIC. Modern ASICs (such as Broadcom Trident and Intel Alta family) are capable of receiving and interpreting the SFI-signaled 10Gbps signal directly, such approach is called PHYless. However, if the copper path length is too long to keep signal quality at an acceptable level, we need to place PHY or SERDES, between the transceiver and the ASIC.
+
+These chips can perform some or all of the functions:
+    ( http://thenetworksherpa.com/hardware-signals-traces-and-circuit-boards/ )
+
+    Clock recovery and re-timing (common to all chips)
+
+    Full electronic dispersion compensation (EDC) – to deal with 10GBASE-LRM
+
+    Electrical interface conversion (e.g. SFI to XFI, or SFI to KR)
+
+    SERDES – Serial / Parallel conversion (e.g. single lane SFI to four-lane XAUI)
+
+    PHY-layer sub-functions like the Physical Coding Sublayer (PCS).
+
+XFI 和 SFI 接口系统设计
+作者：刘 亮   应用工程师
+( https://e2echina.ti.com/blogs_/b/signal_integrity_/archive/2015/08/27/xfi-sfi )
+
+XFI(Ziffy音)和SFI是两个常见的10Gbps高速串行接口，都是连接ASIC芯片和光模块的电气接口。在传统光通信，数据交换机和服务器等上都可以找到些接口。两者之间有什么相似的地方？区别在哪里？我设计的系统接口是否满足标准要求？本博客将一一尝试介绍。
+
+XFI和SFI的来源
+
+XFI来源于XFP光模块标准的一部分，指的是连接ASIC芯片和XFP光模块的电气接口。XFP光模块标准定义于2002年左右，其内部的收和发方向都带有CDR电路。因此XFP模块尺寸比较大，功耗也比较大，这个对于需要多端口高密度的系统，比如数通交换机会是一个问题。为了解决这两个问题，2006年左右，SFP+光模块标准出来了，其内部没有CDR电路，相对于XFP模块，SFP+模块尺寸和功耗都变小了。对应SFP+的电气接口叫做SFI。
+
+XFI接口先于SFI接口出现。电气特性上，由于SFP+模块内部没有CDR，可以预见SFI的电气特性要求会比XFI来的更严格一些，这个可以从接下来的介绍的眼图和抖动指标要求中可以清楚的看出来。
+标准以及参考点
+
+XFI接口的电气特性定义在INF-8077文档，SFI接口的电气特性定义在SFF8431文档。
+
+对于电气特性要求，这两个标准都定义了A，B，C和D四个参考点。
+
+A代表系统板上ASIC芯片高速信号输出，封装管脚的位置
+
+B代表系统板电信号输出的位置，即来自A点的信号经过PCB走线以后到达光模块的电输入的位置
+
+C代表系统板上接收来自光模块的电信号，信号输入的位置
+
+D 代表系统板上ASIC芯片的高速信号输入，封装管脚的位置。即C点的信号经过PCB走线以后到达ASIC的电输入位置
+                    D                              C' C
+                    <----------------------------------   RX       XFP Module
+                    <----------------------------------                 | 
+                                                                       --- light
+    ASIC/SerDes                                                        \ /
+                                                                        | 
+                                                             Driver
+                    ---------------------------------->  TX  --\        | 
+                    ---------------------------------->      --/       --- light
+                                                                       \ /
+                                                                        | 
+
+
+What the Heck is a TCAM
+( http://www.enterprisenetworkingplanet.com/netsysm/article.php/3527301/On-Your-Network-What-the-Heck-is-a-TCAM.htm )
+et's talk about TCAM hardware, Cisco SDM, and try to answer that elusive question: "why do I have to reboot my router to enable certain features, which in turn disables others?"
+First, CAM stands for Content Addressable Memory. A CAM is a special type of memory; some would say the opposite of RAM. With normal computer memory (RAM) the operating system provides an address, and receives the data stored at the supplied address. With a CAM, the operating system supplies the data, and the CAM returns a list of addresses where the data is stored, if it finds any. Furthermore, a CAM searches the entire memory in one operation, so it is considerably faster than RAM.
+CAMs are very expensive, so they aren't normally found in PCs. Even router vendors will sometimes skimp, opting to instead implement advanced software-based searching algorithms. Most commonly CAMs and TCAMs are found in network processing devices, including Intel IXP cards and various routers or switches.
+
+The most commonly implemented CAMs are called binary CAMs. They search only for ones and zeros; a simple operation. MAC address tables in switches commonly get stored inside binary CAMs. You can bet that any switch capable of forwarding Ethernet frames at line-speed gigabit is using CAMs for lookups. If they were using RAM, the operating system would have to remember the address where everything is stored. With CAMs, the operating system can find what it needs in a single operation. In this case it's the switchport that data should be sent out, based on the given MAC address, i.e. the essence of a MAC table. Some older Cisco switches running CatOS even opted to call this table the CAM table, thereby causing great confusion across the land.
+
+Finally, a TCAM is a Ternary CAM. This allows the operating system to match a third state, "X." The X state is a "mask," meaning its value can be anything. This lends itself well to networking, since netmasks (define) operate this way. To calculate a subnet address we mask the bits we don't care about, and then apply the logical AND operation to the rest. Routers can store their entire routing table in these TCAMs, allowing for very quick lookups.
+
+Hardware can sometimes seem to work like magic, but it isn't always transparent. When configuring routers most people will run into a situation where enabling a new feature will require that the Cisco SDM (Switching Database Manager) template be changed. This template is actually a method Cisco uses to assign specific application to specific TCAM resources.
+
+Some routers will allow you to manually specify how much TCAM space you want to allocate to a specific feature. Others aren't so nice. They make you choose from a few restrictive templates, which allocate the resources automatically based on a few predetermined settings. For example, on the Cisco 3750, we recently wanted to enable policy-based routing (PBR) to implement a layer 3 jail. The basic idea with template-only routers is that you have to choose where you want most of the optimizations, and compromise on the rest.
+
+For this platform, there are four templates: default, routing, PBR, and VLAN. Each of these tries to allow for a bit more resources allocated to the specified task. For policy routing, we'd have to choose "routing" or "PBR," which in turn limits the amount of unicast MAC addresses (define) that can be held in TCAMs. Likewise, selecting a VLAN (define) template will make PBR impossible, but allow for more VLAN database information to be held in TCAMs. There are always compromises when we need to use more advanced features. Keeping true to the spirit of router operating systems, there are also some mysterious side effects when a new template is chosen. On our specific router, if the PBR template is chosen, the router will become unable to support VPN routing/forwarding tables (VRF). The next unfortunate gotcha is that with the IOS version that supports IPv6, you cannot even enable PBR. There is no template to allow both policy routing and IPv6.
+
+Here are some more TCAM allocation examples. Just because, for instance, 8K is allocated to routing tables, this doesn't mean that you can only have a routing table of that size. There's always the fallback of process switching. Process switching means that everything will be done by the processor instead of in hardware (TCAMs). Processor intervention is not desirable, mostly because it is much slower than hardware lookups. Also, the processor is supposed to be used for things like sending logs to a syslog server and controlling SSH sessions. If a router doing process switching gets really busy, it may be unable to service your console access attempts.
+
+Hardware is finite, and we always need more. More expensive routers don't always suffer from the constant struggle for TCAMs because they have enough to support most features that currently exist. Unfortunately, most companies won't want to purchase the latest and greatest router with seemingly endless TCAMs unless they can justify the added cost by showing a need for them right now. So we're stuck having to adjust TCAM allocations.
+

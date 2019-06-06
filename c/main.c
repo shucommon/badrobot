@@ -61,5 +61,6 @@ int main(int argc, char**grgc)
     printf("sizeof(unsigned short) = %u\n", sizeof(unsigned short));
 
 	printf("test 1 >> 1 = %d\n", 1 >> 1);
+    printf("3.14 + 1e20 - 1e20 %f, 3.14 +(1e20 - 1e20) %f\n", 3.14+1e20-1e20, 3.14 + (1e20 - 1e20));
 	return 0;
 }
