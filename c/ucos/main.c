@@ -1,4 +1,5 @@
 #include "define.h"
+#include "mem.c"
 
 OS_MEM *OSMemFreeList;
 OS_MEM *pmem;

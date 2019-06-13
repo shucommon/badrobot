@@ -1,4 +1,4 @@
-#include "define.h"
+//#include "define.h"
 
 #define OS_MAX_MEM_PART 10
 
