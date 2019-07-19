@@ -36,5 +36,13 @@ int main(int argc, char* argv[])
 	printf("test.a = %d, ts.a = %d\n", test.a, ts.a);
 
 	print_width();
+
+    char *agv[2];
+    char aa[5] = "abcd";
+    char bb[5] = "123";
+    *agv = aa;
+    *(agv+1) = bb;
+    printf("test print  %s\n", agv[01]);
+
 	return 0;
 }

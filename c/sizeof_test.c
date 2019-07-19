@@ -131,5 +131,7 @@ int main(int argc, char* argv[])
 	int i = 0;
 	int j = sizeof(i++);
 	printf("%d %d\n", i, j);
+
+    printf("sizeof(short int) %u\n", sizeof(short int));
 	return 0;
 }
