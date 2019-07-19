@@ -150,6 +150,10 @@
             Launch vim and run :PluginInstall
             To install from command line: vim +PluginInstall +qall
 
+    # adjust window size
+    Ctrl+W_ will maximize a window vertically.
+    Ctrl+W| will maximize a window horizontally.
+    So far as I'm aware, there is no way to restore the previous layout after these actions, but Ctrl+W= will resize all windows to equal sizes.
 ## show hardware info
     lshw lspci lsdev lscpu lsusb lsblk
 ## cmd for hw control and cofigure

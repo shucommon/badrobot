@@ -1,4 +1,38 @@
-EDC PHY AND PHYLESS SWITCH DESIGN DIFFERENCE
+## SCSI/iSCSI/FC/SAS
+"SAN" is a term for a network used to provide (block) storage access. It can be anything.
+
+SCSI is a family of storage protocols that all share a common core but have more or less subtle differences (apart from the obvious, physical ones). Examples are Parallel SCSI (obsolete), SSA (obsolete), Fibre Channel, Firewire (obsolete), SAS, iSCSI.
+
+SAS and Fibre Channel are two different SCSI variants that each define they're own physical protocols and thus, infrastructure.
+
+iSCSI is another SCSI variant but instead of defining a physical implementation, it sits on top of TCP/IP which most often runs over Ethernet.
+
+Since all three are SCSI implementations, there are ways to make them compatible which each other (by multi-protocol bridging) or at least use them on the same physical infrastructure (e.g. FCoE). Bridging is costly however and most often you use just a single flavor or sometimes multiple in parallel.
+
+PS: Parallel SCSI (SPI) is ancient and long obsolete. It was the foundation for the modern variants though and logically, all things SCSI use the same command protocol.
+
+
+https://www.icc-usa.com/insights/sas-sata-and-iscsi-a-tutorial/
+
+Yesterday there was a great piece over at TechRepublic on the confusing intersection of SAS, SATA and iSCSI arrays. For anyone who has ever had a difficult time understanding and differentiating these technologies, this is a very valuable resource. Excerpts are cross-posted below.
+SATA and SAS are storage interface and bus types designed to aid in the movement of data from one place to another. Think of SAS and SATA as different kinds of computer interfaces, such as PCI Express, but there are actually multiple components that make up the overall SAS architecture.
+
+Initiators. The initiator is the SAS controller to which SAS expanders or targets can be connected.
+Expanders. Expanders sit between initiators and targets, but can also connect to other expanders, as you can see in Figure A. Expanders are sort of like network switches in that they can direct traffic and they provide the ability to scale the SAS architecture beyond single port limits.
+Targets. A target is either a SAS drive or a SATA disk. SATA disks can be connected to SAS expanders and initiators, but do not perform quite as well as SAS disks.
+Each drive has its own host interface (SAS or SATA) which are connected to an initiator or an expander. The initiator, functioning as the system controller, communicates with the SSD using the appropriate commands as dictated by the host interface (again, SAS or SATA.)
+
+In other words, the SSD functions no differently than a hard-disk in terms of how it the interfaces (SAS or SATA) work. It simply utilizes a different method of storing the data.
+
+Now… let’s introduce iSCSI
+It’s either hardware- or software-based and controls communications with the Ethernet-based storage array. By virtue of the fact that the system is using Ethernet for storage traffic, speeds of both 1 Gbps and 10 Gbps are supported. In an iSCSI storage network, SCSI commands originate on the host, at which point, they are encapsulated inside TCP/IP packets. These TCP/IP packets then traverse the Ethernet network just like any other network traffic. At the storage array side of the equation, these packets are received and the SCSI commands are extracted from the TCP/IP packet and passed on to the storage device for execution. Data that is transmitted back to the host undergoes this same encapsulation process.
+Basically, iSCSI adds some extra processor load because of the encapsulation process which takes time. We can think of iSCSI as a “storage transportation method.” In that sense, they resemble SATA and SAS in dealing with how the data is moved around (vs. SSD which deals with how the data is stored.) While this adds resource consumption, the author notes that it also provides a good method to decouple storage from the host, allowing for the share of storage among multiple hosts, as shown below:
+However, you might be wondering exactly how does iSCSI compare to SATA and SAS. The author begins to address this.
+iSCSI is the storage transport but, at present, there is no such thing as an “iSCSI disk.” iSCSI arrays use SAS and SATA disks (which can also be SSDs) for storage, but the data is transported to hosts using iSCSI.
+While SAS and SATA or networking interfaces, iSCSI is a networking protocol that can run across the infrastructure. In that sense, iSCSI is complementary, not contradictory, to SAS and SATA.
+
+
+## EDC PHY AND PHYLESS SWITCH DESIGN DIFFERENCE
 ( https://bm-switch.com/index.php/blog/edc-phy-and-phyless-switch-design-difference/ )
 Almost all modern bare metal switches are described as PHYless. What does it mean, what we need to consider?
 
@@ -56,9 +90,9 @@ D 代表系统板上ASIC芯片的高速信号输入，封装管脚的位置。�
                                                                         | 
 
 
-What the Heck is a TCAM
+## What the Heck is a TCAM
 ( http://www.enterprisenetworkingplanet.com/netsysm/article.php/3527301/On-Your-Network-What-the-Heck-is-a-TCAM.htm )
-et's talk about TCAM hardware, Cisco SDM, and try to answer that elusive question: "why do I have to reboot my router to enable certain features, which in turn disables others?"
+let's talk about TCAM hardware, Cisco SDM, and try to answer that elusive question: "why do I have to reboot my router to enable certain features, which in turn disables others?"
 First, CAM stands for Content Addressable Memory. A CAM is a special type of memory; some would say the opposite of RAM. With normal computer memory (RAM) the operating system provides an address, and receives the data stored at the supplied address. With a CAM, the operating system supplies the data, and the CAM returns a list of addresses where the data is stored, if it finds any. Furthermore, a CAM searches the entire memory in one operation, so it is considerably faster than RAM.
 CAMs are very expensive, so they aren't normally found in PCs. Even router vendors will sometimes skimp, opting to instead implement advanced software-based searching algorithms. Most commonly CAMs and TCAMs are found in network processing devices, including Intel IXP cards and various routers or switches.
 
