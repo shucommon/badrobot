@@ -1,0 +1,37 @@
+deamon
+    ret = fork()
+    if(ret > 0)
+        exit()  // deamon kill itself, make children pass to init
+
+
+kill -l
+    none maskable/changable signal
+        9 sigkill
+        19 sigstop
+    ctrl-z 19 stop
+    fg 18 sigcont
+    ctrl-c 2 sigint
+
+    deep sleeping process can't be killed
+
+ipcs - systemv
+
+top - single core base
+
+ptread_exit - exit itself
+ptread_cancel
+
+
+RMW read modify write
+
+helgrind
+    a thread error detector
+
+bootchart
+    refine boot time
+
+
+select
+epoll - better for select
+C10K problem
+event_init/set/add/dispatch
