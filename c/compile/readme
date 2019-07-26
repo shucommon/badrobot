@@ -1,0 +1,26 @@
+gcc will depend on sufix to determin it's c or cpp file 
+g++ will treat all file as cpp 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+ 
+#ifdef __cplusplus
+}
+#endif
+
+
+qianggu@ubuntu:~/project/c/compile$ gcc a.c
+qianggu@ubuntu:~/project/c/compile$ nm a.out | grep func
+0000000000001135 T func_a
+qianggu@ubuntu:~/project/c/compile$ gcc a.cpp 
+qianggu@ubuntu:~/project/c/compile$ nm a.out | grep func
+0000000000001135 T _Z6func_av
+
+qianggu@ubuntu:~/project/c/compile$ g++ a.c
+qianggu@ubuntu:~/project/c/compile$ nm a.out | grep func
+0000000000001135 T _Z6func_av
+qianggu@ubuntu:~/project/c/compile$ g++ a.cpp
+qianggu@ubuntu:~/project/c/compile$ nm a.out | grep func
+0000000000001135 T _Z6func_av
+
