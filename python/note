@@ -76,6 +76,27 @@ python Zen  #python 之蝉
         sorted(cars):  temperary change 
         # print(sorted(cars, revers=True))
 
+        >>> list=[1,2,3]
+        >>> list
+        [1, 2, 3]
+        >>> list * 3
+        [1, 2, 3, 1, 2, 3, 1, 2, 3]
+
+
+        >>> list
+        [1, 2, 3]
+        >>> list + [4, 5]
+        [1, 2, 3, 4, 5]
+
+        >>> list
+        [1, 2, 3]
+        >>> list.extend([4,5])
+        >>> list
+        [1, 2, 3, 4, 5]
+        >>> list.append([5,6])
+        >>> list
+        [1, 2, 3, 4, 5, [5, 6]]
+
     create list of numbers
         for value in range(1,6):     1-5
         numbers = list(range(1,6))  # [1, 2, 3, 4, 5]
@@ -99,6 +120,7 @@ python Zen  #python 之蝉
         lst1=[1,2,3]
         lst2=lst1           # same as c array, lst1,lst2 point to same array
         lst3=lst1[:]        # copy lst1 to lst3, get a different array
+        lst3=lst1.copy()    # copy lst1 to lst3, get a different array
 
     tuple : ()
         unchangable list is called tuple
