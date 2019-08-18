@@ -28,7 +28,7 @@ void print_heap_struct(int arr[], int len)
     }
 }
 
-void min_heap_fixup(int arr[], int len, int i_f)    // i_f means index father
+void min_heap_fixup(int arr[], int len, int i_f)    // i_f means father index
 {
     int l = 2 * i_f + 1;
     int r = l + 1;
@@ -46,7 +46,7 @@ void min_heap_fixup(int arr[], int len, int i_f)    // i_f means index father
         arr[i_f] = arr[min_i];
         arr[min_i] = tmp;
 
-        min_heap_fixup(arr, len, min_i); // go through until lead node
+        min_heap_fixup(arr, len, min_i); // go through until leaf node
     }
 }
 

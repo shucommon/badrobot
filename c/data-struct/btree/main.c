@@ -1,3 +1,11 @@
+/*
+         a
+      b     e
+       c      f
+      d      g
+           h   k
+*/
+
 #include "btree.h"
 
 int main()
