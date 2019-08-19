@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "common.h"
 
 void half_sort(int *arr, int len)
 {
@@ -26,19 +27,13 @@ void half_sort(int *arr, int len)
     }
 }
 
-void show(int *arr, int len)
-{
-    for(int i = 0; i < len; i++) {
-        printf("%d ", arr[i]);
-    }
-    printf("\n");
-}
-
 int main()
 {
-    int arr[] = {4, 2, 5, 9, 3, 2, 1, 8, 6, 7};
-    half_sort(arr, 10);
-    show(arr, 10);
+    int len = 25;
+    int *arr = get_random_arr(len);
+    show(arr, len);
+    half_sort(arr, len);
+    show(arr, len);
     
     return 0;
 }
