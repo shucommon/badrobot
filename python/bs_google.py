@@ -19,4 +19,4 @@ print soup.a
 for link in soup.find_all('a'):
     print link.get('href')
 '''
-print soup.get_text()
+print(soup.get_text())

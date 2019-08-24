@@ -222,6 +222,10 @@ python Zen  #python 之蝉
                                     field='physics')
         print(user_profile)
 
+##path
+    import sys
+    sys.path.append('absoule_path')
+
 ## module 
     import module_name
     from module_name import function_name
@@ -231,6 +235,22 @@ python Zen  #python 之蝉
         import module_name as mn
     import all function from a modules
         from module_name import *
+
+    useful module:
+        random
+            random.random()  [0:1)
+            random.randint(0,100)
+            random.choice(list(range(10)))  get one of the element in list
+            lst = list(range(10))
+            random.sample(lst, 5)   get 5 element of lst randomly
+            random.shuffle(lst)   re-arrange element in lst
+        numpy
+            ndarry
+            numpy.random.choice(['a', 'b', 'c'], size=(100,2))
+
+        time
+            time.ctime()  - 'Tue Aug 20 22:51:18 2019'  get present time
+            time.time()  - 1566312722.409827  get present time
 
 ## class
     example
