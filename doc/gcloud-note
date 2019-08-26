@@ -1,0 +1,15 @@
+install
+    https://cloud.google.com/deployment-manager/docs/step-by-step-guide/installation-and-setup
+    https://cloud.google.com/sdk/docs/quickstart-macos
+
+    gcloud auth list
+    gcloud config list
+    gcloud compute os-login describe-profile 
+
+
+# add public ssh key to gcloud
+    gcloud compute os-login ssh-keys add --key-file ~/.ssh/id_rsa.pub --ttl 0
+
+# transfer file
+gcloud compute scp [LOCAL_FILE_PATH] [INSTANCE_NAME]:~/
+
