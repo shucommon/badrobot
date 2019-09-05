@@ -13,3 +13,27 @@ install
 # transfer file
 gcloud compute scp [LOCAL_FILE_PATH] [INSTANCE_NAME]:~/
 
+
+
+
+
+storage - vision api
+
+request body
+
+{
+  "requests": [
+    {
+      "features": [
+        {
+          "type": "LABEL_DETECTION"
+        }
+      ],
+      "image": {
+        "source": {
+          "imageUri": "https://www.ctvsh.com/sites/default/files/styles/large/adaptive-image/public/golden-retriever-dog-breed-info.jpg?itok=KV7Ojj-C"
+        }
+      }
+    }
+  ]
+}

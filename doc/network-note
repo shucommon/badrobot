@@ -110,3 +110,115 @@ Here are some more TCAM allocation examples. Just because, for instance, 8K is a
 
 Hardware is finite, and we always need more. More expensive routers don't always suffer from the constant struggle for TCAMs because they have enough to support most features that currently exist. Unfortunately, most companies won't want to purchase the latest and greatest router with seemingly endless TCAMs unless they can justify the added cost by showing a need for them right now. So we're stuck having to adjust TCAM allocations.
 
+
+## 10G ETHERNET LAYER 1 OVERVIEW
+    https://www.fmad.io/blog-10g-ethernet-layer1-overview.html
+         |                                             PHY                          |
+    MAC  |                  PCS            |               PMA                      |         PMD/MDI
+    TX  ->  64b/66b encoder -> scramble    ->   10Ghz serializer                    ->  SFP+              <->  the cable
+    RX  <-  64b/66b decoder <-  descramble <-   clock recovery <- 10G deserialize   <-  transceiver  
+
+Lets start with the basic building blocks of a 10G ethernet system. The diagram above maps out the major components in english (not 802.3 clause 49 legalize).
+
+MAC Media Access Control. Usually this is considered the lowest of low level components, however this is today's starting point. Its connected to the PHY using XAUI or RXAUI protocol which is an 8b/10b encoded bit-stream and includes everything required to extract packets. Note the "extract packets" part as if your from a software background the idea of always sending data on every single cycle, regardless of idle or not, seems quite un-natural. We will get to that a bit later, for now consider the MAC`s interface a full line rate no gap stream of bits.
+
+PHY. Traditionally the PHY was a completely separate chip, e.g the classic NetLogic AEL2005 which handled all the nasty encoding/decoding serialization/deserialization at 10Ghz. This separation required a standardized protocol between the MAC & PHY thus the XAUI protocol was created. The PHY`s main job is to translate the XAUI data stream into a serial link which is connected to the SFP+ transceiver's. Now days the PHY is fully integrated and part of the ASIC or FPGA making the separation more logical than a real physical connector.
+
+PCS Physical Coding Sublayer. For 10GBaseR the PCS is fairly simple compared to 40G, 100G and some of the more exotic backplane protocols. Why simpler? the PCS for 40G/100GBaseR must handle alignment, distribution, lane skew, error correction and synchronization, all of which are not part of the 10GBaseR spec. Straight 10GBaseR PCS only requires 64b66b encode/decode and scramble/descramble logic. One of the great design decisions about 40G and 100G is, it utilizes the same basic 10G foundations, with fairly minor variations for the different protocols. This substantially reduces the technology risk and resources required to support 40G/100G as most of the ground work has already been done. In short, the primary purpose of the PCS is to translate the XAUI bitstream into a 64b/66b encoding and scramble the bits that are then sent to the PMA unit for serialization.
+
+PMA Physical Medium Attachment This unit converts the scrambled 64b/66b bitstream into a high speed 10.3125Ghz serial link or decodes the 10.3125Ghz serial link into an 64b/66b bitstream. On the receiver side it also performs clock recovery which we will go into detail in a different post. Typically most of the work is done by the hardmacro transceiver's on the chip, as FPGA`s and ASIC`s can not run a 10Ghz clock across the chip, but it can run very high clocks in very small areas of the chip, which is exactly what the hardware designers did.
+
+PMD/MDI Medium Dependant Interface At this point, its about what kind of SFP+ transceiver's is plugged in. This is where the rubber meets the road, as the 10Ghz serial stream of 1's and 0's is converted into electrical impulses in the case of Copper cabling, or converted into photons when fiber is used.
+
+For 10Gbit network capture devices, the MAC + PCS + PMA are combined into the same FPGA chip. All major fpga vendors support high speed on-chip transceiver`s, since the Xilinx Virtex6 and Altrea StratixV. Combinding the functionality enables reduction in latency, reduction in costs and an increase in flexibility. Also our own 10G, 40G and 100G capture systems implementing the entire MAC+PCS+PMA in a single fpga, without any PHY chip. We will dig into each of the above components in signficiant detail over the next few posts, stay tuned.
+
+    # explain from TI
+    https://e2e.ti.com/blogs_/b/analogwire/archive/2014/06/16/get-connected-serdes-interfaces
+                    max                          |          PHY          |
+    higher layers - mac(media access control)  <-MII->  PCS - PMA - PMD    <-MDI->  media
+    The physical coding sublayer or PCS allows the transfer of information to and from the MAC or other PCS clients like a repeater. The PCS performs frame delineation, encoding/de-coding such as 8b/10b or 64b/66b, fault information transport, deskew of received data, and data restoration.
+
+    The physical media attachment or PMA sublayer is responsible for local and remote loopback testing, PMA data framing, and test pattern generation (i.e. PRBS7 /CRPAT). The PMA layer is also where the rate per lane and the number of lanes is set. For example, some devices support multiple modes of operation and can be set up to run at 1x10Gbps, 2x5Gbps, or 4x2.5Gbps.
+
+    The physical media dependent or PMD sublayer is where the PHY interacts with the properties of the actual medium. The media can be a single or multimode optical fiber, CAT5 STP/UTP, backplane, or copper cable/wire. The PMD defines the details and standardizes the transmission and reception of the data stream on the medium.
+
+## MII,GMII, RGMII,SGMII,XAUI,SPI
+MII   - Media Independent Interface - 100 Mbps
+GMII  - Gigabit MII - 1 Gbps (24 pins) (8TX - 8RX)
+RGMII - Reduced GMII - 1 Gbps (12 pins) (4TX - 4RX)
+SGMII - Serial GMII - 1 Gbps (8 pins) (2TX - 2RX)
+XAUI  - XGMII Extender - 10 Gbps (XY pins) (8TX - 8RX)
+XLAUI - 40G
+SPI-4.2 - System Packet Interface Level 4, Phase 2 (16TX - 16RX)
+
+The Media Independent Interface (MII) is a standard interface used to connect a Fast Ethernet (i.e. 100Mb/s) MAC-block to a PHY. The MII may connect to an external transceiver device via a pluggable connector (see photo) or simply connect two chips on the same printed circuit board. Being media independent means that any of several different types of PHY devices can be used without redesigning or replacing the MAC hardware. The equivalents of MII for other speeds are AUI (for 10 megabit Ethernet), GMII (for gigabit Ethernet), and XAUI (for 10 gigabit Ethernet).
+
+Gigabit Media Independent Interface (GMII) is an interface between the Media Access Control (MAC) device and the physical layer (PHY). The interface defines speeds up to 1000 Mbit/s, implemented using an eight bit data interface clocked at 125 MHz, and is backwards compatible with the Media Independent Interface (MII) specification. It can also operate on fall-back speeds of 10/100 Mbit/s as per the MII specification.
+Data on the interface is framed using the IEEE Ethernet standard. As such it consists of a preamble, start of frame delimiter, Ethernet headers, protocol specific data and a cyclic redundancy check (CRC) checksum.
+The GMII interface is defined in IEEE Standard 802.3, 2000 Edition [1].
+
+Reduced Gigabit Media Independent Interface (RGMII) specifies a particular interface between an Ethernet MAC and PHY.
+RGMII uses half the number of pins as used in the GMII interface. This reduction is achieved by clocking data on both the rising and falling edges of the clock, and by eliminating non-essential signals (carrier-sense and collision-indication). Thus RGMII consists only of: RXC, RD[3:0], RX_CTL, TXC, TXD[3:0], and TX_CTL (12 pins, as opposed to GMII's 24).
+Unlike GMII, the transmit clock signal is always provided by the MAC on the TXC line, rather than being provided by the PHY for 10/100 Mbit/s operation and by the MAC at 1000 Mbs.
+RGMII supports Ethernet speeds of 10 Mbit/s, 100 Mb/s and 1000 Mbit/s.
+
+The Serial Gigabit Media Independent Interface (SGMII) is a sequel of MII, a standard interface used to connect an Ethernet MAC-block to a PHY. It is used for Gigabit Ethernet (contrary to Ethernet 10/100 for MII). It differs from GMII by its low-power and low pin count serial interface (commonly referred to as a SerDes). To carry frame data and link rate information between a 10/100/1000 PHY and an Ethernet MAC, SGMII uses a differential pair for data signals and for clocking signals, with both being present in each direction (i.e., transmit and receive), giving 8 signal lines in total.
+
+XAUI is a standard for extending the XGMII (10 Gigabit Media Independent Interface) between the MAC and PHY layer of 10 Gigabit Ethernet (10GbE). XAUI is pronounced "zowie", a concatenation of the Roman numeral X, meaning ten, and the initials of "Attachment Unit Interface".
+The XGMII Extender, which is composed of an XGXS at the MAC end, an XGXS at the PHY end and a XAUI between them, is to extend the operational distance of the XGMII and to reduce the number of interface signals. Applications include extending the physical separation possible between MAC and PHY components in a 10 Gigabit Ethernet system distributed across a circuit board.
+
+System Packet Interface-4 Phase 2 (SPI-4.2) is a protocol used for data transfer between link layer and physical layer. It is an interface for packet and cell transfer between a physical (PHY) layer device and a link layer device, for aggregate bandwidths of OC-192 ATM and Packet over SONET (POS), as well as for 10 Gb/s Ethernet applications. The SPI 4.2 protocol defines a 311 MHz (minimum) dual data rate (DDR) operation for a 16-bit data bus, effectively yielding a 10 Gb/s data rate. In order to achieve optimum performance, the architecture outlined below does not add any padding data/control packets between two consecutive back-to-back transfers. Also, in order to transfer data efficiently, the architecture incorporates an SPI Performance monitor which reflects the arbitration status and FIFO status measured over a period of time, which can be analyzed by the firmware. This feature helps the firmware to change the calendar sequence or arbitration logic of a specific port, thus achieving a significant improvement in SPI 4.2 channel utilization. Most of the blocks used in the IP are configurable and can also be re-used in protocol implementation of a similar kind.
+
+## PHY internal
+        MAC
+         |  GMII XGMII XLGMII CGMII
+   ---PLS / PCS <--------
+   |     | XSBI         |
+   |  FEC / RS-FEC     AUI
+   |     |              |
+  PHY   PMA     <--------          PHY
+   |     | XLAUI CAUI   |
+   |    PMA             |
+   |     | nPPI         |
+   |    PMD            MDI         PMD
+   -----AN              |           AN
+         ^              |           ^
+         |              |           |
+         |MDI          \ /     MDI  |
+         ----------> Medium <-------
+
+    PLS：PhysicalSublayer Signaling，对MAC给的信息进行传递，只在1Mb/s、10Mb/s的应用场景才出现；
+    PCS：Physical Coding Sublayer，对MAC给的信息进行编码，应用于≥100 Mb/s的应用场景，比如完成8B/10B、64B/66B、256B/257B编码；
+    FEC：Forward Error Correction，前向纠错，与10GBase-R、40GBase-R的PCS 搭配；
+    RS-FEC：Reed-Solomon前向纠错，比单纯的FEC纠错能力更强，与100GBase-R的PCS 搭配，采用256B/257B编码；
+    PMA：Physical Medium Attachment，
+    PMD：Physical Medium Dependent，
+    AN: Auto-Negotiation Function，自动协商，使背板两侧的Device能够互换信息以发挥出彼此最大的优势；
+
+
+## Ethernet Frame
+In computer networking, an Ethernet frame is a data link layer protocol data unit and uses the underlying Ethernet physical layer transport mechanisms. In other words, a data unit on an Ethernet link transports an Ethernet frame as its payload.[1]
+An Ethernet frame is preceded by a preamble and start frame delimiter (SFD), which are both part of the Ethernet packet at the physical layer. Each Ethernet frame starts with an Ethernet header, which contains destination and source MAC addresses as its first two fields. The middle section of the frame is payload data including any headers for other protocols (for example, Internet Protocol) carried in the frame. The frame ends with a frame check sequence (FCS), which is a 32-bit cyclic redundancy check used to detect any in-transit corruption of data.
+A data packet on the wire and the frame as its payload consist of binary data. Ethernet transmits data with the most-significant octet (byte) first; within each octet, however, the least-significant bit is transmitted first.[a]
+The internal structure of an Ethernet frame is specified in IEEE 802.3.[1] The table below shows the complete Ethernet packet and the frame inside, as transmitted, for the payload size up to the MTU of 1500 octets.[b] Some implementations of Gigabit Ethernet and other higher-speed variants of Ethernet support larger frames, known as jumbo frames.
+
+Layer	                       | Preamble	Start of frame delimiter  | MAC destination	MAC source	802.1Q tag (optional)	Ethertype (Ethernet II) or length (IEEE 802.3)	Payload	        Frame check sequence (32‑bit CRC) |  Interpacket gap  |
+                               | 7 octets	1 octet	                  | 6 octets	    6 octets	(4 octets)	            2 octets	                                    46‑1500 octets	4 octets	                      |  12 octets        |
+Layer 2 Ethernet frame		   |                                      |                                        ← 64–1522 octets →                                                                                             |	                  |
+Layer 1 Ethernet packet & IPG  |	                                                        ← 72–1530 octets →	                                                                                                              |   ← 12 octets →   |
+
+
+# Retimer /Redriver / Repeater
+    https://www.asteralabs.com/post/pci-express-retimers-vs-redrivers-an-eye-popping-difference
+
+    Repeater: An imprecise term for an extension device [2]. (This term causes confusion … please don’t use it!)
+    Redriver: A non-protocol-aware software-transparent extension device [2].
+    Retimer: A physical layer protocol-aware, software-transparent extension device that forms two separate electrical link segments [2].
+
+    A redriver is a mostly analog reach extension device designed to boost the high-frequency portions of a signal to counteract the frequency-dependent attenuation caused by the interconnect: the central processing unit (CPU) package, system board, connectors and so on. A redriver’s data path typically includes a continuous time linear equalizer (CTLE), a wideband gain stage and a linear driver. In addition, redrivers often have input loss-of-signal threshold and output receiver (Rx) detection capability. Figure 1 illustrates a typical redriver block diagram.
+
+    A retimer is a mixed signal analog/digital device that is protocol-aware and has the ability to fully recover the data, extract the embedded clock and retransmit a fresh copy of the data using a clean clock. In addition to the CTLE and wideband gain stages also found in a redriver, retimers contain a clock and data recovery (CDR) circuit, a decision feedback equalizer (DFE) and a transmit (Tx) finite impulse response (FIR) driver. Finite state machines (FSMs) and/or a microcontroller typically manage the automatic adaptation of the CTLE, wideband gain, DFE and FIR driver, and implement the PCIe link training and status state machine (LTSSM). Figure 2 illustrates a typical retimer block diagram.
+
+    In simple terms, a redriver amplifies a signal, whereas a retimer retransmits a fresh copy of the signal.
+
+
