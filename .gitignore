@@ -36,3 +36,5 @@ __pycache__
 *.sqlite3
 python/python-crash-course/webapp/learning_log/venv/
 python/python-crash-course/webapp/docker_make/
+
+*.DS_Store

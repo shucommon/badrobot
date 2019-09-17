@@ -221,4 +221,22 @@ Layer 1 Ethernet packet & IPG  |	                                               
 
     In simple terms, a redriver amplifies a signal, whereas a retimer retransmits a fresh copy of the signal.
 
+# EOBC
+a xxx is a composite system with supervisor(s) and linecards, with intelligence distributed over the linecards.
+For management and control purposes  a different path is built inside the xxx different from the switching fabric used to move user traffic. The idea is that control traffic has to use different paths then user traffic to build a stable reliable system avoiding control packets to compete for BW resources with user traffic.
+These management links are called out of band control, so EOBC should stand for ethernet out of band communication.
+Using these management links the supervisor polls the various linecards to understand if they are alive.
+Also through these ooB links the CEF table is copied to linecards hosting DFC submodules for distributed CEF.
+The OOB management uses IPv4 for communication and modules are assigned unique IP addresses within the 127.0.0.0/8 that is dedicated to internal communication in a  node (loopback).
+On the xxx there are show commands related to EOBC activity.
+Also communication between supervisors is a form of EOBC, the master supervisor takes control of the chassis and of the EOBC communication.
 
+# Linux network protocol stack
+net/socket.c
+    core_initcall(sock_init);	/* early initcall */
+
+net/ipv4/af_inet.c
+    fs_initcall(inet_init);
+
+net/core/dev.c
+    subsys_initcall(net_dev_init);

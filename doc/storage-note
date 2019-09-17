@@ -1,0 +1,146 @@
+1. flash memory
+    NOR flash memory is one of two types of nonvolatile storage technologies. NAND is the other.
+    Nonvolatile memory does not require power to retain data.
+    NOR and NAND use different logic gates -- the fundamental building block of digital circuits -- in each memory cell to map data. Both types of flash memory were invented by Toshiba, but commercial NOR flash memory was first introduced by Intel in 1988. NAND flash was introduced by Toshiba in 1989.
+
+    1.1 NOR flash vs. NAND flash
+    NOR flash is faster to read than NAND flash, but it's also more expensive, and it takes longer to erase and write new data. NAND has a higher storage capacity than NOR.
+    NAND devices are accessed serially, using the same eight pins to transmit control, addressing and data. NAND can write to a single memory address, doing so at eight bits -- one byte -- at a time.
+    In contrast, older, parallel NOR flash memory supports one-byte random access, which enables machine instructions to be retrieved and run directly from the chip, in the same way a traditional computer retrieves instructions directly from main memory. However, NOR has to write in larger chunks of data at a time than NAND. Parallel NOR flash has a static random access memory (SRAM) interface that includes enough address pins to map the entire chip, enabling access to every byte stored within it.
+
+    NOR flash is also more expensive to produce than NAND. That, and its random access function, mean NOR is mostly used for code execution, while NAND is mostly used for data storage.
+    NOR flash is most often used in mobile phones, scientific instruments and medical devices. NAND has found a market in devices to which large files are frequently uploaded and replaced, such as MP3 players, digital cameras and USB flash drives.
+    Some devices use both NAND and NOR flash. A smartphone or tablet, for instance, may use embedded NOR to boot up the operating system and a removable NAND card for all its other memory or storage requirements.
+
+    1.2 Major vendors and products
+    According to a June 2016 report by the research firm Technavio, the top five NOR flash memory vendors are Cypress Semiconductor Corp., GigaDevice Semiconductor, Macronix International Co. Ltd., Micron Technology Inc. and Winbond Electronics Corp.
+    Among those, Cypress Semiconductor also supplies embedded system components that use NOR flash memory for industries like automotive and the internet of things. In comparison, Micron Technologies is mainly known as a supplier of flash chips -- both NOR and NAND -- as well as DRAM, to component manufacturers.
+
+    1.3 The future of NOR flash
+    While NOR flash memory has traditionally been based on a parallel interface, the latest innovation is SPI NOR flash, which uses a serial peripheral interface (SPI) bus. The bus communicates data synchronously like a parallel interface, but is configured as a serial connection. It uses a clock signal to keep the incoming and outgoing data streams in sync.
+    SPI NOR flash, also called serial NOR flash, has become the standard because it is a much smaller form factor with fewer connector pins, but it retains the same memory density and speed as parallel NOR flash memory.
+
+
+2. SAN / NAS
+    2.1
+    A storage area network (SAN) is a dedicated, high-speed network that provides access to block-level storage. SANs were adopted to improve application availability and performance by segregating storage traffic from the rest of the LAN. 
+    SANs enable enterprises to more easily allocate and manage storage resources, achieving better efficiency. “Instead of having isolated storage capacities across different servers, you can share a pool of capacity across a bunch of different workloads and carve it up as you need. It’s easier to protect, it’s easier to manage,” says Scott Sinclair, senior analyst with Enterprise Strategy Group.
+    A SAN consists of interconnected hosts, switches and storage devices. The components can be connected using a variety of protocols. Fibre Channel is the original transport protocol of choice. Another option is Fibre Channel over Ethernet (FCoE), which lets organizations move Fibre Channel traffic across existing high-speed Ethernet, converging storage and IP protocols onto a single infrastructure. Other options include Internet Small Computing System Interface (iSCSI), commonly used in small and midsize organizations, and InfiniBand, commonly used in high-performance computing environments.
+    Vendors offer entry-level and midrange SAN switches for rack settings, as well as high-end enterprise SAN directors for environments that require greater capacity and performance. Example vendors that offer enterprise SAN products include Dell EMC, Hewlett-Packard Enterprise, IBM and Pure Storage.
+    “A SAN consists of two tiers: The first tier — the storage-plumbing tier — provides connectivity between nodes in a network and transports device-oriented commands and status. At least one storage node must be connected to this network. The second tier — the software tier — uses software to provide value-added services that operate over the first tier,” says research firm Gartner in its definition of SAN.
+
+    SAN and network-attached storage (NAS) are both network-based storage solutions. A SAN typically uses Fibre Channel connectivity, while NAS typically ties into to the network through a standard Ethernet connection. A SAN stores data at the block level, while NAS accesses data as files. To a client OS, a SAN typically appears as a disk and exists as its own separate network of storage devices, while NAS appears as a file server.
+    SAN is associated with structured workloads such as databases, while NAS is generally associated with unstructured data such as video and medical images. “Most organizations have both NAS and SAN deployed in some capacity, and often the decision is based on the workload or application,” Sinclair says.
+
+    2.2 unified storage
+    Unified storage – also known as multiprotocol storage – grew out of the desire to stop procuring SAN and NAS as two separate storage platforms and to combine unified block and file storage in one system. With unified storage, a single system can support Fibre Channel and iSCSI block storage as well as file protocols such as NFS and SMB. NetApp is generally credited with the development of unified storage, though many vendors offer multiprotocol options.
+    Storage vendors continue to add features to improve scalability, manageability and efficiency. On the performance front, flash storage is having an impact on enterprise SANs. Vendors offer hybrid arrays that combine spinning disks with flash drives, as well as all-flash SANs.
+
+
+3. Storage Networking Basics: Understanding the Fibre Channel Protocol
+    Understanding the guts of the Fibre Channel (FC) protocol itself, including the naming format and addressing scheme, allows one to better understand what's happening on a SAN. Quickly glancing at a problem and knowing what's wrong requires thorough knowledge of all the protocols involved. While it's possible to operate a SAN with only point-and-click GUIs and limited knowledge, it certainly isn't recommended. So let's learn about the FC protocol.
+    To reiterate: Fibre Channel is not a replacement for SCSI; SCSI generally rides on top of Fibre Channel. Now that we have that out of the way, let us get to work. FC generally refers to the FC-PHY layers: FC0-FC2, which were briefly discussed in our last installment. The term FCP, Fibre Channel Protocol, refers to the interface protocol for SCSI, or the FC-4 mapping. We're talking about the inner-workings of FC here, not FCP.
+    FC data units are called Frames. FC is mostly a layer 2 protocol, even though it has its own layers. The maximum size for an FC frame is 2148 bytes, and the header FC frame itself is a bit strange, at least when compared to Ethernet with IP and TCP. FC uses one frame format for many purposes, and at many layers. The function of the frame determines the format, which is strange and wonderful, compared to our notions in the IP world.
+    FC frames begin with a start-of-frame (SOF) marker followed by frame the header, which will be described in a moment. The data, or FC content, comes next, followed by an EOF. The reason for the encapsulation is so that FC can be carried over other protocols, such as TCP if desired.
+    The FC frame itself, the general format that is, varies in size quite a bit. In Figure 1 you can see the SOF and EOF markers we mentioned before. The strange part about FC headers is that they are word-oriented, and an FC word is 4 bytes. Up to 537 words are allowed, which gives us our 2148-byte capacity.
+
+    The components of the header, with all the optional items listed, are:
+        SOF (1 word): The start of a frame.
+        Frame Header (24 bytes): The header that specifies what protocol is being used, as well as the source and destination address. Varies depending on the protocol in question.
+        Optional ESP Header (8 bytes): Provides encryption; includes the SPI and ESP sequence number.
+        Optional Network Header (16 bytes): So that you can connect an FC-SAN to non-FC networks.
+        Optional Association Header (32 bytes): Not used by FCP, but can be used to identify processes within a node.
+        Optional Device Header (up to 64 bytes): Not used by FCP, and is application specific.
+        Payload: The data, up to 2048 bytes.
+        Optional Fill Bytes (variable): Used to ensure the variable-length payload ends on a word boundary.
+        Optional ESP Trailer (variable): Contains check values for ESP.
+        CRC (4 bytes): A CRC of the header and FC data fields.
+        End of Frame (4 bytes): Ends the frame, and says whether or not it's the last in a sequence.
+
+    The FC frame format includes FC-specific information, including the source and destination, among others. Hopefully it clear now why FC is so flexible, which also explains why there's so darn many FC-blah protocols available to give you a headache.
+        The actual FC Header, depicted in Figure 2 includes the following fields:
+        Routing Control (1 byte): The routing portion says if this is a data frame or a link-control frame (either an ACK or a Link_Response), and the information portion indicates the type of data.
+        Destination ID (3 bytes): The FC address of the destination.
+        Class Specific Control/Priority (1 byte): Essentially, Quality of Service.
+        Source ID (3 bytes): The FC address of the originating node.
+        Type (1 byte): Indicates the next protocol (what's in the Payload), unless R_CTL indicates a control frame.
+        Frame Control (3 bytes): Various crazy FC options, such as sequencing information and what to do in case of a problem.
+        Sequence ID (1 byte): A sequence number, just like IP.
+        Data Field Control (1 byte): Indicates the presence of optional headers, and the size.
+        Sequence Count (2 bytes): The number of frames that have been transmitted in a sequence.
+        Originator Exchange ID (2 bytes): Assigned by the initiator, used to group related sequences.
+        Responder Exchange ID (2 bytes): Same as the OX_ID, but assigned by a target node.
+        Parameter (4 bytes): Mostly used as a "relative offset" in sequences, much like IP's offset.
+
+    Yes, it is confusing, and there's a lot of new terminology, compared to the IP world. We'll continue to refer back to these headers in future Storage Basics articles, so hopefully the fields and their purposes will become second nature after some real-world examples.
+    The next important concept to grasp is the way FC assigns names. Notice that the D_ID and S_ID fields in the FC Frame Header only allow for 24 bits. Each HBA is assigned a WWN, and each port on it is assigned a Port WWN, or PWWN. These WWNs are 64-bits in length, which are larger than the 24 bits in FC. The ANSI T11 Address Identifier Format says that the FCID is made up of three parts, which are the Domain_ID, the Area_ID, and the Port_ID.
+    FC networks are broken up into hierarchies, dynamically. The Domain_ID is assigned to each switch when a fabric comes online using a Domain_ID distribution process. Normally the Domain_ID is administratively configured. The Domain_ID, along with the Area_ID, a second hierarchical level, are combined with a Port_ID (assigned by the switch) to identify each FC node in a fabric. So the WWN doesn't really mean anything as far as SAN routing goes.
+    Domain_IDs are distributed by a Principal Switch, which ensures that everyone has the correct information. In short, an FCID will be completely random the first time a node connects, which is generally fine, unless an administrator manually configures it. Some Domain_IDs are reserved for multicast and other purposes, but the details are a bit outside our scope here. Refer to the ANSI T11 FC-SW-3 specification for more details.
+
+4. SCSI - Small Computer System Interface
+    4.1 SCSI Versions
+
+        The Small Computer System Interface (SCSI) is a set of parallel interface standards developed by the American National Standards Institute (ANSI) for attaching printers, disk drives, scanners and other peripherals to computers. SCSI (pronounced "skuzzy") is supported by all major operating systems.
+        The first version (SCSI-1), adopted by ANSI in 1986, was an 8-bit version with a 5 MBps transfer speed that allowed up to eight devices to be connected with a maximum cable length of six meters. The latest version, 16-bit Ultra-640 (Fast-320) SCSI, was introduced in 2003 and has a 640 MBps transfer speed, connecting up to 16 devices with a 12 meter cable length. Other versions include:
+        SCSI-2: 8-bit bus, six meter cable length, 5-10 MBps; connects 8 or 16 devices. 50-pin connector.
+        Wide SCSI-2: Received its name from the wider 168 line cable with 68-pin connectors to accommodate the 16-bit bus. 3 meter cable; 20 MBps transfer rate; connected 16 devices.
+        Fast SCSI-2: 8-bit bus, but double the clock speed of SCSI-2 allowing transfers of 10-20 MBps. 3 meter cable; connects 8 devices.
+        Fast Wide SCSI-2: 6-bit bus; 3 meter cable; 20 MBps; 16 devices.
+        Ultra SCSI-3: 8-bit and 16-bit versions, both with 1.5 meter cable length. The 8-bit version supports data rates of 20 MBps and connects 8 devices. The 16-bit version doubled the transfer rate and number of devices.
+        Ultra-2 SCSI: 8-bit bus; 12 meters; 40 MBps; 8 devices.
+        Wide Ultra-2 SCSI: 16-bit bus; 12 meters; 80 MBps; 16 devices.
+
+        Traditional SCSI has been superseded by later attachment protocols such as Serial Attached SCSI (SAS) and iSCSI, which build on the earlier SCSI command structure.
+
+    4.2 SCSI History and Uses 
+        SCSI grew out of the Shugart Associates System Interface (SASI), developed by a team led by Larry Boucher at floppy disk drive manufacturer Shugart Associates. Boucher later went on to found host bus adapter manufacturer Adaptec.
+
+        Since SCSI uses a low-voltage differential (LVD) bus, a method where data is transmitted by comparing the difference in voltage between a pair of wires, its speed and cable lengths are limited. As a result, SCSI is now largely implemented via serial communications like Serial Attached SCSI (SAS), which offers significantly higher performance. Other types of peripheral connections include the following:
+
+        Universal Serial Bus (USB)
+        Serial Attached SCSI (SAS)
+        Internet Small computer System Interface (iSCSI)
+        USB Attached SCSI (UAS)
+        Ethernet
+        Fibre Channel (FC)
+        Fibre Channel over IP (FC/IP)
+        Fibre Channel over Ethernet (FCoE)
+        Advanced Technology Attachment (ATA)
+        Serial ATA (SATA)
+        eSATA
+
+    4.3 SCSI implementation
+        SCSI required the use of an adapter card, unlike ATA, where the adapter is built into the device. SCSI is also the foundation of SAS and iSCSI, two common uses of SCSI technology in enterprise storage environments.
+
+    4.4 Common SCSI components
+        There are several components used in SCSI storage systems:
+
+        Initiator. An initiator issues requests for service by the SCSI device and receives responses. Initiators come in a variety of forms and may be integrated into a server’s system board or exist within a host bus adapter. ISCSI connectivity typically uses a software-based initiator.
+        Target. A SCSI target is typically a physical storage device (although software-based SCSI targets also exist). The target can be a hard disk or an entire storage array. It is also possible for non-storage hardware to function as a SCSI target. Although rare today, it was once common for optical scanners to be attached to computers through the SCSI bus and to act as SCSI targets.
+        Service delivery subsystem. The mechanism that allows communication to occur between the initiator and the target; it usually takes the form of cabling.
+        Expander. Only used with serial-attached SCSI (SAS); allows multiple SAS devices to share a single initiator port.
+
+    4.5 Serial-attached SCSI
+        SAS products are compatible with devices that employ earlier SCSI technologies. The Serial Storage Architecture (SSA) standard can be used when SCSI performance is not adequate, as can iSCSI, which preserves the SCSI command set by embedding SCSI-3 (most SCSI-3 specifications start with the designation Ultra) over TCP/IP.
+
+        SAS has become a popular alternative to parallel SCSI in enterprise environments. Both serial and parallel SCSI are based on the SCSI command set. SAS offers the following distinct advantages over parallel SCSI:
+
+        It supports up to 65,535 devices (through the use of expanders). The latest parallel SCSI standards allow for only 16 devices.
+        it eliminates issues with termination and clock skew.
+        It is a point-to-point technology. This means SAS is not subject to the resource contention issues that are so common with parallel SCSI.
+
+    4.6 SAS vs. SATA
+        Like SAS, SATA is a serial bus that replaces the aging parallel ATA (PATA) standard. The SATA-3 standard is rated at 6 gigabits per second (Gbps)/600 MBps, which is slightly slower than the Ultra640 SCSI standard. Similarly, SATA-2 has a transfer speed of 3 Gbps/300 MBps, which is just below that of Ultra320 SCSI.
+
+        SAS is backward-compatible with SATA-2 and above. A SATA-2 drive can be connected to a SAS backplane. This is possible because both SAS and SATA drives use the SCSI command set. Conversely, SAS drives cannot be connected to a SATA controller.
+
+
+    4.7 SCSI controller
+        A SCSI controller, also called a host bus adapter (HBA), is a card or chip that allows a Small Computer System Interface (SCSI) storage device to communicate with the operating system across a SCSI bus.
+        The actual implementation of a SCSI controller varies by manufacturer. SCSI controllers can reside in a hard drive's PCI slot or can be a chip built into the motherboard. When an end user sends a request, the operating system sends the SCSI command to the controller, which then sends it to the storage device. Like all components on a SCSI bus, a SCSI controller is given a unique identifier.
+
+    4.8 SCSI command
+        In SCSI computer storage, computers and storage devices use a client-server model of communication. The computer is a client which requests the storage device to perform a service, e.g., to read or write data. The SCSI command architecture was originally defined for parallel SCSI buses but has been carried forward with minimal change for use with Fibre Channel, iSCSI, Serial Attached SCSI, and other transport layers.
+    In the SCSI protocol, the initiator sends a SCSI command information unit to the target device. Data information units may then be transferred between the computer and device. Finally, the device sends a response information unit to the computer.
+    SCSI commands are sent in a command descriptor block (CDB), which consists of a one byte operation code (opcode) followed by five or more bytes containing command-specific parameters. Upon receiving and processing the CDB the device will return a status code byte and other information.
+

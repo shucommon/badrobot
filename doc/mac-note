@@ -26,3 +26,45 @@
 
         kextutil -n /Library/Extensions/SiLabsUSBDriver.kext
             - Will tell you if the driver installed correctly, is loadable, and is signed.
+
+
+4. iterm2
+    https://iterm2.com/
+    $ cmd-f + tab/shift-tab   -- find
+    $ cmd-d / cmd-shift-d | cmd-opt-arrow / cmd [/]  |  cmd-shift-enter  -- divide panel
+    $ cmd ;         -- autocomplete
+    $ cmd-shift-H   -- paster history
+    $ cmd-opt-B     -- instant replay
+    $ cmd-enter     -- full screen
+    $ cmd-opt-E     -- all your tabs will be shown at once
+    $ cmd-click     -- smart selection
+    $ cmd-z         -- Undo Close, you get five seconds (by default; configurable in Preferences > Profiles > Session)
+
+    Text Selection
+        There are several ways to select text to copy to the clipboard:
+        You can use the mouse.
+        You can use the find feature's "mouseless copy" feature.
+        To select text without using the mouse, press cmd-f to open the find field. Enter the beginning of the text you wish to copy and the find feature will select it in your window. Then press tab and the end of the selection will advance by a word. To move the beginning of the selection to the left, press shift-tab. At most one line of text can be selected this way.
+        You can use Copy Mode.
+        You can bind keystrokes to create and adjust selections.
+        In Prefs > Profiles > Keys you can assign keys to move the beginning or end of the selection by a single character, word, or line. No such keys are bound by default.
+
+    iTerm2 allows you to divide a tab into many rectangular "panes", each of which is a different terminal session. The shortcuts 
+        cmd-d and cmd-shift-d divide an existing session vertically or horizontally, respectively. You can navigate among split panes with 
+        cmd-opt-arrow or cmd-[ and cmd-]. You can "maximize" the current pane--hiding all others in that tab--with 
+        cmd-shift-enter. Pressing the shortcut again restores the hidden panes.
+    Regular Expression Search
+        When you open the find field (cmd-f) there is a down-arrow on the left of the field by the magnifying glass. Clicking it opens a menu of options in which you can enable regular expression search. The ICU syntax is used.
+
+    Autocomplete
+        Any text that exists in a tab or its scrollback buffer can be autocompleted in that tab. To use autocomplete, type the beginning of a word and then press cmd-;. An autocomplete window opens showing the top 20 choices for words beginning what you have entered. The list can be filtered by typing a subsequence. The filter can be reset by pressing backspace. If you make a selection and press return, it will be entered for you. If you make a selection and press tab, your autocomplete will be extended with the selection.
+
+    Paste History
+        Whenever text is copied or pasted in iTerm2 it is added to the paste history. You can access paste history with cmd-shift-H. It can be filtered by typing a subsequence, and the filter can be cleared by pressing backspace. You can choose to have your paste history saved to disk by turning that option on under Preferences > General > Save copy/paste history to disk.
+
+    Instant Replay
+        Sometimes interactive programs will overwrite something of interest on the screen (for example, top(1) does this all the time). Normally, this would be lost forever. With Instant Replay, you can step back in time to see exactly what was on your screen at some point in the recent past. To enable, press cmd-opt-B. Once you are in instant replay mode, you can use the left and right arrow keys to navigate back and forward through time. Esc exits instant replay mode. By default, each session uses up to 4MB to save its instant replay history, and this can be adjusted under Preferences > General > Instant Replay uses __ MB per session.
+        Another benefit of Instant Replay is that it shows you the exact time that something appeared on your screen down to the second. This is useful when trying to figure out when an error occurred, for example.
+
+    Full Screen
+        You can press cmd-enter and iTerm2 will take up the entire screen. If you had a transparent background configured, it will be turned off upon entering full screen mode to reduce distractions. You can re-enable it with cmd-U. Unlike most macOS apps, iTerm2 can open a fullscreen window in the same desktop with no annoying animation if you disable Preferences > General > Native full screen windows.

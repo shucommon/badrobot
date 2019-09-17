@@ -210,6 +210,16 @@
     b. Makefile : obj-m := a.o
     c. make -C /lib/modules/$(uname -r)/build M=$PWD modules
 
+    makefile:
+
+        obj-m := hello.o
+
+        all:
+            make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+
+        clean:
+            make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+
 ## kernel source
     lsb_release -a to get codename
     git clone git://kernel.ubuntu.com/ubuntu/ubuntu-bionic.git
