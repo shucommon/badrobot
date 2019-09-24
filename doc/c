@@ -55,3 +55,70 @@ One can also add the function pointers to a completely different self-invented s
 I'd prefer __attribute__((constructor))/((destructor)) where possible, it's a simple and elegant solution even it feels like cheating. For bare-metal coders like myself, this is just not always an option.
 
 Some good reference in the book Linkers & loaders.
+
+# Shift Operations in C
+    Logical. A logical right shift fills the left end with k zeros, giving a result [0, . . . , 0, xw−1, xw−2, . . . xk].
+    Arithmetic. An arithmetic right shift fills the left end with k repetitions of the most significant bit, giving a result [xw−1, . . . , xw−1, xw−1, xw−2, . . . xk]. This convention might seem peculiar, but as we will see, it is useful for operating on signed integer data.
+    The C standards do not precisely define which type of right shift should be used with signed numbers—either arithmetic or logical shifts may be used. This unfortunately means that any code assuming one form or the other will potentially encounter portability problems. In practice, however, almost all compiler/machine combinations use arithmetic right shifts for signed data, and many programmers assume this to be the case. For unsigned data, on the other hand, right shifts must be logical.
+    In contrast to C, Java has a precise definition of how right shifts should be performed. The expression x >> k shifts x arithmetically by k positions, while x >>> k shifts it logically.
+
+# sizeof vs sizeof()
+    "When sizeof's operand is a type, it has to be enclosed in parentheses. But when sizeof's operand is a variable, this is not required."
+    --Expert C Programming: Deep C secrets. And from c11 standard:
+        sizeof unary-expression
+        sizeof ( type-name )
+
+# NULL
+    from stdio.h
+    #define NULL 0
+
+# file io
+    c lib
+        FILE *fp;
+        FILE *fopen(char *name, char *mode);
+        fp = fopen(name, mode); //read ("r"), write ("w"), and append ("a")
+        int getc(FILE *fp)  //getc returns the next character from a file
+        int putc(int c, FILE *fp)   //putc writes the character c to the file fp and returns the character written, or EOF if an error occurs.
+        int fscanf(FILE *fp, char *format, ...)
+        int fprintf(FILE *fp, char *format, ...)
+        int fclose(FILE *fp)
+        int feof(FILE *fp)      //it returns non-zero if end of file has occurred on the specified file.
+        int ferror(FILE *fp)    //The function ferror returns non-zero if an error occurred on the stream fp.
+        char *fgets(char *line, int maxline, FILE *fp)  // fgets reads the next input line (including the newline) from file fp into the character array line; at most maxline−1 characters will be read
+        int fputs(char *line, FILE *fp) // For output, the function fputs writes a string (which need not contain a newline) to a file
+
+# string operations
+    strcat(s,t)	concatenate t to end of s
+    strncat(s,t,n)	concatenate n characters of t to end of s
+    strcmp(s,t)	return negative, zero, or positive for
+    s < t, s == t, or s > t
+    strncmp(s,t,n)	same as strcmp but only in first n characters
+    strcpy(s,t)	copy t to s
+    strncpy(s,t,n)	copy at most n characters of t to s
+    strlen(s)	return length of s
+    strchr(s,c)	return pointer to first c in s, or NULL if not present
+    strrchr(s,c)	return pointer to last c in s, or NULL if not present
+
+# Character Class Testing and Conversion
+    isalpha(c)	non-zero if c is alphabetic, 0 if not
+    isupper(c)	non-zero if c is upper case, 0 if not
+    islower(c)	non-zero if c is lower case, 0 if not
+    isdigit(c)	non-zero if c is digit, 0 if not
+    isalnum(c)	non-zero if isalpha(c) or isdigit(c), 0 if not
+    isspace(c)	non-zero if c is blank, tab, newline, return, formfeed, vertical tab
+    toupper(c)	return c converted to upper case
+    tolower(c)	return c converted to lower case
+
+# Mathematical Functions
+    sin(x)	sine of x, x in radians
+    cos(x)	cosine of x, x in radians
+    atan2(y,x)	arctangent of y/x, in radians
+    exp(x)	exponential function ex
+    log(x)	natural (base e) logarithm of x (x > 0)
+    log10(x)	common (base 10) logarithm of x (x > 0)
+    pow(x,y)	xy
+    sqrt(x)	square root of x (x ≥ 0)
+    fabs(x)	absolute value of x
+
+# compile
+    __attribute__((__packed__))

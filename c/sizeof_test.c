@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
@@ -133,5 +134,6 @@ int main(int argc, char* argv[])
 	printf("%d %d\n", i, j);
 
     printf("sizeof(short int) %u\n", sizeof(short int));
+    printf("sizeof(bool in c) %d\n", sizeof(bool));
 	return 0;
 }
