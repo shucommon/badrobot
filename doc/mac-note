@@ -39,6 +39,9 @@
     $ cmd-opt-E     -- all your tabs will be shown at once
     $ cmd-click     -- smart selection
     $ cmd-z         -- Undo Close, you get five seconds (by default; configurable in Preferences > Profiles > Session)
+    $ cmd-shift-c   -- enter select mode
+    $ space +vim    -- select
+    $ cmd+c/v
 
     Text Selection
         There are several ways to select text to copy to the clipboard:
