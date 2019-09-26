@@ -1445,3 +1445,79 @@
     So when somebody asks you "What is the difference between UTF-8 and Unicode?", you can now confidently answer short and precise:
 
 UTF-8 (Unicode Transformation Format) and Unicode cannot be compared. UTF-8 is an encoding used to translate numbers into binary data. Unicode is a character set used to translate characters into numbers.
+
+## shutdown/poweroff/halt/reboot
+    # shutdown
+    shutdown schedules a time for the system to be powered down. It may be used to halt, power-off or reboot the machine.
+    You may specify a time string (which is usually “now” or “hh:mm” for hour/minutes) as the first argument. Additionally, you may set a wall message to be sent to all logged-in users before the system goes down.
+    Important: If the time argument is used, 5 minutes before the system goes down the /run/nologin file is created to ensure that further logins will not be allowed.
+    Examples of shutdown commands:
+        # shutdown
+        # shutdown now
+        # shutdown 13:20
+        # shutdown -p now	#poweroff the machine
+        # shutdown -H now	#halt the machine
+        # shutdown -r09:35	#reboot the machine at 09:35am
+    To cancel a pending shutdown, simply type the command below:
+        # shutdown -c
+
+    # halt
+    halt instructs the hardware to stop all CPU functions, but leaves it powered on. You can use it to get the system to a state where you can perform low level maintenance.
+    Note that in some cases it completely shuts down the system. Below are examples of halt commands:
+        # halt		   #halt the machine
+        # halt -p	   #poweroff the machine
+        # halt --reboot    #reboot the machine
+
+    # poweroff
+    poweroff sends an ACPI signal which instructs the system to power down.
+    The following are examples of poweroff commands:
+        # poweroff   	       #poweroff the machine
+        # poweroff --halt      #halt the machine
+        # poweroff --reboot    #reboot the machine
+
+    # reboot
+    reboot instructs the system to restart.
+        # reboot            #reboot the machine
+        # reboot --halt     #halt the machine
+        # reboot -p   	    #poweroff the machine
+
+# linux boot
+    https://www.kernel.org/doc/Documentation/arm/Booting
+
+    the most typical setup is:
+
+    1. CPU executes first-stage bootloader (FSB).
+        FSB is located on the chip itself in ROM or EEPROM and is very small (AT91RM9200 FSB is 10kB max, AFAIR). FSB then initializes minimum set of peripherals (clocks, RAM, flash), transfers second-stage bootloader (U-Boot) to RAM, and executes it.
+
+    2. U-Boot starts.
+        U-Boot initializes some other hardware (serial, ethernet, etc), transfers Linux kernel to RAM, prepares the pointer to kernel input parameters and jumps into it's entry point.
+
+    3. Linux kernel starts.
+        Magic happens here. The system now able to serve you cookies via SSH console and/or executes whatever needs to be executed.
+
+    The typical ARM processor in use today is integrated with peripherals on a single IC called a SoC, system on a chip. Typically the reboot procedure is nearly identical to a power-on boot procedure. On a reset the ARM processor typically jumps to address 0.
+
+    Main memory, e.g. DRAM, and non-volatile storage, e.g. NAND flash, are typically external to the SoC (that is Linux capable) for maximum design flexibility.
+    But typically there is a small (perhaps 128KB) embedded ROM (read-only memory) to initialize the minimal system components (e.g. clocks, external memories) to begin bootstrap operations. A processor reset will cause execution of this boot ROM. (This ROM is truly read-only, and cannot be modified. The code is masked into the silicon during chip fabrication.)
+    The SoC may have a strapping option to instead execute an external boot memory, such as NOR flash or EEPROM, which can be directly executed (i.e. XIP, execute in place).
+    The salient characteristic of any ROM, flash, and SRAM that the first-stage boot program uses is that these memories must be accessible immediately after a reset.
+
+    One of the problems of bootstrapping a system that uses DRAM for main memory is its hardware initialization. The DRAM memory controller has to be initialized with board-specific parameters before code can be loaded into DRAM and executed. So from where does this board-specific initialization code execute, since it can't be in main memory?
+    Each vendor has their own solution.
+    Some require memory configuration data to be stored in nonvolatile memory for the boot ROM to access.
+    Some SoCs have integrated SRAM (which does not require initialization like DRAM) to execute a small second-stage bootstrap program.
+    Some SoCs use NOR flash to hold a XIP (execute in place) bootstrap program (e.g. the SPL program of U-Boot).
+
+    Each SoC vendor has its own bootstrap method to get the OS loaded and executing.
+    Some use hardware strapping read through GPIO pins to determine the source of the next stage of the bootstrap sequence.
+    Another vendor may use an ordered list of memories and devices to probe for a bootstrap program.
+    Another technique, is to branch to firmware in NOR flash, which can be directly executed (i.e. XIP, execute in place).
+
+    Once the bootstrap program has initialized the DRAM, then this main memory can be used to load the next stage of booting. That could be a sophisticated boot utility such as U-Boot, or (if the bootstrap program is capable) the Linux kernel. A ROM boot program could do everything to load an ARM Linux kernel (e.g. ETRAX), but more common is that there will be several bootstrap programs or stages that have be performed between processor reset to execution of the OS.
+
+    The requirements of booting the Linux ARM kernel are spelled out in the following document: Booting ARM Linux
+    Older versions of Linux ARM used the ATAGs list to pass basic configuration information to the kernel. Modern versions provide a complete board configuration using a compiled binary of a Device Tree.
+    ... e.g do boot loaders reinitialize DDR memory?
+
+    Of the few examples that I have seen, the boot programs unconditionally configure the dynamic RAM controller.
+    PCs have a BIOS and Power On Self Tests, aka POST. The execution of POST is the primary difference between a power-on reset (aka cold boot) versus a software reset (aka warm boot or reboot). ARM systems typically do not perform POST, so you typically will see minimal to no difference between types of reset.
