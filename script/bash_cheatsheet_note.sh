@@ -60,3 +60,62 @@ _	underscore	    A kind of catch-all parameter. Directly after shell invocation,
                     or the absolute or relative path to the script, just like $0 would show it.
                     Subsequently, expands to the last argument to the previous command. Placed into the environment when executing commands,
                     and set to the full pathname of these commands. When checking mail, this parameter holds the name of the mail file currently being checked.
+
+# brace expansion
+    Brace expansion is used to generate arbitrary strings. The specified strings are used to generate all possible combinations with the optional surrounding preambles and postscripts.
+
+    {string1,string2,...,stringN}
+    {<START>..<END>}
+    {<START>..<END>..<INCR>} (Bash 4)
+    <PREAMBLE>{........}
+    {........}<POSTSCRIPT>
+    <PREAMBLE>{........}<POSTSCRIPT>
+
+# strict mode
+    Let's start with the punchline. Your bash scripts will be more robust, reliable and maintainable if you start them like this:
+        #!/bin/bash
+        set -euo pipefail
+        IFS=$'\n\t'
+    I call this the unofficial bash strict mode. This causes bash to behave in a way that makes many classes of subtle bugs impossible. You'll spend much less time debugging, and also avoid having unexpected complications in production.
+    There is a short-term downside: these settings make certain common bash idioms harder to work with. Most have simple workarounds, detailed below: jump to Issues & Solutions. But first, let's look at what these obscure lines actually do.
+    set -e
+        The set -e option instructs bash to immediately exit if any command [1] has a non-zero exit status.
+
+    set -u
+        set -u affects variables. When set, a reference to any variable you haven't previously defined - with the exceptions of $* and $@ - is an error, and causes the program to immediately exit.
+
+    set -o pipefail
+        This setting prevents errors in a pipeline from being masked. If any command in a pipeline fails, that return code will be used as the return code of the whole pipeline. By default, the pipeline's return code is that of the last command - even if it succeeds. Imagine finding a sorted list of matching lines in a file:
+
+        % grep some-string /non/existent/file | sort
+        grep: /non/existent/file: No such file or directory
+        % echo $?
+        0
+        (% is the bash prompt.) Here, grep has an exit code of 2, writes an error message to stderr, and an empty string to stdout. This empty string is then passed through sort, which happily accepts it as valid input, and returns a status code of 0. This is fine for a command line, but bad for a shell script: you almost certainly want the script to exit right then with a nonzero exit code... like this:
+
+        % set -o pipefail
+        % grep some-string /non/existent/file | sort
+        grep: /non/existent/file: No such file or directory
+        % echo $?
+        2
+
+    Setting IFS
+        The IFS variable - which stands for Internal Field Separator - controls what Bash calls word splitting. When set to a string, each character in the string is considered by Bash to separate words. This governs how bash will iterate through a sequence. For example, this script:
+
+        #!/bin/bash
+        IFS=$' '
+        items="a b c"
+        for x in $items; do
+            echo "$x"
+        done
+
+        IFS=$'\n'
+        for y in $items; do
+            echo "$y"
+        done
+        ... will print out this:
+
+        a
+        b
+        c
+        a b c

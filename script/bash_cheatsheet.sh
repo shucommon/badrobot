@@ -110,3 +110,33 @@ if myfunc; then
 else
     echo "failure"
 fi
+
+# 6. shell execution
+echo "I'm in $(pwd)"
+echo "I'm in `pwd`"     # same
+echo `ls`     # same
+
+# 7. brace expansion
+# details see bash_cheatsheet_note.sh
+echo {a,b}.c # a.c b.c
+echo {a,b}
+echo {1..5}
+echo {a,b}$PATH
+a=1
+b=10
+# the first step just do expansions
+echo {$a..$b}   # wrong, it become {1..10}
+#using the eval command, which basically evaluates a commandline twice:
+eval echo {$a..$b} # 1 2 3 ... 10
+#for i in $(eval echo {$a..$b})
+#wget http://docs.example.com/documentation/slides_part{1,2,3,4,5,6}.html
+#wget http://docs.example.com/documentation/slides_part{1..6}.html
+#mkdir /home/bash/test/{foo,bar,baz,cat,dog}
+for i in 0{1..9} 10; do printf "%s\n" "$i";done
+printf "%s\n" img{00{1..2},0{10..12},{100..102}}.png
+echo $(printf "img%02d.png " {1..11})
+echo -v{,,,,}
+# bash 4.0
+# Zero padded number expansion
+echo {0001..5} # 0001 0002 0003 0004 0005
+echo {1..10..2}
