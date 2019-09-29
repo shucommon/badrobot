@@ -122,3 +122,32 @@ Some good reference in the book Linkers & loaders.
 
 # compile
     __attribute__((__packed__))
+
+# c casting
+        short    int    v  = -12345;
+        unsigned short uv = (unsigned short) v;
+        printf("v = %d, uv = %u\n", v, uv);
+    When run on a two’s-complement machine, it generates the following output:
+        v = -12345, uv = 53191
+    What we see here is that the effect of casting is to keep the bit values identical but change how these bits are interpreted.
+
+    two's complement <--> unsigned
+    for x in TMin(w) <= x <= TMax(w)
+        T2U(w) = x + 2^w if x < 0
+              x if x >= 0 
+
+    When an op- eration is performed where one operand is signed and the other is unsigned, C implicitly casts the signed argument to unsigned and performs the operations
+    When either operand of a comparison is unsigned, the other operand is implicitly cast to unsigned
+
+    
+    short sx = -12345; /* -12345 */
+    unsigned uy = sx; /* Mystery! */
+    printf("uy = %u:\t", uy);
+    -> uy = 4294954951:  ff ff cf c7
+    This shows that, when converting from short to unsigned, the program first changes the size and then the type.
+
+# bug hard to find
+    x > 0, y > 0, x + y < 0
+        Many beginning programmers are surprised to find that adding two positive num- bers can yield a negative result
+    x<y vs x-y < 0
+        and that the comparison x < y can yield a different result than the comparison x-y < 0.

@@ -110,6 +110,13 @@ Here are some more TCAM allocation examples. Just because, for instance, 8K is a
 
 Hardware is finite, and we always need more. More expensive routers don't always suffer from the constant struggle for TCAMs because they have enough to support most features that currently exist. Unfortunately, most companies won't want to purchase the latest and greatest router with seemingly endless TCAMs unless they can justify the added cost by showing a need for them right now. So we're stuck having to adjust TCAM allocations.
 
+CAM (ternary content-addressable memory) is a specialized type of high-speed memory that searches its entire contents in a single clock cycle. 
+
+The term “ternary” refers to the memory's ability to store and query data using three different inputs: 0, 1 and X. The “X” input, which is often referred to as a “don’t care” or “wildcard” state, enables TCAM to perform broader searches based on pattern matching, as opposed to binary CAM, which performs exact-match searches using only 0s and 1s.
+
+Generally speaking, CAM is often described as the opposite of random access memory (RAM). To retrieve data on RAM, the operating system (OS) must provide the memory address where the data is stored. Data stored on CAM can be accessed by performing a query for the content itself, and the memory retrieves the addresses where that data can be found. Due to its parallel nature, CAM (and by extension TCAM) is much faster than RAM. However, it is not widely used in most electronics because it is expensive to build, consumes a lot of power and generates a high level of heat that must be dissipated.
+
+TCAM is commonly found in networking equipment, such as high-performance routers and switches, to increase the speed of route look-up, packet classification, packet forwarding and access control list-based commands.
 
 ## 10G ETHERNET LAYER 1 OVERVIEW
     https://www.fmad.io/blog-10g-ethernet-layer1-overview.html
