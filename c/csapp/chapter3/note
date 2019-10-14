@@ -1,0 +1,16 @@
+mstore.c
+    This will cause gcc to run the compiler, generating an assembly file mstore.s, and go no further. 
+    linux> gcc -Og -S mstore.c
+
+    If we use the -c command-line option, gcc will both compile and assemble the code
+    linux> gcc -Og -c mstore.c
+    linux> objdump -d mstore.o
+
+    we could generate an executable program prog as follows:
+    linux> gcc -Og -o prog main.c mstore.c
+
+
+How do I display the byte representation of a program?
+    To display the binary object code for a program (say, mstore), we use a disassembler (described below) to determine that the code for the procedure is 14 bytes long. Then we run the GNU debugging tool gdb on file mstore.o and give it the command
+    (gdb) x/14xb multstore
+    telling it to display (abbreviated ‘x’) 14 hex-formatted (also ‘x’) bytes (‘b’) starting at the address where function multstore is located.
