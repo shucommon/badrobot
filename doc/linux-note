@@ -1521,3 +1521,48 @@ UTF-8 (Unicode Transformation Format) and Unicode cannot be compared. UTF-8 is a
 
     Of the few examples that I have seen, the boot programs unconditionally configure the dynamic RAM controller.
     PCs have a BIOS and Power On Self Tests, aka POST. The execution of POST is the primary difference between a power-on reset (aka cold boot) versus a software reset (aka warm boot or reboot). ARM systems typically do not perform POST, so you typically will see minimal to no difference between types of reset.
+
+# systemd
+    hostnamectl  s
+    timedatectl
+    localectl
+    loginctl session-status [id] / show-user user_name
+    journalctl  -u sshd
+
+# MBR GDP
+    lsblk
+    fdisk /dev/sdc
+    parted /dev/sda print
+    dd if=/dev/zero of=/dev/sdc count=1 bs=512
+    GUID Partition table - GPT
+    gdisk /dev/sdb
+    grep CONFIG_EFI_PARTITION /boot/config-$(uname -r)
+
+    UEFI    unified extensible firmware interface
+
+    boot loader support:
+        both BIOS and UEFI      UEFI Only       BIOS only
+        GRUB 2                  Gummiboot       GRUB Legacy
+        Syslinux                Clover          LILO
+
+    GRUB Legacy:
+        /boot/grub/grub.cfg
+        /boot/grub/menu.lst
+
+    GRUB shell
+        > help
+        > root (hd0,0)
+        > kernel /vmlinuz-xxxx root=/dev/sda2 ro
+        > initrd /intitramfs-xxx
+
+    $ sudo grub
+    grub > find /boot/grub/stage1
+    grub > find /grub/stage1
+
+    modify /etc/grub.d/40_custom
+    $ grub2-mkconfig -o /boot/grub2/grub.cfg
+
+# utils
+    dnsmasq
+    dig
+    !$  -> last parameter
