@@ -753,6 +753,15 @@
     recursive execute all files
     find . -type f | xargs dos2unix
 
+## wget
+    wget -r -p -np -k http://xxx.com/abc/
+    -r, –recursive          specify recursive download
+    -k, –convert-links      make links in downloaded HTML point to local files.
+    -p, –page-requisites    (necessary page element) get all images, etc. needed to display HTML page.
+    -np, –no-parent         don’t ascend to the parent directory.
+    -nc                     breakpoint continue
+    -o                      log
+
 ## sed
     insert one line in the specific line:
     sed -i '8i8 This is Line 8' FILE
