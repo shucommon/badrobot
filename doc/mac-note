@@ -71,3 +71,14 @@
 
     Full Screen
         You can press cmd-enter and iTerm2 will take up the entire screen. If you had a transparent background configured, it will be turned off upon entering full screen mode to reduce distractions. You can re-enable it with cmd-U. Unlike most macOS apps, iTerm2 can open a fullscreen window in the same desktop with no annoying animation if you disable Preferences > General > Native full screen windows.
+
+## gdb
+gdb requires special privileges to access Mach ports.
+You will need to codesign the binary. For instructions, see:
+
+  https://sourceware.org/gdb/wiki/BuildingOnDarwin
+    https://sourceware.org/gdb/wiki/PermissionsDarwin
+
+On 10.12 (Sierra) or later with SIP, you need to run this:
+
+  echo "set startup-with-shell off" >> ~/.gdbinit
