@@ -1,4 +1,5 @@
 mstore.c
+    
     This will cause gcc to run the compiler, generating an assembly file mstore.s, and go no further. 
     linux> gcc -Og -S mstore.c
 
@@ -9,8 +10,30 @@ mstore.c
     we could generate an executable program prog as follows:
     linux> gcc -Og -o prog main.c mstore.c
 
+    gcc can generate code in Intel format for the sum function using the following command line:
+    linux> gcc -Og -S -masm=intel mstore.c
+
+
+    We see that the Intel and ATT formats differ in the following ways:
+        . The Intel code omits the size designation suffixes. We see instruction push and mov instead of pushq and movq.
+        . The Intel code omits the ‘%’ character in front of register names, using rbx instead of %rbx.
+        . The Intel code has a different way of describing locations in memory—for example, QWORD PTR
+        [rbx] rather than (%rbx).
+        . Instructions with multiple operands list them in the reverse order. This can be very confusing when
+        switching between the two formats.
+
+    
 
 How do I display the byte representation of a program?
     To display the binary object code for a program (say, mstore), we use a disassembler (described below) to determine that the code for the procedure is 14 bytes long. Then we run the GNU debugging tool gdb on file mstore.o and give it the command
     (gdb) x/14xb multstore
     telling it to display (abbreviated ‘x’) 14 hex-formatted (also ‘x’) bytes (‘b’) starting at the address where function multstore is located.
+
+
+stack
+    With x86-64, stacks grow toward lower addresses
+                Effect
+    pushq S     R[%rsp] ← R[%rsp]−8;
+                M[R[%rsp]] ← S
+    popq D      D ← M[R[%rsp]];
+                R[%rsp] ← R[%rsp]+8

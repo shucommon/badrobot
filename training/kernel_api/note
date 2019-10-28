@@ -1,0 +1,69 @@
+barry song
+
+
+RCU
+spin_lock
+mutex
+
+RMW
+    atomic_add/sub/inc/dec
+
+spinlock
+    can't lock code that will sleep
+    can't sleep in interrupt
+
+    might_sleep()
+
+spin_lock_irqsave
+    lock schdule
+    lock interrupt
+
+in thread, need disable interrupt and sch, in interrupt, disable sch
+    CPU0                CPU 
+    spin_lock_irqsave   spin_lock_irqsave   
+T0  ...                 ...                     T3
+    spin_lock_restore   spin_lock_restore
+
+    spin_lock_irqsave   spin_lock_irqsave   
+T1  ...                 ...                     T4
+    spin_lock_restore   spin_lock_restore
+
+    spin_lock           spin_lock
+IRQ0...                 ...                     IRQ1
+    spin_unlock         spin_unlock
+
+
+local_irq_disable/save      disable cpu response interrupt
+irq_disable                 disable interrupt send to cpu
+
+mutex can lock code which will sleep
+
+
+kmalloc     small memory
+vmalloc     large memory, no physical continue
+ioremap     register to memory
+kmap        map a highmem page into memory
+
+coherent DMA buffers : no cache
+DMA streaming mapping 
+iommu
+
+vector interrupt        intr->isr entry
+no vector interrupt     IRQ single entry -> irq_desc
+
+request_irq
+chrt -q 
+
+/sys/kernel/debug   irq_domain_mapping    expose harware/virtual IRQ mapping
+
+interrupt type:
+    SPI IPI PPI
+    smp_affinity    bind irq to core    /proc/irq/xx/
+
+tasklet -> softirq
+
+debug
+root=/dev/ loglevel=8 earlyprintk
+console=ttyAMAo  initcall_debug
+printk -> dev_xxx/emerg/warn/info
+
