@@ -1,9 +1,13 @@
 mstore.c
     This will cause gcc to run the compiler, generating an assembly file mstore.s, and go no further. 
-    $ gcc -Og -S mstore.c
+    linux> gcc -Og -S mstore.c
 
     If we use the -c command-line option, gcc will both compile and assemble the code
-    $ gcc -Og -c mstore.c
+    linux> gcc -Og -c mstore.c
+    linux> objdump -d mstore.o
+
+    we could generate an executable program prog as follows:
+    linux> gcc -Og -o prog main.c mstore.c
 
 
 How do I display the byte representation of a program?
