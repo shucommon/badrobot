@@ -1,0 +1,27 @@
+<root xmlns:foo="http://www.foo.org/ " xmlns:bar="http://www.bar.org" >
+<x>
+  <y name="a"/> 
+  <y name="b"/>
+</x> 
+<x>
+  <y/>
+  <y name="d"/> 
+</x>
+</root>
+
+//y
+//x[2]/y[1]
+//y[@name='b']
+//y[not(@name)]
+
+
+
+id是i2的Y
+ class是c1的X下的y  name是b的Y
+ 没有name的Y
+ 所有第一个Y
+ 第二个X的第一个Y
+y#i2
+x.c1 y
+y[name='b']
+y:not([name])
