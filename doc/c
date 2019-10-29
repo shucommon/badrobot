@@ -1,3 +1,18 @@
+# C library
+    Checkout the latest glibc in development:
+
+    git clone git://sourceware.org/git/glibc.git
+    cd glibc
+    git checkout master
+    Releases are available by source branch checkout via git and tarball via ftp.
+
+    Checkout the latest glibc 2.30 stable release:
+
+    git clone git://sourceware.org/git/glibc.git
+    cd glibc
+    git checkout release/2.30/master
+    Release tarballs are available via anonymous ftp at http://ftp.gnu.org/gnu/glibc/ and its mirrors.
+
 ## cross compile:
 
     i686-wrs501-linux-gnu-gcc -I../third-party/bin/linux/gdb.x86-xeon-wrl7/linux-windriver-3.14-r0/include.kernel_export --sysroot=/auto/andpkg/rep_cache//wr-x86/7.0rcpl8/sysroots/core2-64-wrsmllib32-linux pcimem.c
