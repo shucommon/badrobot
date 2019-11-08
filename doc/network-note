@@ -202,6 +202,59 @@ System Packet Interface-4 Phase 2 (SPI-4.2) is a protocol used for data transfer
     PMD：Physical Medium Dependent，
     AN: Auto-Negotiation Function，自动协商，使背板两侧的Device能够互换信息以发挥出彼此最大的优势；
 
+AN:
+    https://www.fiberoptics4sale.com/blogs/archive-posts/95041222-what-is-ethernet-auto-negotiation
+
+    Auto-negotiation is the feature that allows a port on a switch, router, server, or other device to communicate with the device on the other end of the link to determine the optimal duplex mode and speed for the connection.
+    The driver then dynamically configures the interface to the values determined for the link.
+
+    1. Speed:
+    Speed is the rate of the interface, usually listed in megabits per second (Mbps). Common Ethernet speeds include 10 Mbps, 100 Mbps, and 1,000 Mbps. 1,000 Mbps Ethernet is also referred to as Gigabit Ethernet.
+
+    2. Duplex
+    Duplex refers to how data flows on the interface.
+
+    On a half-duplex interface, data can only be transmitted or received at any given time. A conversation on a two-way radio is usually half-duplex – each person must push a button to talk, and, while talking, that person can not listen.
+    A full-duplex interface, on the other hand, can send and receive data simultaneously. A conversation on a telephone is full duplex.
+
+    :: HOW AUTO-NEGOTIATION WORKS
+    What Auto-Negotiation Does Not Do:
+
+    When auto-negotiation is enabled on a port, it does not automatically determine the configuration of the port on the other side of the Ethernet cable and then match it.
+    This is a common misconception that often leads to problems.
+    Auto-negotiation is a protocol, and as with any protocol, it only works if it’s running on both sides of the link.
+    So if one side of a link is running auto-negotiation, and the other side of the link is not, auto-negotiation CANNOT determine the speed and duplex configuration of the other side.
+    If auto-negotiation is running on the other side of the link, the two devices decide TOGETHER on the best speed and duplex mode. Each interface advertises the speeds and duplex modes at which it can operate, and the best match is selected (higher speed and full duplex are preferred).
+
+    :: WHEN AUTO-NEGOTIATION FAILS
+    When auto-negotiation fails on 10/100 links, the most likely cause is that one side of the link has been set to 100/full, and the other side has been set to auto-negotiation. This results in one side being 100/full, and the other side being 100/half.
+
+    1. Half-Duplex
+    The following figure shows a half-duplex link. In a half-duplex environment, the receiving (Rx) line is monitored. If a frame is present on the Rx link, no frames are sent until the Rx line is clear. If a frame is received on the Rx line while a frame is being sent on the transmitting (Tx) line, a collision occurs. Collisions cause the collision error counter to be incremented – and the sending frame to be retransmitted – after a random back-off delay.
+
+    2. Full-Duplex
+    The following figure shows a full-duplex link. In full-duplex operation, the Rx line is not monitored, and the Tx line is always considered available. Collisions do not occur in full-duplex mode because the Rx and Tx lines are completely independent.
+
+    3. Misconfiguration
+    When one side of the link is full-duplex, and the other side is half-duplex, a large number of collisions will occur on the half-duplex side.
+    Because the full-duplex side sends frames without checking the Rx line, if it’s a busy device, chances are it will be sending frames constantly.
+    The other end of the link, being half-duplex, will listen to the Rx line, and will not transmit unless the Rx line is available. It will have a hard time getting a chance to transmit, and will record a high number of collisions, resulting in the device appearing to be slow on the network.
+    This issue may not be obvious because a half-duplex interface normally shows collisions. The problem should present itself as excessive collisions.
+    The following figure shows a link where auto-negotiation has failed.
+
+    In the real world, if you see that an interface that is set to auto-negotiation has negotiated to 100/half, chances are the other wide is set to 100/full. 100 Mbps interfaces that do not full duplex are rare, so properly configured auto-negotiation ports should almost never end up configured for half duplex.
+
+    :: AUTO-NEGOTIATION BEST PRACTICES
+    Using auto-negotiation to your advantage is as easy as remembering one simple rule:
+
+    Make sure that both sides of the link are configured the same way.
+    If one side of the link is set to auto-negotiation, make sure the other side is also set to auto-negotiation. If one side is set to 100/full, make sure the other side is also set to 100/full.
+    Be careful about using 10/full, as full duplex is not supported on all 10Base-T Ethernet devices.
+
+    :: GIGABIT ETHERNET AUTO-NEGOTIATION
+    Gigabit Ethernet uses a substantially more robust auto-negotiation mechanism than the one described above.
+
+    Gigabit Ethernet should thus always be set to auto-negotiation, unless there is a compelling reason to do so (such as an interface that will not properly negotiate). Even then, this should be considered a temporary workaround until the misbehaving part can be replaced.
 
 ## Ethernet Frame
 In computer networking, an Ethernet frame is a data link layer protocol data unit and uses the underlying Ethernet physical layer transport mechanisms. In other words, a data unit on an Ethernet link transports an Ethernet frame as its payload.[1]
