@@ -1,0 +1,15 @@
+fd = open(name, flags, mode)
+flags: O_RDONLY, O_WRONLY, O_RDWR  -> must include one
+       O_APPEND, O_CREAT, O_TRUNC  -> may include
+mode : access mode
+
+// unbuffered output, buffer : data in memory
+write(fd, buffer, count)
+// unbuffered input
+read(fd, buffer, count)
+
+close(fd);
+
+lseek(fd, offset, whence)
+offset: +/-
+whence: SEEK_SET/CUR/END
