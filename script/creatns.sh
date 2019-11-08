@@ -1,11 +1,14 @@
 #!/bin/sh
-ip netns add port1
-ip netns add port2
-ip link set eth4 netns port1
-ip link set eth5 netns port2
-ip netns exec port1 ip addr add 192.168.2.10/24 dev eth4
-ip netns exec port2 ip addr add 192.168.2.11/24 dev eth5
-ip netns exec port1 ip link set dev eth4 up
-ip netns exec port2 ip link set dev eth5 up
-ip netns exec port1 ip addr 
-ip netns exec port2 ip addr 
+ip netns add ns1
+ip netns add ns2
+ip link set eth2 netns ns1
+ip link set eth3 netns ns2
+ip netns exec ns1 ip addr add 192.168.2.10/24 dev eth2
+ip netns exec ns2 ip addr add 192.168.2.11/24 dev eth3
+ip netns exec ns1 ip link set dev eth2 up
+ip netns exec ns2 ip link set dev eth3 up
+ip netns exec ns1 ip addr
+ip netns exec ns2 ip addr
+
+shell1$ ip netns exec ns1 ping -I 192.168.2.10 192.168.2.11 -c 10
+shell2$ watch -d 'ip netns exec ns2 ethtool  -S eth3 | grep rx_packets'
