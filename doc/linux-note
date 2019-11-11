@@ -1696,4 +1696,5 @@ UTF-8 (Unicode Transformation Format) and Unicode cannot be compared. UTF-8 is a
     Saving your settings
     If you’ve made any changes to top’s output, you can save them for later use by pressing ‘W’. top writes its configuration to the .toprc file in your home directory.
 
-
+# install jupyter
+    pip install --user jupyter matplotlib missingno notebook numpy pandas pytz scikit-learn scipy seaborn xlrd xgboost
