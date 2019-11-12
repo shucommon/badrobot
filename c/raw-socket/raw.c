@@ -90,6 +90,11 @@ void* recv_u()
         printf("\t|-Destination address : %.2x-%.2x-%.2x-%.2x-%.2x-%.2x\n", eth->h_dest[0], eth->h_dest[1], eth->h_dest[2], eth->h_dest[3], eth->h_dest[4], eth->h_dest[5]);
         printf("\t|-Protocol: %d\n", eth->h_proto); 
 
+        /*
+        h_proto gives information about the next layer. If you get 0x800 (ETH_P_IP), it means that the next header is the IP header. Later, we will consider the next header as the IP header.
+        */
+
+        // Now, to get this information, you need to increment your buffer pointer by the size of the Ethernet header because the IP header comes after the Ethernet header:
         // ip header
         struct sockaddr_in source, dest;
         unsigned short iphdrlen;
@@ -205,7 +210,7 @@ void* send_u(void* args)
         return (void*)ret;
     }
     mac = ifreq_c_d.ifr_ifru.ifru_hwaddr.sa_data;
-    printf("src mac=%.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    printf("des mac=%.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
     // src ip
     struct ifreq ifreq_ip;
