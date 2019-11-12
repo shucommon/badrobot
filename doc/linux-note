@@ -1700,3 +1700,70 @@ UTF-8 (Unicode Transformation Format) and Unicode cannot be compared. UTF-8 is a
     pip install --user jupyter matplotlib missingno notebook numpy pandas pytz scikit-learn scipy seaborn xlrd xgboost
     on mac:
     export PATH="$HOME/Library/Python/<version number>/bin:$PATH"
+
+# tcpdump
+    List interfaces that tcpdump can listen on
+    $ tcpdump -D
+
+    Turn on "verbose" key in TCPDUMP to see IP and TCP header information
+    $ tcpdump -vi eth0
+
+    Turn off hostname and port lookup in TCPDUMP
+    $ tcpdump -vnni eth0
+
+    Tcpdump filter only icmp traffic
+    $ tcpdump -nni eth0 icmp
+
+    Tcpdump command to filter on ICMP type - capture only ICMP echo request, ICMP echo requests are ICMP type 8
+    $ tcpdump -nni vlan111 -e icmp[icmptype] == 8
+    Above tcpdump filter "icmp[icmptype] == 8" will only display ip packets that have icmp payload and icmptype 8 - ICMP Echo Request.
+
+    Tcpdump command to filter on ICMP type - capture only ICMP echo reply
+    $ tcpdump -nni vlan111 -e icmp[icmptype] == 0
+
+    Tcpdump filter packets with specified ip identification in ip header
+    $ tcpdump -nr /tmp/tcpdump.pcap -v 'ip[4:2] == 24332'
+
+    Tcpdump filtering based on DSCP field in IP header
+    $ tcpdump -nni eth1 -v 'ip[1] & 0xfc == 184'
+
+    Tcpdump: How to to capture only ICMP Fragmentation needed notifications
+    $ tcpdump -nni vlan111 -e icmp[icmptype] == 3 && icmp[icmpcode] == 4
+
+    How to capture frames with specific source or destination mac address
+    $ tcpdump -nni eth0 ether src 2c:21:72:c6:c1:88
+    $ tcpdump -nni eth0 ether dst 2c:21:72:c6:c1:88
+
+    Capture only packets from a specific IP host or to a specific IP destination
+    $ tcpdump -nni en0 src host 8.8.8.8.8
+    $ tcpdump -nni en0 dst host 8.8.8.8.8
+
+    Tcpdump - capture only ARP packets
+    $ tcpdump -nni en0 arp
+
+    Capture only IPv4 or only IPv6 traffic
+    $ tcpdump -nni en0 ip
+    $ tcpdump -nni en0 ip6
+
+    Capture ethernet multicast traffic based on ethernet field and on IPv4 destination
+    $ tcpdump -nni en0 "ether[0] & 1 != 0"
+    $ tcpdump -nni en0 dst net 224.0.0.0/4
+
+    Show ethernet / layer 2 headers
+    $ tcpdump -nni en0 -e
+
+    Capture only specific vlan traffic (for interfaces that terminate vlan trunks)
+    $ tcpdump -nni em2 -e vlan 5
+
+    Capture specific IPv4 protocols related traffic
+    $ grep -E "esp|ah|gre|ospf|icmp|tcp|udp" /etc/protocols
+    Showing below how to capture GRE traffic.
+    $ tcpdump -nni em2 ip proto 47
+
+    Dump HTTP data as ASCII or ASCII and HEX
+    $ tcpdump -nni eth0 -s0 -A -l port 80
+    $ tcpdump -nni eth0 -s0 -AX -l port 80
+
+    Capture only traffic related to a CIDR subnet
+    $ tcpdump -nni eth0 net 192.168.3.96/28
+
