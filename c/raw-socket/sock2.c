@@ -19,8 +19,7 @@
 typedef struct raw_param
 {
     int total_len;
-    char * src_interface;
-    char * des_interface;
+    char ** intf;
 } raw_param_t;
 
 typedef unsigned long long int  uint64;
@@ -52,47 +51,75 @@ struct __net_dev_stats_t {
 };  
 typedef struct __net_dev_stats_t net_dev_stats_t;
 
+int bring_up_intf(char * intf);
+int find_intf(char **intf, uint8_t *size, int did);
+int get_status(char * interface, net_dev_stats_t *stat);
+unsigned char * get_mac(int sock, unsigned char *interface);
+int recv_intf(int sock_r, char *src_interface, char *des_interface, int len);
+int send_intf(int sock_raw, char * src_interface, char *des_interface, int len);
 void* recv_u(void *args);
 void* send_u(void *args);
-int get_status(char * interface, net_dev_stats_t *stat);
-int find_intf(char **intf, uint8_t *size, int did);
 
 int main(int argc, char** argv)
 {
     pthread_t recv_id;
     pthread_t send_id;
-    raw_param_t send_args;
-    raw_param_t recv_args;
+    raw_param_t sock_args;
+    void *ret1, *ret2;
 
-    if(argc < 3)
-    {
-        printf("usage: app src_interface_name des_interface_name [total_len]\n");
+    char **intf = (char **)malloc(sizeof(char *) * 4);
+    uint8_t size;
+    if(find_intf(intf, &size, 0x15ab) != 0) {
+        printf("Failed to find interface to test\n");
         return -1;
     }
+    sock_args.intf = intf;
+    sock_args.total_len = 64;
 
-    send_args.total_len = 64;
-    send_args.src_interface = argv[1];
-    send_args.des_interface = argv[2];
-    recv_args.src_interface = argv[1];
-    recv_args.des_interface = argv[2];
-    recv_args.total_len = 64;
-    if(argc == 4) {
-        send_args.total_len = atoi(argv[3]);
-        recv_args.total_len = atoi(argv[3]);
-    }
-
-    printf("test interface name: src = %s, des = %s, total data len %u\n", send_args.src_interface, send_args.des_interface, send_args.total_len);
-
-    pthread_create(&recv_id, NULL, &recv_u, &recv_args);
+    pthread_create(&recv_id, NULL, &recv_u, &sock_args);
     // sleep 2 seconds
     sleep(2);
-    pthread_create(&send_id, NULL, &send_u, &send_args);
+    pthread_create(&send_id, NULL, &send_u, &sock_args);
 
-    pthread_join(recv_id, NULL);
-    pthread_join(send_id, NULL);
+    pthread_join(recv_id, &ret1);
+    pthread_join(send_id, &ret2);
+    printf("ret1 %d, ret2 %d\n", *(int *)ret1, *(int *)ret2);
     return 0;
 }
 
+int bring_up_intf(char * intf)
+{
+    // bring up interface
+    uint8_t retry = 5;
+    while(1) {
+        char sys_cmd[_NAME_MAX_LEN];
+        memset(sys_cmd, 0, _NAME_MAX_LEN);
+        snprintf(sys_cmd, _NAME_MAX_LEN, "ifconfig | grep %s", intf);
+        if(system(sys_cmd) != 0) {
+            if(retry-- == 0) {
+                printf("Ethernet interface %s is not up.\n", intf);
+                return -1;
+            }
+            printf("trying to bring up interface %s, retry %u times\n", intf, 5 - retry);
+            char cmd[_NAME_MAX_LEN];
+            memset(cmd, 0, _NAME_MAX_LEN);
+            snprintf(cmd, _NAME_MAX_LEN, "ifconfig %s up", intf);
+            system(cmd);
+            sleep(2);
+        } else {
+            printf("Ethernet interface %s is up\n", intf);
+            break;
+        }
+    }
+    return 0;
+}
+
+/*
+/sys/class/net/eth2/device/device:0x15ab
+/sys/class/net/eth3/device/device:0x15ab
+/sys/class/net/eth4/device/device:0x15ab
+/sys/class/net/eth5/device/device:0x15ab
+*/
 int find_intf(char **intf, uint8_t *size, int did)
 {
     char cmd[64];
@@ -132,12 +159,6 @@ int find_intf(char **intf, uint8_t *size, int did)
     *size = 4;
     pclose(fp);
     return 0;
-/*
-/sys/class/net/eth2/device/device:0x15ab
-/sys/class/net/eth3/device/device:0x15ab
-/sys/class/net/eth4/device/device:0x15ab
-/sys/class/net/eth5/device/device:0x15ab
-*/
 }
 
 int get_status(char * interface, net_dev_stats_t *stat)
@@ -245,20 +266,8 @@ unsigned char * get_mac(int sock, unsigned char *interface)
     return mac;
 }
 
-void* recv_u(void *args)
+int recv_intf(int sock_r, char *src_interface, char *des_interface, int len)
 {
-    int *ret = (int*)malloc(sizeof(int));
-    *ret = 0;
-    // step 1, opening a raw socket
-    int sock_r;
-    sock_r = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-    if(sock_r < 0)
-    {
-        printf("error creating socket\n");
-        *ret = -1;
-        return (void*)ret;
-    }
-
     unsigned char *buffer = (unsigned char*)malloc(65536);  // to receive data
     memset(buffer, 0, 65536);
     struct sockaddr saddr;
@@ -271,28 +280,18 @@ void* recv_u(void *args)
         if(buflen < 0)
         {
             printf("error in reading recvfrom function\n");
-            close(sock_r);
-            *ret = -1;
-            return (void*)ret;
+            return -1;
         }
-    //printf("len %d, %d\n", buflen, sizeof(struct ethhdr));
 
         // ethernet header
         struct ethhdr *eth = (struct ethhdr *)(buffer);
-
-        raw_param_t *param =  (raw_param_t*)(args);
-        char *src_interface = param->src_interface;
-        char *des_interface = param->des_interface;
-        int len = param->total_len;
 
         // src mac verify
         unsigned char * src_mac = get_mac(sock_r, src_interface);
         if(src_mac == NULL)
         {
             printf("error in get src mac address\n");
-            close(sock_r);
-            *ret = -1;
-            return (void*)ret;
+            return -1;
         }
         if(strncmp(eth->h_source, src_mac, ETH_ALEN))
             continue;
@@ -302,9 +301,7 @@ void* recv_u(void *args)
         if(des_mac == NULL)
         {
             printf("error in get des mac address\n");
-            close(sock_r);
-            *ret = -1;
-            return (void*)ret;
+            return -1;
         }
         if(strncmp(eth->h_dest, des_mac, ETH_ALEN))
             continue;
@@ -317,7 +314,6 @@ void* recv_u(void *args)
         printf("\t|-Packet total len : %d\n", buflen);
         printf("\t|-Source address : %.2x-%.2x-%.2x-%.2x-%.2x-%.2x\n", eth->h_source[0], eth->h_source[1], eth->h_source[2], eth->h_source[3], eth->h_source[4], eth->h_source[5]);
         printf("\t|-Destination address : %.2x-%.2x-%.2x-%.2x-%.2x-%.2x\n", eth->h_dest[0], eth->h_dest[1], eth->h_dest[2], eth->h_dest[3], eth->h_dest[4], eth->h_dest[5]);
-        printf("\t|-Protocol: %d\n", eth->h_proto);
         printf("\t|-Data:\t");
 
         // extracting data
@@ -335,9 +331,7 @@ void* recv_u(void *args)
         for(int i = 0; i < remaining_data; i++) {
             if(data[i] != start_pattern) {
                 printf("receive data verify failed\n");
-                close(sock_r);
-                *ret = -1;
-                return (void*)ret;
+                return -1;
             }
             start_pattern += 0x11;
         }
@@ -347,63 +341,73 @@ void* recv_u(void *args)
         get_status(des_interface, &stat);
         break;
     }
+    return 0;
+}
+
+void* recv_u(void *args)
+{
+    int *ret = (int*)malloc(sizeof(int));
+    *ret = 0;
+    // step 1, opening a raw socket
+    int sock_r;
+    sock_r = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+    if(sock_r < 0)
+    {
+        printf("error creating socket\n");
+        *ret = -1;
+        return (void*)ret;
+    }
+
+    raw_param_t *param =  (raw_param_t*)(args);
+    char *src_interface = param->intf[0];
+    char *des_interface = param->intf[1];
+    int len = param->total_len;
+    if(recv_intf(sock_r, src_interface, des_interface, len)) {
+        printf("receive from %s on %s failed\n", des_interface, src_interface);
+        close(sock_r);
+        *ret = -1;
+        return (void*)ret;
+    }
+
+    src_interface = param->intf[1];
+    des_interface = param->intf[0];
+    if(recv_intf(sock_r, src_interface, des_interface, len)) {
+        printf("receive from %s on %s failed\n", des_interface, src_interface);
+        close(sock_r);
+        *ret = -1;
+        return (void*)ret;
+    }
+
+    src_interface = param->intf[2];
+    des_interface = param->intf[3];
+    if(recv_intf(sock_r, src_interface, des_interface, len)) {
+        printf("receive from %s on %s failed\n", des_interface, src_interface);
+        close(sock_r);
+        *ret = -1;
+        return (void*)ret;
+    }
+
+    src_interface = param->intf[3];
+    des_interface = param->intf[2];
+    if(recv_intf(sock_r, src_interface, des_interface, len)) {
+        printf("receive from %s on %s failed\n", des_interface, src_interface);
+        close(sock_r);
+        *ret = -1;
+        return (void*)ret;
+    }
+
     *ret = 0;
     close(sock_r);
     return (void*)ret;
 }
 
-int bring_up_intf(char * intf)
+int send_intf(int sock_raw, char * src_interface, char *des_interface, int len)
 {
-    // bring up interface
-    uint8_t retry = 5;
-    while(1) {
-        char sys_cmd[_NAME_MAX_LEN];
-        memset(sys_cmd, 0, _NAME_MAX_LEN);
-        snprintf(sys_cmd, _NAME_MAX_LEN, "ifconfig | grep %s", intf);
-        if(system(sys_cmd) != 0) {
-            if(retry-- == 0) {
-                printf("Ethernet interface %s is not up.\n", intf);
-                return -1;
-            }
-            printf("trying to bring up interface %s, retry %u times\n", intf, 5 - retry);
-            char cmd[_NAME_MAX_LEN];
-            memset(cmd, 0, _NAME_MAX_LEN);
-            snprintf(cmd, _NAME_MAX_LEN, "ifconfig %s up", intf);
-            system(cmd);
-            sleep(2);
-        } else {
-            printf("Ethernet interface %s is up\n", intf);
-            break;
-        }
-    }
-    return 0;
-}
-
-void* send_u(void* args)
-{
-    int *ret = (int*)malloc(sizeof(int));
-    *ret = 0;
-    raw_param_t *param =  (raw_param_t*)(args);
-    char *src_interface = param->src_interface;
-    char *des_interface = param->des_interface;
-    int len = param->total_len;
-
-
     if(bring_up_intf(src_interface) != 0) {
-        *ret = -1;
-        return (void*)ret;
+        return -1;
     }
     if(bring_up_intf(des_interface) != 0) {
-        *ret = -1;
-        return (void*)ret;
-    }
-
-    int sock_raw = socket(AF_PACKET, SOCK_RAW, IPPROTO_RAW);
-    if(sock_raw == -1)
-    {
-        printf("error creating socket\n");
-        *ret = -1;
-        return (void*)ret;
+        return -1;
     }
 
     // src index
@@ -413,9 +417,7 @@ void* send_u(void* args)
     if((ioctl(sock_raw, SIOCGIFINDEX, &ifreq_i)) < 0) // getting index name
     {
         printf("error in index ioctl reading\n");
-        close(sock_raw);
-        *ret = -1;
-        return (void*)ret;
+        return -1;
     }
 
     // src mac
@@ -423,9 +425,7 @@ void* send_u(void* args)
     if(src_mac == NULL)
     {
         printf("error in get src mac address\n");
-        close(sock_raw);
-        *ret = -1;
-        return (void*)ret;
+        return -1;
     }
 
     // des mac
@@ -433,9 +433,7 @@ void* send_u(void* args)
     if(des_mac == NULL)
     {
         printf("error in get des mac address\n");
-        close(sock_raw);
-        *ret = -1;
-        return (void*)ret;
+        return -1;
     }
 
     unsigned char* sendbuff = (unsigned char*)malloc(len);
@@ -446,8 +444,7 @@ void* send_u(void* args)
     memcpy((void *)(eth->h_source), (void *)src_mac, ETH_ALEN);
     // fill ethernet header, dest mac
     memcpy((void *)(eth->h_dest), (void *)des_mac, ETH_ALEN);
-    // fill ethernet header, protocol
-    //eth->h_proto = htons(IPPROTO_RAW);
+    // fill ethernet header, protocol, this field is not used
     eth->h_proto = htons(0x1234);
 
     // fill in data after ethernet header
@@ -470,10 +467,65 @@ void* send_u(void* args)
     if(send_len < 0)
     {
         printf("error in sending ...sendlen=%d...errno=%d\n", send_len, errno);
-        close(sock_raw);
+        return -1;
+    }
+    return 0;
+}
+
+void* send_u(void* args)
+{
+    int *ret = (int*)malloc(sizeof(int));
+    *ret = 0;
+    raw_param_t *param =  (raw_param_t*)(args);
+    char *src_interface = param->intf[0];
+    char *des_interface = param->intf[1];
+    int len = param->total_len;
+
+    int sock_raw = socket(AF_PACKET, SOCK_RAW, IPPROTO_RAW);
+    if(sock_raw == -1)
+    {
+        printf("error creating socket\n");
         *ret = -1;
         return (void*)ret;
     }
+
+    printf("Sending 1 packet %d bytes from %s to %s\n", len, src_interface, des_interface);
+    if(send_intf(sock_raw, src_interface, des_interface, len)) {
+        printf("Error sending packet from %s to %s\n", src_interface, des_interface);
+        *ret = -1;
+        return (void*)ret;
+    }
+    sleep(1);
+
+    src_interface = param->intf[1];
+    des_interface = param->intf[0];
+    printf("Sending 1 packet %d bytes from %s to %s\n", len, src_interface, des_interface);
+    if(send_intf(sock_raw, src_interface, des_interface, len)) {
+        printf("Error sending packet from %s to %s\n", src_interface, des_interface);
+        *ret = -1;
+        return (void*)ret;
+    }
+    sleep(1);
+
+    src_interface = param->intf[2];
+    des_interface = param->intf[3];
+    printf("Sending 1 packet %d bytes from %s to %s\n", len, src_interface, des_interface);
+    if(send_intf(sock_raw, src_interface, des_interface, len)) {
+        printf("Error sending packet from %s to %s\n", src_interface, des_interface);
+        *ret = -1;
+        return (void*)ret;
+    }
+    sleep(1);
+
+    src_interface = param->intf[3];
+    des_interface = param->intf[2];
+    printf("Sending 1 packet %d bytes from %s to %s\n", len, src_interface, des_interface);
+    if(send_intf(sock_raw, src_interface, des_interface, len)) {
+        printf("Error sending packet from %s to %s\n", src_interface, des_interface);
+        *ret = -1;
+        return (void*)ret;
+    }
+
     close(sock_raw);
     *ret = 0;
     return (void*)ret;
