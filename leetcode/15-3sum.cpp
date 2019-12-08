@@ -10,6 +10,8 @@ public:
 				break;
 			int l = i+1, r = n - 1;
 			while(l < r) {
+                if((long long)nums.at(i) * (long long)nums.at(r) > 0)
+                    break;
 				int sum = nums.at(i) + nums.at(l) + nums.at(r);
 				if(sum == 0) {
 					vector<int> tmp;
