@@ -83,6 +83,13 @@ Some good reference in the book Linkers & loaders.
         sizeof unary-expression
         sizeof ( type-name )
 
+    The operand of sizeof can be a parenthesised type, sizeof (int), instead of an object expression.
+    The parentheses are unnecessary: int a; printf("%d\n", sizeof a); is perfectly fine. They're often seen, firstly because they're needed as part of a type cast expression, and secondly because sizeof has very high precedence, so sizeof a + b isn't the same as sizeof (a+b). But they aren't part of the invocation of sizeof, they're part of the operand.
+    You can't take the address of sizeof.
+    The expression which is the operand of sizeof is not evaluated at runtime (sizeof a++ does not modify a).
+    The expression which is the operand of sizeof can have any type except void, or function types. Indeed, that's kind of the point of sizeof.
+    A function would differ on all those points. There are probably other differences between a function and a unary operator, but I think that's enough to show why sizeof could not be a function even if there was a reason to want it to be.
+
 # NULL
     from stdio.h
     #define NULL 0
@@ -166,3 +173,73 @@ Some good reference in the book Linkers & loaders.
         Many beginning programmers are surprised to find that adding two positive num- bers can yield a negative result
     x<y vs x-y < 0
         and that the comparison x < y can yield a different result than the comparison x-y < 0.
+
+# How to Link Static Library in C/C++ using GCC compiler?
+Unlike Dynamic Link Library (DLL), the static library are pre-compiled and linked to the binary executables. Once built into the final executables, the static library cannot be shared among the others. The static library is part of the binary code and that means it is loaded as the program starts i.e. DLL files can be loaded at runtime whenever needed.
+
+HOW TO CREATE STATIC LIBRARY IN C/C++?
+It turns out that it is very simple to create static library in C/C++. A static library is basically an archive (like a zip file) of object files, which are compiled from the *.c/*.cpp source code. Each source code contains the exported functions. For example, let’s create two source files: test1.c and test2.c that contains two functions respectively.
+    // test1.c
+    int test1(int a) {
+            return a + 1;
+    }
+There is no need to define entry main as these are not programs but function libraries.
+
+    // test2.c
+    void test2(int *c) {
+            *c = *c + 1;
+    }
+Now, we can compile these into *.o object files.
+
+    gcc -c test1.c test2.c
+The -c switch means: Compile and assemble, but do not link. We will have two files: test1.o and test2.o and they are object files:
+
+    $ file *.o
+    test1.o: ELF 64-bit LSB relocatable, x86-64, version 1 (SYSV), not stripped
+    test2.o: ELF 64-bit LSB relocatable, x86-64, version 1 (SYSV), not stripped
+Now, as mentioned above, we can use ar to put these object files together into a single static library.
+
+    $ ar rsv testlib.a test1.o test2.o
+    ar: creating testlib.a
+    a - test1.o
+    a - test2.o
+The switch for ar command: r – replace, s – create an archive, v – verbose. Now the testlib.a contains test1.o and test2.o which we can verify by:
+
+    $ file testlib.a
+    testlib.a: current ar archive
+    $ ar -t testlib.a
+    test1.o
+    test2.o
+
+HOW TO USE STATIC LIBRARY IN C/C++?
+Let’s create a test file and invoke these two methods from the static library.
+
+    #include <stdio.h>
+
+    int main() {
+            int c = 3;
+            test2(&c);
+            printf("%d\n", c);
+            printf("%d\n", test1(c));
+            return 0;
+    }
+To compile it, use the following command (pass the static library testlib.a as the source file, so gcc compiler knows to link it later.
+
+    gcc -o test.out test.c testlib.a
+Alternatively, you could use the explicity linking options to link the static library (-L switch specifies the static library path and -l followed by the name of the static library):
+    gcc -o test.out test.c -L. -ltestlib
+However, it will output warnings:
+    test.c: In function ‘main’:
+    warning: implicit declaration of function ‘test2’ [-Wimplicit-function-declaration]
+      test2(&c);
+      ^
+    warning: implicit declaration of function ‘test1’ [-Wimplicit-function-declaration]
+      printf("%d\n", test1(c));
+
+However, the compiler still generates the binary code and you can run it:
+
+    $ ./test.out
+The warnings are to warn you that the compiler is not sure the function declarations of test1 and test2. To make the gcc compiler happy, you need to declare the two functions before usage:
+    int test1(int c);
+    void test2(int *c);
+That is why the static library is distributed with a function declaration header files *.h, so that you know how to invoke them and the compiler takes care of them e.g. linking *.a static libraries into your executables.
