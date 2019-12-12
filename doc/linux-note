@@ -636,6 +636,45 @@
     tree
         tree --charset ASCII
 
+    # binary diff
+    1. xxd + diff
+        % xxd b1 > b1.hex
+        % xxd b2 > b2.hex
+    And then
+        % diff b1.hex b2.hex
+    or
+        % vimdiff b1.hex b2.hex
+
+    2. cmp
+    cmp -l b1 b2
+    cmp -l file1.bin file2.bin | gawk '{printf "%08X %02X %02X\n", $1, strtonum(0$2), strtonum(0$3)}'
+    cmp -l file1.bin file2.bin | gawk '{printf "%08X %02X %02X\n", $1-1, strtonum(0$2), strtonum(0$3)}'
+    cmp -l file1.bin file2.bin | mawk 'function oct2dec(oct,     dec) {for (i = 1; i <= length(oct); i++) {dec *= 8; dec += substr(oct, i, 1)}; return dec} {printf "%08X %02X %02X\n", $1, oct2dec($2), oct2dec($3)}'
+        cmp -l file1.bin file2.bin |
+        mawk 'function oct2dec(oct,    dec) {
+                  for (i = 1; i <= length(oct); i++) {
+                      dec *= 8;
+                      dec += substr(oct, i, 1)
+                  };
+                  return dec
+              }
+              {
+                  printf "%08X %02X %02X\n", $1, oct2dec($2), oct2dec($3)
+              }'
+
+    3. diff + xxd
+        Try diff in the following combination of zsh/bash process substitution:
+            diff -y <(xxd foo1.bin) <(xxd foo2.bin)
+        Where:
+            -y shows you differences side-by-side (optional).
+            xxd is CLI tool to create a hexdump output of the binary file.
+            Add -W200 to diff for wider output (of 200 characters per line).
+            For colors, use colordiff as shown below.
+                colordiff -y <(xxd foo1.bin) <(xxd foo2.bin)
+        You can also use vimdiff, e.g.
+            vimdiff <(xxd foo1.bin) <(xxd foo2.bin)
+
+
 ## dmidecode
     https://linux.die.net/man/8/dmidecode
 
