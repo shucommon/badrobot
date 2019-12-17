@@ -1886,3 +1886,69 @@ Following the above split rule, kernel has 1 GB kernel virtual address space ded
 
 Suppose the system X has 512 MB of physical memory, then only those 512 MB out of the entire 1 GB virtual space will be mapped for kernel address space, leaving the remaining 512 MB of virtual addresses unmapped. On the other hand, if X has 2 GB of physical memory, the entire 1 GB of virtual addresses will be mapped to physical addresses.
 Having virtual memory could allow OS kernel pages to partly reside on secondary storage (i.e., disk) if the whole kernel does not fit to physical memory. In practice, this doesn’t happen (at least on Linux) since most recent Linux kernels need approximately only 70 MB, which is significantly below the amount of physical memory nowadays available on modern systems. Moreover, the kernel has data and code that must be kept always in main memory for efficiency reasons, and also because a page fault could not be handled otherwise. Think about what we discussed above when a page fault happens: the OS kernel (actually the OS page supervisor) takes the control of the system, enters a specific Interrupt Service Routine (ISR) to handle the page fault, and gives back the control to the user process that generated the page fault. If the OS kernel was not fit entirely to main memory, it might happen that the kernel itself generates a page fault. In a very bad case, such page fault could, for instance, concern the page with the code for the page fault handling routine, thereby blocking the whole system! That’s why kernel code and data are always addressable (i.e., it never generates a page fault), and ready to handle interrupts or system calls at any time.
+
+# cpu info
+    cpu cores number:
+        $ cat /proc/cpuinfo | grep "cpu cores"
+        cpu cores	: 8
+        cpu cores	: 8
+        cpu cores	: 8
+        cpu cores	: 8
+        cpu cores	: 8
+        cpu cores	: 8
+        cpu cores	: 8
+        cpu cores	: 8
+        cpu cores	: 8
+        cpu cores	: 8
+        cpu cores	: 8
+        cpu cores	: 8
+        cpu cores	: 8
+        cpu cores	: 8
+        cpu cores	: 8
+        cpu cores	: 8
+
+        $ cat /proc/cpuinfo | grep "cpu cores" | uniq
+        cpu cores	: 8
+    logical core number(if double cpu cores, means support HT):
+        $ cat /proc/cpuinfo | grep siblings
+        siblings	: 16
+        siblings	: 16
+        siblings	: 16
+        siblings	: 16
+        siblings	: 16
+        siblings	: 16
+        siblings	: 16
+        siblings	: 16
+        siblings	: 16
+        siblings	: 16
+        siblings	: 16
+        siblings	: 16
+        siblings	: 16
+        siblings	: 16
+        siblings	: 16
+        siblings	: 16
+    physical id(socket number):
+        $ cat /proc/cpuinfo | grep "physical id"
+        physical id	: 0
+        physical id	: 0
+        physical id	: 0
+        physical id	: 0
+        physical id	: 0
+        physical id	: 0
+        physical id	: 0
+        physical id	: 0
+        physical id	: 0
+        physical id	: 0
+        physical id	: 0
+        physical id	: 0
+        physical id	: 0
+        physical id	: 0
+        physical id	: 0
+        physical id	: 0
+        $ cat /proc/cpuinfo | grep "physical id" | sort | uniq
+        physical id	: 0
+        $ cat /proc/cpuinfo | grep "physical id" | sort | uniq  | wc -l
+        1
+    logical processor id(equal to siblings):
+        $ cat /proc/cpuinfo | grep processor | wc -l
+        16
