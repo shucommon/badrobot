@@ -1,0 +1,45 @@
+<fstream>
+    ifstream if;
+    ofstream of;
+    if.open("name");
+    of.open("name_o");
+    if >> var;
+    of << var;
+    if.close();
+    of.close();
+
+static_cast
+    c   : (float) hits;
+    c++ : static_cast<float>(hits)
+
+const_cast : remove const attribute,将指向常数对象的指针转变为指向非常数对象的指针
+reinterpret_cast : change pointer type, pointer -> int, int -> pointer
+    int i;
+    float f = -6.9072;
+    unsigned char *p = reinterpret_cast<unsigned char *>(&f);
+    cout << hex;    // print bytes of f in hex
+    for( i = 0; i < sizeof(float); i++)
+        cout << static_cast<int>(p[i]) << '\n';
+dynamic_cast  继承层次中的类型转换
+
+string
+    string s1;
+    string s2 = "hello";
+    string s3 = s2;
+    string s4(10, 'x');
+    char *a = s1.c_str();   // return a null terminate const char type arr pointer
+    s1.length()
+    getline(infile, s1) : get one line to string
+    s2.erase(1, 2)  // s2 = "hlo"
+    s2.erase(1)  // s2 = "h"
+    s2.insert(1, "lo") // s2 = "hlo"
+    s2.insert(1, "el") // s2 = "hello"
+    s2.replace(1,3, "ab") // s2 = "habo"
+    s1 = "world"
+    s2 = "hello"
+    s1.swap(s2);        // swap s1 s2, s1 = "hello"
+    s1.substr(1,2) = "el"
+    s1.find(s2, ind);   // ind default is 0, if not found, return max int
+    s1.find_first_of(s2)    // return the first char index that both s1 and s2 contain
+    s1.find_first_not_of(s2) // in s1 not in s2 first char index
+    
