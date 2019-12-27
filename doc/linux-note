@@ -1952,3 +1952,11 @@ Having virtual memory could allow OS kernel pages to partly reside on secondary 
     logical processor id(equal to siblings):
         $ cat /proc/cpuinfo | grep processor | wc -l
         16
+
+    # thread soly occupy cpu - boot up parameter : isolcpus
+    for a server with 4 cpu, in boot up time, add parameter : isolcpus=2,3, then the system will not use cpu3/cpu4.
+    these cpus will be used by taskset command
+    $ vim /boot/grub2.cfg -> add "isolcpus=2,3"
+    $ cat /proc/cmdline
+
+    # /sys/devices/system/cpu/cpuX
