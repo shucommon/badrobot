@@ -445,7 +445,9 @@ endfunction
 " my own setting
 set number
 " uncomment cursorline to enaboe underline 
-" set cursorline
+set cursorline
+highlight CursorLine ctermbg=535 cterm=NONE
+nnoremap <Leader>c :set cursorline! cursorcolumn!<CR>
 set laststatus=2
 
 " Add by GQ
