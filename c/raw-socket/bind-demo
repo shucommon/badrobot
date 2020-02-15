@@ -1,0 +1,21 @@
+void BindToInterface(int raw , char *device , int protocol) { 
+    struct sockaddr_ll sll;
+    struct ifreq ifr; bzero(&sll , sizeof(sll));
+    bzero(&ifr , sizeof(ifr)); 
+    strncpy((char *)ifr.ifr_name ,device , IFNAMSIZ); 
+    //copy device name to ifr 
+    if((ioctl(raw , SIOCGIFINDEX , &ifr)) == -1)
+    { 
+        perror("Unable to find interface index");
+        exit(-1); 
+    }
+    sll.sll_family = AF_PACKET; 
+    sll.sll_ifindex = ifr.ifr_ifindex; 
+    sll.sll_protocol = htons(protocol); 
+    if((bind(raw , (struct sockaddr *)&sll , sizeof(sll))) ==-1)
+    {
+        perror("bind: ");
+        exit(-1);
+    }
+    return 0;
+} 
