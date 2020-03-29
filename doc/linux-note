@@ -674,6 +674,7 @@
         You can also use vimdiff, e.g.
             vimdiff <(xxd foo1.bin) <(xxd foo2.bin)
 
+    4. kernelshark
 
 ## dmidecode
     https://linux.die.net/man/8/dmidecode
