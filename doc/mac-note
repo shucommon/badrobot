@@ -82,3 +82,16 @@ You will need to codesign the binary. For instructions, see:
 On 10.12 (Sierra) or later with SIP, you need to run this:
 
   echo "set startup-with-shell off" >> ~/.gdbinit
+
+
+## vscode
+
+    # for vscodevim plugin, enable press and hold
+    To disable the Apple press and hold for VSCode only, run this command in a terminal:
+
+    defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
+    Then restart VSCode.
+
+    To re-enable, run this command in a terminal:
+
+    defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool true
