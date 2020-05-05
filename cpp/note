@@ -1,0 +1,6 @@
+dynamic_cast 仅对多态类型有效（即至少有一个虚函数），转型的源类型
+
+copy constructor 可以有多于一个的参数，但是第一个以后的所有参数必须有默认值
+Person(const Person &p, bool married=false);
+
+当一个类包含指向动态存储空间指针类型的数据成员，则应该为这个类定义拷贝构造函数
