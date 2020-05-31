@@ -663,6 +663,226 @@ public:
     }
 };
 
+// problem 1441
+/*
+输入：target = [1,3], n = 3
+输出：["Push","Push","Pop","Push"]
+解释： 
+读取 1 并自动推入数组 -> [1]
+读取 2 并自动推入数组，然后删除它 -> [1]
+读取 3 并自动推入数组 -> [1,3]
+*/
+class Solution {
+public:
+    vector<string> buildArray(vector<int>& target, int n) {
+        vector<string> str;
+        auto it = target.begin();
+        for (int i = 1; i <= n; i++) {
+            if (it != target.end() && *it == i) {
+                str.push_back("Push");
+                it++;
+            } else if (it != target.end()) {
+                str.push_back("Push");
+                str.push_back("Pop");
+            }
+        }           
+        return str;
+    }
+};
+
+// problem 1442
+/*
+给你一个整数数组 arr 。
+
+现需要从数组中取三个下标 i、j 和 k ，其中 (0 <= i < j <= k < arr.length) 。
+
+a 和 b 定义如下：
+
+a = arr[i] ^ arr[i + 1] ^ ... ^ arr[j - 1]
+b = arr[j] ^ arr[j + 1] ^ ... ^ arr[k]
+注意：^ 表示 按位异或 操作。
+
+请返回能够令 a == b 成立的三元组 (i, j , k) 的数目。
+a ^ a = 0
+a ^ !a = ff
+a ^ 1 = !a
+a ^ 0 = a
+*/
+class Solution {
+public:
+    int countTriplets(vector<int>& arr) { int n = arr.size();
+        if(n < 2) return 0;
+
+        int a = 0, b = 0, cnt = 0;
+        for (int i = 0; i < n - 1; i++) {
+            a = arr[i];
+            for (int j = i + 1; j < n; j++) {
+                if (j > i + 1) a ^= arr[j - 1];
+                b = arr[j];
+                if(a == b) cnt++;
+                for (int k = j + 1; k < n; k++) {
+                    b ^= arr[k];
+                    if(a == b) cnt++;
+                }
+            }
+        }
+        return cnt;
+    }
+};
+
+class Solution {
+public:
+    int minTime(int n, vector<vector<int>>& edges, vector<bool>& hasApple) {
+        multimap<int, int> mp;
+        for (auto e : edges) {
+            mp.insert(pair<int, int>(e[0], e[1]));
+        }
+        cnt = 0;
+        search(mp, hasApple, edges[0][0]);
+        return cnt;
+    }
+    bool search (multimap<int, int> &mp, vector<bool> &hasApple, int key) {
+        auto it = mp.find(key);
+        auto n = mp.count(key);
+        int curCnt = cnt;
+        for (int i = 0; i < n; i++, it++) {
+            if (hasApple[it->second]) {
+                cnt += 2;
+            }
+            if (mp.find(it->second) != mp.end()) {
+                if (search(mp, hasApple, it->second) && !hasApple[it->second])  cnt += 2;
+            }
+        }
+        if (curCnt != cnt) return true;
+        return false;
+    }
+private:
+    int cnt;
+};
+
+/*
+"Jlhvvd wfwnphmxoa qcuucx qsvqskq cqwfypww dyphntfz hkbwx xmwohi qvzegb ubogo sbdfmnyeim tuqppyipb llwzeug hrsaebveez aszqnvruhr xqpqd ipwbapd mlghuuwvec xpefyglstj dkvhhgecd kry"
+output: "Kry xqpqd ubogo hkbwx qvzegb jlhvvd xmwohi qcuucx qsvqskq llwzeug ipwbapd dyphntfz cqwfypww tuqppyipb dkvhhgecd sbdfmnyeim xpefyglstj mlghuuwvec aszqnvruhr hrsaebveez wfwnphmxoa"
+expected: "Kry hkbwx ubogo xqpqd jlhvvd qcuucx xmwohi qvzegb qsvqskq llwzeug ipwbapd cqwfypww dyphntfz tuqppyipb dkvhhgecd wfwnphmxoa sbdfmnyeim hrsaebveez aszqnvruhr mlghuuwvec xpefyglstj"
+*/
+
+/*
+text 以大写字母开头，然后包含若干小写字母以及单词间的单个空格。
+1 <= text.length <= 10^5
+*/
+bool sortLen(string str1, string str2) {
+    return (str1.length() < str2.length());
+}
+class Solution {
+public:
+    string arrangeWords(string text) {
+        vector<string> str;       
+        int pos = 0, npos = 0;
+        while ((npos = text.find(" ", pos)) != string::npos) {
+            str.push_back(text.substr(pos, npos - pos));
+            pos = npos + 1;
+        }
+        str.push_back(text.substr(pos));
+        if (str.size() > 1) {
+            str[0][0] = tolower(str[0][0]);
+        }
+        sort(str.begin(), str.end(), sortLen);
+        // will keep same element pos don't change
+        stable_sort(str.begin(), str.end(), sortLen);
+
+        string ret;
+        for (auto v : str) {
+            ret += v;
+            ret += " ";
+        }
+        ret[0] = toupper(ret[0]);
+        ret.erase(ret.length() - 1, 1);
+
+        return ret;
+    }
+};
+
+class Solution {
+public:
+    static bool cmp(vector<string> v1, vector<string> v2) {
+        return (v1.size() < v2.size());
+    }
+
+    vector<int> peopleIndexes(vector<vector<string>>& favoriteCompanies) {
+        sort(favoriteCompanies.begin(), favoriteCompanies.end(), cmp);
+        vector<int> ret;
+        vector<set<string>> fc;
+        for (auto f : favoriteCompanies) {
+            set<string> s;
+            for (auto v : f) {
+                s.insert(v);
+            }
+            fc.push_back(s);
+        }
+        for (int i = 0; i < fc.size(); i++) {
+            set<string> s = fc.at(i);
+            int j = 0;
+            for (; j < fc.size(); j++) {
+                if (j == i) continue;
+                set<string> f = fc.at(j);
+                int size = f.size();
+                f.merge(s.begin(), s.end()); 
+                if (size == f.size()) break;
+            }
+            if (j >= fc.size()) ret.push_back(i);
+        }
+
+        return ret;
+    }
+};
+
+class Solution {
+public:
+    int isPrefixOfWord(string sentence, string searchWord) {
+        int l1 = sentence.length();
+        int l2 = searchWord.length();
+        int index = 1;
+
+        for(int i = 0; i < l1; i++) {
+            int j = 0;
+            for(; j < l2 && i < l1; j++, i++) {
+                if(searchWord[j] != sentence[i]) break;
+            }
+            if (j == l2) return index;
+            index++;
+            while(sentence[i] != ' ') i++;
+        }
+
+        return -1;
+    }
+};
+
+class Solution {
+public:
+    bool isVowels(char c) {
+        return (c == 'a' ||
+                c == 'e' ||
+                c == 'i' ||
+                c == 'o' ||
+                c == 'u');
+    }
+    int maxVowels(string s, int k) {
+        vector<int> index;
+        for (int i = 0; i < s.length(); i++) {
+            if (isVowels(s[i])) index.push_back(i);
+        }
+        if (index.size() == 0) return 0;
+        int max = 1;
+        int l = 0;
+        for (int i = 0; i < index.size(); i++) {
+            while (l <= i && index[i] - index[l] >= k) l++;
+            max = max > (i - l + 1) ? max : (i - l + 1);
+        }
+        return max;
+    }
+};
+
+
 int main()
 {
     return 0;
