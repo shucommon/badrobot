@@ -882,6 +882,660 @@ public:
     }
 };
 
+// problem 5424
+class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+        int max1 = nums[0];
+        int max2 = nums[1];
+        if (max1 > max2) {
+            max1 = nums[1];
+            max2 = nums[0];
+        }
+        for (uint16_t i = 2; i < nums.size(); i++) {
+            if (nums[i] > max2) {
+                max1 = max2;
+                max2 = nums[i];
+            } else if (nums[i] > max1) {
+                max1 = nums[i];
+            }
+        }
+        return (max1 - 1) * (max2 - 1);
+    }
+};
+
+// problem 5425
+/*
+2 <= h, w <= 10^9
+1 <= horizontalCuts.length < min(h, 10^5)
+1 <= verticalCuts.length < min(w, 10^5)
+1 <= horizontalCuts[i] < h
+1 <= verticalCuts[i] < w
+题目数据保证 horizontalCuts 中的所有元素各不相同
+题目数据保证 verticalCuts 中的所有元素各不相同
+*/
+class Solution {
+public:
+    int maxArea(int h, int w, vector<int>& horizontalCuts, vector<int>& verticalCuts) {
+        sort(horizontalCuts.begin(), horizontalCuts.end());
+        sort(verticalCuts.begin(), verticalCuts.end());
+        int mh = horizontalCuts[0];
+        int mw = verticalCuts[0];
+
+        for (uint32_t i = 1; i < horizontalCuts.size(); i++) {
+            int tmp = horizontalCuts[i] - horizontalCuts[i - 1];
+            mh = mh > tmp ? mh : tmp;
+        }
+        int tmp = h - horizontalCuts[horizontalCuts.size() - 1];
+        mh = mh > tmp ? mh : tmp;
+
+        for (uint32_t i = 1; i < verticalCuts.size(); i++) {
+            int tmp = verticalCuts[i] - verticalCuts[i - 1];
+            mw = mw > tmp ? mw : tmp;
+        }
+        tmp = w - verticalCuts[verticalCuts.size() - 1];
+        mw = mw > tmp ? mw : tmp;
+
+        return (long long)mh * (long long)mw % 1000000007;
+    }
+};
+
+
+// problem 5429
+class Solution {
+public:
+    vector<int> getStrongest(vector<int>& arr, int k) {
+        sort(arr.begin(), arr.end());
+        int len = arr.size();
+        int m = arr[(len - 1) / 2];
+        vector<int> ret;
+
+        for (int i = 0, j = len - 1; i <= j && i + len - j - 1 < k;) {
+            int m1 = abs(arr[i] - m);
+            int m2 = abs(arr[j] - m);
+            if (m1 <= m2) {
+                ret.push_back(arr[j--]);
+            } else {
+                ret.push_back(arr[i++]);
+            }
+        }
+        return ret;
+    }
+};
+
+// problem 5430
+class BrowserHistory {
+public:
+    BrowserHistory(string homepage) {
+        urls.push_back(homepage); 
+        pos = 0;
+        end = 0;
+    }
+    
+    void visit(string url) {
+        while(pos < end && end < urls.size()) {
+            urls.erase(urls.begin() + pos + 1);
+            end--;
+        }
+        urls.push_back(url);
+        pos++;
+        end++;
+    }
+    
+    string back(int steps) {
+        if (steps > pos) {
+            steps = pos;
+        }
+        pos -= steps;
+        return urls[pos];
+    }
+    
+    string forward(int steps) {
+        if (steps > end - pos) {
+            steps = end - pos;
+        }
+        pos += steps;
+        return urls[pos];
+    }
+
+private:
+    vector<string> urls;
+    int pos;
+    int end;
+};
+/**
+ * Your BrowserHistory object will be instantiated and called as such:
+ * BrowserHistory* obj = new BrowserHistory(homepage);
+ * obj->visit(url);
+ * string param_2 = obj->back(steps);
+ * string param_3 = obj->forward(steps);
+ */
+
+
+// problem 5431
+class Solution {
+public:
+    int minCost(vector<int>& houses, vector<vector<int>>& cost, int m, int n, int target) {
+};
+// ref 1
+class Solution {
+    int f[105][105][25];
+public:
+    int minCost(vector<int>& houses, vector<vector<int>>& cost, int m, int n, int target) {
+        int i,j,k,l,ans=1<<30;
+        memset(f,127,sizeof(f));
+        f[0][0][0]=0;
+
+        for(i=0;i<m;i++)for(j=0;j<=i;j++)for(k=0;k<=n;k++)if(houses[i])f[i+1][j+(k!=houses[i])][houses[i]]=min(f[i+1][j+(k!=houses[i])][houses[i]],f[i][j][k]);
+        else for(l=1;l<=n;l++)f[i+1][j+(k!=l)][l]=min(f[i+1][j+(k!=l)][l],f[i][j][k]+cost[i][l-1]);
+        for(l=1;l<=n;l++)ans=min(ans,f[m][target][l]);
+        if(ans==1<<30)ans=-1;
+        return ans;
+
+        for(i=0;i<m;i++) {
+            for(j=0;j<=i;j++) {
+                for(k=0;k<=n;k++) { 
+                    if(houses[i]) {
+                        f[i+1][j+(k!=houses[i])][houses[i]] = min(f[i+1][j+(k!=houses[i])][houses[i]],f[i][j][k]);
+                    } else {
+                        for(l=1;l<=n;l++) {
+                            f[i+1][j+(k!=l)][l] = min(f[i+1][j+(k!=l)][l],f[i][j][k]+cost[i][l-1]);
+                        }
+                    }
+                }
+            }
+        }
+        for(l=1;l<=n;l++)ans=min(ans,f[m][target][l]);
+        if(ans==1<<30)ans=-1;
+        return ans;
+    }
+};
+
+// problem 5437
+class Solution {
+public:
+    int findLeastNumOfUniqueInts(vector<int>& arr, int k) {
+        sort(arr.begin(), arr.end());
+        vector<int> index;
+        int pre = arr[0];
+        int cnt = 0;
+        for(auto a : arr) {
+            if(a == pre) cnt++;
+            else {
+                index.push_back(cnt);
+                cnt = 1;
+                pre = a;
+            }
+        }
+        index.push_back(cnt);
+        sort(index.begin(), index.end());
+        int total = index.size();
+        cnt = 0;
+        for(auto i : index) {
+            cnt += i;
+            if (cnt > k) {
+                return total;
+            } else if (cnt == k) {
+                return total - 1;
+            }
+            total--;
+        }
+        return 0;
+    }
+    int findLeastNumOfUniqueInts(vector<int>& arr, int k) {
+        map<int, int> index;
+        for(auto a : arr) {
+            if(index.find(a) != index.end()) {
+                index[a]++;
+            } else {
+                index.insert(pair<int, int>(a, 1));
+            }
+        }
+        multimap<int, int> sorted;
+        for (auto i : index) {
+            sorted.insert(pair<int, int>(i.second, i.first));
+        }
+        int cnt = 0;
+        while(sorted.size() > 0) {
+            cnt += sorted.begin()->first;
+            if (cnt > k) {
+                return sorted.size();
+            } else if (cnt == k) {
+                return sorted.size() - 1;
+            }
+            sorted.erase(sorted.begin());
+        }
+        return 0;
+    }
+};
+
+// problem 5438
+/*
+输入：bloomDay = [1,10,3,10,2], m = 3, k = 1
+输出：3
+解释：让我们一起观察这三天的花开过程，x 表示花开，而 _ 表示花还未开。
+现在需要制作 3 束花，每束只需要 1 朵。
+1 天后：[x, _, _, _, _]   // 只能制作 1 束花
+2 天后：[x, _, _, _, x]   // 只能制作 2 束花
+3 天后：[x, _, x, _, x]   // 可以制作 3 束花，答案为 3
+*/
+class Solution {
+public:
+    void find(vector<int>& bloomDay, int m, int k, int day, int &l, int &r) {
+        int cntk = 0;
+        int cntm = 0;
+        int i = 0;
+        for(; i < bloomDay.size(); i++) {
+            int b = bloomDay[i];
+            if (b <= day) cntk++;
+            else cntk = 0;
+
+            if(cntk == k) {
+                cntm++;
+                cntk = 0;
+            }
+        }
+        
+        if (cntm >= m) r = (l + r) / 2 - 1;
+        else l = (l + r) / 2 + 1;
+    }
+
+    int minDays(vector<int>& bloomDay, int m, int k) {
+        if (m * k > bloomDay.size()) return -1;
+        vector<int> tmp = bloomDay;
+        sort(tmp.begin(), tmp.end());
+        int l = 0, r = tmp.size() - 1;
+        while (l <= r) {
+            int c = (l + r) / 2;
+            int mid = tmp[c];
+            find(bloomDay, m, k, mid, l, r);
+        }
+        return tmp[l];
+    }
+};
+
+// problem 5441
+class Solution {
+public:
+    vector<string> getFolderNames(vector<string>& names) {
+        map<string, int> table;
+        vector<string> ans;
+        for (auto name : names) {
+            if (table.find(name) == table.end()) {
+                ans.push_back(name);
+                table.insert(pair<string, int>(name, 0));
+            } else {
+                int i = table[name];
+                string tmp;
+                do {
+                    i++;
+                    tmp = name + "(" + to_string(i) + ")";
+                } while (table.find(tmp) != table.end());
+                table[name] = i;
+                ans.push_back(tmp);
+                table.insert(pair<string, int>(tmp, 0));
+            }
+        }
+        return ans;
+    }
+};
+
+// problem 1488
+class Solution {
+public:
+    vector<int> avoidFlood(vector<int>& rains) {
+        set<int> rain;
+        deque<int> zero;
+        vector<int> ans(rains.size(), -1);
+
+        for (int i = 0; i < rains.size(); i++) {
+            if (rains[i] == 0 && rain.size() > 0) {
+                zero.push_back(i);
+            } else {
+                if (rain.find(rains[i]) != rain.end()) {
+                    if (zero.size() > 0) {
+                        ans[zero.back()] = rains[i];
+                        zero.pop_back();
+                    } else {
+                        ans.clear();
+                        break;
+                    }
+                } else {
+                    rain.insert(rains[i]);
+                }
+            }
+        }
+        if (ans.size() > 0 && zero.size() > 0) {
+            for (auto z : zero) {
+                ans[z] = 1;
+            }
+        }
+        return ans;
+    }
+};
+
+// problem 5454
+/*
+输入：mat = [[1,0,1],
+            [1,1,0],
+            [1,1,0]]
+输出：13
+解释：
+有 6 个 1x1 的矩形。
+有 2 个 1x2 的矩形。
+有 3 个 2x1 的矩形。
+有 1 个 2x2 的矩形。
+有 1 个 3x1 的矩形。
+矩形数目总共 = 6 + 2 + 3 + 1 + 1 = 13 。
+*/
+class Solution {
+public:
+    int find(vector<vector<int>> sum, int r, int c, int rows, int cols) {
+        int target = r * c - 1;
+        int cnt = 0;
+        for (int i = 0; i <= rows - r; i++) {
+            for (int j = 0; j <= cols - c; j++) {
+                if (sum[i+r-1][j+c-1] - sum[i,j] == target) cnt++;
+            }
+        }
+        return cnt;
+    }
+
+    int numSubmat(vector<vector<int>>& mat) {
+        int raws = mat.size();
+        int cols = mat[0].size();
+        int cnt = 0;
+
+        vector<vector<int>> sum = mat;
+        for (int i = 0; i < raws; i++) {
+            for (int j = 1; j < cols; j++) {
+                sum[i][j] += sum[i][j-1]; 
+            }
+        }
+        for (int i = 0; i < cols; i++) {
+            for (int j = 1; j < raws; j++) {
+                sum[i][j] += sum[i][j-1]; 
+            }
+        }
+
+        for (int r = 1; r <= rows; r++) {
+            for (int c = 1; c <= cols; c++) {
+                cnt += find(sum, r, c, raws, cols);
+            }
+        }
+        return cnt;
+    }
+};
+
+// problem 5453
+// 所有蚂蚁掉下来前的最后一刻
+// 碰撞后其实是继续前进
+class Solution {
+public:
+    int getLastMoment(int n, vector<int>& left, vector<int>& right) {
+        int m = 0;
+        for (auto l : left) m = max(m, l); 
+        for (auto r : right) m = max(m, n - r); 
+        return m;
+    }
+};
+// problem 5455
+/*
+1 <= num.length <= 30000
+num 只包含 数字 且不含有 前导 0 。
+1 <= k <= 10^9
+*/
+class Solution {
+public:
+    int find(string num, int i) {
+        for(int j = 0; j < num.size(); j++) {
+            if(num[j] - '0' == i) return j;
+        }
+        return -1;
+    }
+
+    string minInteger(string num, int k) {
+        for (int i = 0; i < 10; i++) {
+            int n = find(num, i);
+            if(n >= 0 && n <= k) {
+                string ret = num.substr(n, 1);
+                num.erase(num.begin() + n);
+                return ret + this->minInteger(num, k - n);
+            }
+        }
+    }
+};
+
+// problem 5461
+class Solution {
+public:
+    void add(map<int, int> &m, int key) {
+        if (m.find(key) != m.end()) {
+            m[key]++;
+        } else {
+            m.insert(pair<int, int>(key, 1));
+        }
+    }
+    int getCnt(map<int, int> &m) {
+        long long cnt = 0;
+        for(auto e : m) {
+            long long n = e.first;
+            cnt += e.second * ((1+n) * n / 2);
+            if (cnt > 1000000006) cnt %= 1000000007;
+        }
+        return cnt;
+    }
+    int numSub(string s) {
+        int cnt = 0;
+        map<int, int> m;
+        for(auto ss : s) {
+            if (ss == '0' && cnt > 0) {
+                add(m, cnt);
+            }
+            ss == '0' ? (cnt = 0) : cnt++;
+        }
+        if (cnt > 0) {
+            getCnt(m, cnt);
+        }
+        return cnt(m);
+    }
+};
+
+// problem 5211
+class Solution {
+public:
+    struct val {
+        int e;
+        double p;
+    }
+    double cal(map<int, vector<val>> &table, int start, int end, double &p) {
+        auto it = table.find(start);
+        if (it == table.end()) return 0;
+        for (auto v : it->second) {
+            p *= v.p;
+            if (v.e == end || p == 0) {
+                return p;
+            }
+            p *= cal(table, v.e, end);
+        }
+        return p;
+    }
+    double maxProbability(int n, vector<vector<int>>& edges, vector<double>& succProb, int start, int end) {
+        map<int, vector<val>> table;
+        for (int i = 0; i < edges.size(); i++) {
+            val tmp;
+            tmp.e = edges[i][1];
+            tmp.p = succProb[i];
+            auto it = table.find(edges[i][0]);
+            if (it != table.end()) {
+                it->second.push_back(tmp);    
+            } else {
+                table.insert(pair<int, vector<val>>(edges[i][0], tmp));
+            }
+        }
+
+    }
+};
+
+// problem 5472
+class Solution {
+public:
+    string restoreString(string s, vector<int>& indices) {
+        string a = s;
+        int i = 0;
+        for (auto in : indices) {
+            a[in] = s[i++];
+        }
+        return a;
+    }
+};
+
+// problem 5473
+class Solution {
+public:
+    int minFlips(string target) {
+        int l = target.length();
+        char s = target[l-1];
+        int cnt = 0;
+        for(int i = l - 2; i >= 0; i--) {
+            if (target[i] != s) {
+                cnt++;
+                s = (s == '0' ? '1' : '0');
+            }
+        }
+        if (s == '1') {
+            cnt++;
+        }
+        return  cnt;
+    }
+};
+
+// problem 5474
+//Definition for a binary tree node.
+struct TreeNode {
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+    TreeNode() : val(0), left(nullptr), right(nullptr) {}
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+    TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+};
+
+class Solution {
+public:
+    int countPairs(TreeNode* root, int distance) {
+        
+    }
+};
+
+// problem 5475
+class Solution {
+public:
+    int countGoodTriplets(vector<int>& arr, int a, int b, int c) {
+        int cnt = 0;
+        for (int i = 0; i < arr.size() - 2; i++) {
+            for (int j = i + 1; j < arr.size() - 1; j++) {
+                for (int k = j + 1; k < arr.size(); k++) {
+                    bool x = abs(arr[i] - arr[j]) <= a;
+                    bool y = abs(arr[j] - arr[k]) <= b;
+                    bool z = abs(arr[i] - arr[k]) <= c;
+                    if (x && y && z) cnt++;
+                }
+            }
+        }
+        return cnt;
+    }
+};
+
+// problem 5476
+class Solution {
+public:
+    int getWinner(vector<int>& arr, int k) {
+        int cnt = 1;
+        int trys = 0;
+        int base = max(arr[0], arr[1]);
+        for (int i = 2; i < arr.size() && cnt < k; i++) {
+            int m;
+            if (base < arr[i]) {
+                base = arr[i];
+                cnt = 1;
+            } else {
+                cnt++;
+            }
+            if(cnt == k) break;
+        }
+        return base;
+    }
+};
+
+// problem 5477
+class Solution {
+public:
+    int minSwaps(vector<vector<int>>& grid) {
+        map<int, vector<int>> m;
+        map<int, int> index;
+        int n = grid.size();
+        for(int i = 0; i < n; i++) {
+            int cnt = 0;
+            for(int j = n - 1; j >= 0; j--) {
+                if(grid[i][j] != 0) break;
+                cnt++;
+            }
+            if(cnt) {
+                if(m.find(cnt) != m.end()) m[cnt].push_back(i);
+                else m[cnt] = {i};
+                index[i] = cnt;
+            }
+        }
+        if (index.size() < n - 1) return -1;
+
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = n; j >= n - i - 1; j--) {
+                if (m.find(j) == m.end()) continue;
+
+            }
+        }
+    }
+};
+
+// problem 5483
+class Solution {
+public:
+    string makeGood(string s) {
+        for (int i = 0; i < s.size() - 1;) {
+            if(abs(s[i] - s[i+1]) == 'a' - 'A') {
+                s.erase(i, 2);
+                i = (i > 0 ? i - 1 : 0);
+                if(s.empty()) return s;
+                continue;
+            }
+            i++;
+        }
+    }
+};
+
+// problem 5484
+class Solution {
+public:
+    char findKthBit(int n, int k) {
+        if(n==1) return '0';
+
+        int start = 1;
+        for(int i = 1; i < n; i++) {
+            start = start * 2 + 1;
+        }
+        if (k-1 == start/2) return '1';
+        if (k-1 < start/2) {
+            return findKthBit(n-1, k);
+        } else {
+            char s = findKthBit(n-1, start - k + 1);
+            if (s == '1') return '0';
+            return '1';
+        }
+    }
+};
+
+
 
 int main()
 {

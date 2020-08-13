@@ -84,7 +84,7 @@ void deque_demo()
     for(auto t : dq) {
         cout << t << " ";
     }
-    dq.pop_back();
+    //cout << dq.pop_back();
     dq.pop_front();
     for(auto t : dq) {
         cout << t << " ";
@@ -441,8 +441,6 @@ int main()
     map_demo();
     set_demo();
     string_demo();
-    muitimap_demo();
-    muitiset_demo();
 
     return 0;
 }
