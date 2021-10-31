@@ -1,0 +1,80 @@
+using qemu to debug linux
+___
+
+
+# qemu
+
+- download qemu source
+
+    - [install](https://wiki.qemu.org/Hosts/Linux)
+
+    - ubuntu
+
+        > $ sudo apt-get install git libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev
+        > $ sudo apt-get install libnfs-dev libiscsi-dev ninja-build libsdl2-dev libsdl2-image-dev
+
+
+        > $ wget https://download.qemu.org/qemu-6.0.0.tar.xz
+        > $ tar xvJf qemu-6.0.0.tar.xz
+
+        Switch to the QEMU root directory.
+        > $ cd qemu
+
+        Prepare a native debug build.
+        > $ mkdir -p bin/debug/native
+        > $ cd bin/debug/native
+
+        Configure QEMU and start the build or configure QEMU for x86_64 only - faster build
+        > $ ../../../configure --enable-debug
+        > $ ../../../configure --target-list=x86_64-softmmu --enable-debug
+        > $ make
+
+        using help to see all support target-list:
+        > $ ./configure --help
+        > $ ../../../configure --target-list=aarch64-softmmu,arm-softmmu,i386-softmmu,riscv32-softmmu,riscv64-softmmu,x86_64-softmmu,aarch64-linux-user,aarch64_be-linux-user,arm-linux-user,i386-linux-user,riscv32-linux-user,riscv64-linux-user,x86_64-linux-user  --enable-debug
+
+        Return to the QEMU root directory.
+        > $ cd ../../..
+
+
+# kernel
+
+    > $ wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.12.6.tar.xz
+    > $ tar xvJf linux-5.12.6.tar.xz
+    > $ sudo apt install libncurses-dev pkg-config flex bison libelf-dev libssl-dev
+    > $ make menuconfig
+
+    for debug
+    ```c++ Kernel hacking  ---> 
+     Processor type and features  --->
+        []Randomize the address of the kernel image (KASLR)
+
+    [*] Kernel debugging
+    Compile-time checks and compiler options  --->
+        [*] Compile the kernel with debug info
+        [*]   Provide GDB scripts for kernel debugging```
+
+    > $ make -j4
+
+# busybox
+
+    > $ wget https://busybox.net/downloads/busybox-1.33.1.tar.bz2
+    > $ tar -jxf busybox-1.33.1.tar.bz2
+    > $ cd busybox-1.28.0
+    > $ make menuconfig
+    ```c++
+        Settings  --->
+        [*] Build static binary (no shared libs)
+    ```
+    > $ make -j4
+    > $ make install
+    > $ ls _install 
+
+# os study
+
+    > [Bran's kernel development tutorials](http://www.osdever.net/bkerndev/index.php)
+
+    > [JamesM's kernel development tutorials](http://www.jamesmolloy.co.uk/tutorial_html/)
+
+    > $ sudo apt install nasm docker
+
