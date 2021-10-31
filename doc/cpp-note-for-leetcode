@@ -1,0 +1,9 @@
+
+- queue
+    queue<pair<int, int>> que;
+    que.push({i, j});
+    while(!que.empty()) {
+        auto rc = que.front();
+        que.pop();
+        rc.first
+        rc.second

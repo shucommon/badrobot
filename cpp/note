@@ -4,3 +4,6 @@ copy constructor 可以有多于一个的参数，但是第一个以后的所有
 Person(const Person &p, bool married=false);
 
 当一个类包含指向动态存储空间指针类型的数据成员，则应该为这个类定义拷贝构造函数
+
+vector 初始化
+    vector<vector<char>> vec(row,vector<char>(col,'#'));
